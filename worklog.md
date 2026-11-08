@@ -2209,3 +2209,25 @@ Work Log:
 - **CSV deliverable**: download/data-resmi/pihk-ppiu-jateng-satu-haji-2025.csv (129 baris; kolom Master; sumber dicantumkan per baris).
 - **E2E**: lookup NIB 02201073600530004 → PT. SEKOLAH HAJI UMROH BAITULLAH, Kab. Semarang, telp+email ✓; #/gabung ketik izin → nama+kota terisi otomatis ✓; 0 page error.
 - Catatan: 5 entri tanpa nomor izin (ALFATIH BIRO UMRAH, OZMAN, CAHAYA HARAMAIN, NAJAH TOUR & TRAVEL, MADANI MITRA MULIA) TIDAK diimpor sesuai aturan anti-karang; data mentah disimpan /tmp/panen25/.
+
+## Task ID 26 — Panen Direktori Resmi AMPHURI: 779 Anggota, +657 Baru, 79 Diperkaya (DB 735 → 1392)
+Tanggal: 2026-11-09
+
+Task: "ghp_... tolong push yang terbaru lalu gas lagi" (push dicek ternyata 946a3f0 sudah sinkron; lanjut panen sumber baru).
+
+Work Log:
+- **Verifikasi push**: ls-remote langsung ke GitHub = HEAD lokal 946a3f0 (Task 23+24+25 sudah di remote).
+- **Sumber baru: Direktori anggota resmi AMPHURI** (amphuri.org/daftar-member — asosiasi PPIU/PIHK; situs TIDAK memblokir sandbox, berbeda dari sapuhi.id/web.archive.org yang kini ikut timeout). Tabel utama 780 baris (779 anggota + header): nama, no. anggota, pimpinan, License (PIHK 279/PPIU 500), kota, provinsi, DPD.
+- **779 detail modal dipanen** (`/daftar-member/<id>/detail?signature=...`, JSON berisi alamat + "PPIU License Number" + "PIHK License Number"): scripts/amphuri-panen.py (4 worker) → 539 ok + 240 kena HTTP 429 → scripts/amphuri-retry.py (1 worker, jeda 2s, backoff) → **779/779, 0 gagal**.
+- **Parser v2** (scripts/amphuri-parse2.py): perbaikan badge inisial avatar ("AM"/"SR" ikut tertangkap sbg nama), izin via clean-text (label terpotong tag), izin_rapi "TH"→"Tahun". Matcher 3 tahap vs DB 735: (1) norm nama persis 78, (2) norm izin 0, (3) token containment ≥0.75 + provinsi sama = 15 → **review manual**: hanya PT MAKASSAR TORAJA ≡ PT. MAKASSAR TORAJA TOUR & TRAVEL (alamat Jl. Otista Raya 13330 identik) yang benar digabung; 14 lainnya perusahaan berbeda (nama mirip, izin beda) → tetap diimpor sbg baru. Cek silang tambahan 237 kandidat cont 0.5-0.75: hampir semua tabrakan token generik ("indah"/"al"/"prima") — 0 tabrakan izin antar 749 AMPHURI vs 735 DB menguatkan.
+- **Anti-karang**: 30 anggota AMPHURI izinnya "-"/kosong → TIDAK diimpor; 12 izin notasi ilmiah Excel (mis. "1.293000232054E+16", NIB terpotong di sumber) → ditolak; 1 izin berisi angka akuntansi "1.290.000.710.217,00" (PT BUNGOMAS MEGA WISATA) → ditolak; apostrof sumber "…0001'" dibersihkan.
+- **29 baris kota kosong diisi dari alamat sumber** (scripts/amphuri-fix-kota.py; Tebet→Kota Jakarta Selatan dst.) + **4 provinsi tabel AMPHURI salah dikoreksi dari alamat** (ADZAN INSAN KARIMAH Sulsel→Banten/Kota Tangerang; ARYATI Banten→DKI/Jakarta Utara; INHIL ARJUNA DKI→NTB/Lombok Tengah; TRAVELATAYA Riau→Kep. Riau/Batam).
+- **Bug ditemukan & diperbaiki**: 14 cocokan t3 yang divonis "impor sbg baru" ternyata tereliminasi dari CSV (hanya MAKASSAR TORAJA yang dibuang seharusnya) → scripts/amphuri-t14.py memulihkan & mengimpor keduanya.
+- **Impor**: 615 (batch-1) + 28 (fix kota) + 14 (t3) = **657 inserted, 0 error**. **Enrichment 79** anggota lama (guard anti-dobel "Anggota AMPHURI"): no. anggota + DPD + pimpinan + izin versi AMPHURI/izin kedua; MAKASSAR TORAJA kini punya KMA 800/2017 (DB) + KMA 388/2021 & U.76/2021 (AMPHURI). 78 description dibersihkan dari apostrof nyangkut.
+- **DB: 735 → 1392 Member (PIHK 517, PPIU 870, KBIHU 2, IPHI 1, TW 2)**; 736 anggota bersumber AMPHURI.
+- **CSV deliverable**: download/data-resmi/anggota-amphuri.csv (657 baris, kolom Master, sumber per baris).
+- **E2E**: lookup "KMA Nomor 154 Tahun 2021" → PT GELORA INDAH PERDANA Kota Makassar ✓; NIB "02200035922680001/2024" → PT PELANGI WISATA MADANIAH ✓; "U.77 TAHUN 2022" → PT BERKAH ZAMZAM WISATA Situbondo ✓; browser #/gabung ketik izin → nama/kota/provinsi auto-isi ✓, 0 page error.
+- Blokir terdokumentasi: SAPUHI masih diblokir; web.archive.org kini ikut timeout dari sandbox; bali.haji.go.id (pengumuman daftar PPIU/PIHK 1447H/2026) = SPA React 907 byte — kandidat panen berikutnya via API di baliknya.
+
+Stage Summary:
+- Direktori 735 → 1392 dalam satu sesi (1,9× lipat); total 3 sumber resmi baru dalam 2 hari (HIMPUH, SATU HAJI Jateng, AMPHURI); semua data asli dengan sitasi sumber di description; 44 entri ditolak secara jujur (izin tidak valid/rusak di sumber).
