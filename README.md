@@ -3,7 +3,7 @@
 
 ![MUHDIN.ID — Portal Digital Ekosistem Umrah dan Haji Indonesia](docs/assets/banner.svg)
 
-# 🕋 MUHDIN.ID — v12.5.0 «SINERGI»
+# 🕋 MUHDIN.ID — v13.0.0 «GERBANG»
 
 ### **MU**asyarakat **U**mroh **H**aji **D**igital **I**ndonesia
 
@@ -15,7 +15,9 @@
 [![React 19](https://img.shields.io/badge/React-19-61DAFB?logo=react)](https://react.dev)
 [![TypeScript 5](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript)](https://typescriptlang.org)
 [![Tailwind CSS 4](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?logo=tailwindcss)](https://tailwindcss.com)
-[![Prisma 6](https://img.shields.io/badge/Prisma_6-67_model-2D3748?logo=prisma)](https://prisma.io)
+[![Prisma 6](https://img.shields.io/badge/Prisma_6-69_model-2D3748?logo=prisma)](https://prisma.io)
+[![CI](https://img.shields.io/badge/CI-GitHub_Actions_·_verify_+_e2e-2088FF?logo=githubactions)](https://github.com/gunaracorp/muhdin/blob/main/.github/workflows/ci.yml)
+[![E2E](https://img.shields.io/badge/E2E-Playwright_12+_tes-2EAD33?logo=playwright)](tests/e2e)
 [![SQLite](https://img.shields.io/badge/DB-SQLite_↔_Postgres_ready-003B57?logo=sqlite)](#strategi-database)
 [![i18n](https://img.shields.io/badge/i18n-ID_·_EN_·_AR_RTL-16a34a)](#internasionalisasi)
 [![RBAC](https://img.shields.io/badge/RBAC-4_peran_·_36+_modul_CMS-d97706)](#keamanan-dan-rbac)
@@ -24,7 +26,7 @@
 
 > 🕌 **GRATIS SELAMANYA** — pendaftaran & iuran **Rp 0** untuk semua anggota, tanpa pengecualian. Itu keunggulan MUHDIN dibanding asosiasi lain, dan seluruh portal konsisten menyampaikan satu pesan itu.
 
-**v12.5.0 «SINERGI»** dibangun di atas fondasi **v12.0.0 «GABUNG»** — dua garis pengembangan besar portal ini (**garis fitur v6**: Marketplace, Forum, Kartu Jamaah, Pusat Bisnis, Pindai Izin 360°, dll. dan **garis v11.1**: Akademi, KTA Digital, Booking Slot, Benefit, Paspor Haji QR, GPS Tracking, Tur 360°, WA-AI Bot) yang kini **menjadi satu codebase utuh** — ditambah **God-Mode Izin Compliance Checker**, **99 Roadmap Upgrade**, sprint keamanan **«AMANAH»** (2FA TOTP, kebijakan sandi, backup terjadwal), sprint transaksi **«LUNAS»** (checkout, payment gateway adapter, invoice PDF), dan sprint sinergi **«SINERGI»** yang menuntaskan seluruh 15 item IN_PROGRESS roadmap: **SEO teknis penuh** (sitemap dinamis, landing page SSR `/paket/[slug]` & `/artikel/[slug]` ber-JSON-LD, OG image dinamis), **media WebP + lazy-load**, **konten edukasi SEO**, **impor CSV massal**, **Help Center** (`#/bantuan`), **kepatuhan UU PDP operasional** (consent + hak subjek data), **rate-limit adaptif** (blocklist backoff berlipat), **anti-spam forum ber-skor**, **observability dashboard**, **broadcast WA terjadwal**, **skor kualitas vendor**, **poin KTA lintas layanan**, **itinerary harian interaktif**, **peta kursi + waitlist otomatis**, dan **audit dual-ready PostgreSQL** — **45/99 item roadmap selesai**. Semua fitur hidup, satu database, satu CMS, tiga bahasa.
+**v12.5.0 «SINERGI»** dibangun di atas fondasi **v12.0.0 «GABUNG»** — dua garis pengembangan besar portal ini (**garis fitur v6**: Marketplace, Forum, Kartu Jamaah, Pusat Bisnis, Pindai Izin 360°, dll. dan **garis v11.1**: Akademi, KTA Digital, Booking Slot, Benefit, Paspor Haji QR, GPS Tracking, Tur 360°, WA-AI Bot) yang kini **menjadi satu codebase utuh** — ditambah **God-Mode Izin Compliance Checker**, **99 Roadmap Upgrade**, sprint keamanan **«AMANAH»** (2FA TOTP, kebijakan sandi, backup terjadwal), sprint transaksi **«LUNAS»** (checkout, payment gateway adapter, invoice PDF), dan sprint sinergi **«SINERGI»** yang menuntaskan seluruh 15 item IN_PROGRESS roadmap: **SEO teknis penuh** (sitemap dinamis, landing page SSR `/paket/[slug]` & `/artikel/[slug]` ber-JSON-LD, OG image dinamis), **media WebP + lazy-load**, **konten edukasi SEO**, **impor CSV massal**, **Help Center** (`#/bantuan`), **kepatuhan UU PDP operasional** (consent + hak subjek data), **rate-limit adaptif** (blocklist backoff berlipat), **anti-spam forum ber-skor**, **observability dashboard**, **broadcast WA terjadwal**, **skor kualitas vendor**, **poin KTA lintas layanan**, **itinerary harian interaktif**, **peta kursi + waitlist otomatis**, dan **audit dual-ready PostgreSQL** — **45/99 item roadmap selesai** — lalu sprint **«GERBANG»** menutup sprint berikutnya: **CI/CD GitHub Actions** (verify: tsc 0 error → lint 0 error → build; e2e: Playwright jalur kritis di DB segar), **suite E2E Playwright 12+ tes**, **verifikasi sertifikat publik via QR** (dituntaskan jalur kritisnya), **Dashboard Omzet Manajemen** di CMS, **Sesi & Device Management** (perangkat aktif + logout paksa), dan **Landing Kampanye Musiman** SSR dengan pelacakan lead — **52/99 item roadmap selesai**. Semua fitur hidup, satu database, satu CMS, tiga bahasa.
 
 ---
 
@@ -54,7 +56,7 @@ MUHDIN adalah **asosiasi digital pertama** yang mempertemukan seluruh rantai lay
 
 | Angka | Artinya |
 | --- | --- |
-| **67 model** Prisma | Skema terpadu: dua garis + compliance + roadmap + checkout + PDP + broadcast + itinerary/waitlist |
+| **69 model** Prisma | Skema terpadu: dua garis + compliance + roadmap + checkout + PDP + broadcast + itinerary/waitlist + kampanye/lead |
 | **40+ rute halaman** portal publik | Beranda → ekosistem → layanan digital → trust center |
 | **37+ modul CMS** | Semua konten & transaksi dikelola tanpa sentuh kode |
 | **13 kejadian notifikasi × 2 kanal** | Email sekretariat + WhatsApp admin, otomatis (termasuk ORDER, BROADCAST, WAITLIST) |
@@ -95,6 +97,14 @@ MUHDIN adalah **asosiasi digital pertama** yang mempertemukan seluruh rantai lay
 - **Compliance Center** (`#/compliance`) — ⭐ *god mode tier max*: papan kepatuhan **seluruh perusahaan registri** dihitung live oleh engine Pindai Izin 360° — **skor 0–100**, **grade A–E**, **level risiko** (RENDAH→KRITIS), **tren antar-audit**, dan **dossier drill-down** per perusahaan (checklist a–l berwarna status + rekomendasi berprioritas + tren skor) — publik & transparan
 - **Audit god-mode dari CMS** (modul *Compliance Checker*) — satu klik menilai registri penuh, menyimpan snapshot **ComplianceScore** (riwayat tren) + **temuan berprioritas** (`ComplianceFinding`, tier 0 darurat … 4 nilai tambah) + agregat **ComplianceAudit**, lalu meneruskan ringkasan ke sekretariat via **Email & WhatsApp** (saklar `notifyCompliance`)
 - **Deep-link** `#/compliance?q=<companyId>` membuka dossier langsung · menu **PERIZINAN → Compliance Center** · i18n 3 bahasa penuh
+
+### 🚦 v13.0 «GERBANG» — Sprint Gerbang Mutu + Manajemen
+- **CI/CD pipeline otomatis** (`R-060`) — `.github/workflows/ci.yml` dua job: **verify** (bun install terkunci → **typecheck tsc wajib 0 error** → **ESLint 0 error** → build produksi) dan **e2e** (DB segar `prisma db push` + seed → Playwright Chromium → laporan artifact bila gagal); berjalan tiap push/PR ke `main` dengan concurrency-cancel & retry CI — prasyaratnya dituntaskan dulu: **seluruh 55 error `tsc` warisan dibereskan** (import `parseIntOr`, tipe `Session`/`Msg`, prop `DetailHero`, derive `SmartImage`, dsb.) sehingga gerbang typecheck kini benar-benar hijau
+- **Suite E2E jalur kritis** (`R-061`) — Playwright + Chromium: **portal** (beranda, katalog, seksi 99 roadmap), **auth CMS** (login tersalah ditolak; login benar membuka CMS dan **sesi bertahan penuh reload**), **checkout end-to-end** (katalog → detail → form → order `ORD-…` → lacak `#/pesanan`), **verifikasi sertifikat** (deep-link QR valid & kode asing), **landing kampanye + kirim lead + 404 slug asing**; seed khusus `scripts/e2e-seed.ts` idempoten; **kredensial selalu dari env/Secrets** — tak pernah masuk repo
+- **Verifikasi sertifikat publik via QR** (`R-022`) — API publik `GET /api/certificates/verify?code=SERT-…` (rate-limit, counter verifikasi naik server-side) + halaman `#/verifikasi-sertifikat/<kode>`: hasil autentik langsung saat dipindai — nama pemegang, kursus, skor, tanggal terbit; jalur kritisnya dijaga E2E
+- **Dashboard Omzet Manajemen** (`R-051`) — menu CMS baru *Dashboard Omzet*: 4 kartu ringkasan (**omzet lunas**, konversi lunas %, menunggu bayar, rata-rata order), **grafik batang SVG 12 bulan** omzet lunas, 5 paket penyumbang omzet terbesar, 8 pesanan terbaru — agregat `groupBy`/`aggregate` dari Order via `/api/management/omzet` (SUPER_ADMIN/ADMIN)
+- **Sesi & Device Management** (`R-077`) — `Session` kini mencatat **perangkat** (ringkasan User-Agent), **IP**, dan **denyut `lastSeenAt`** tiap 2 menit; panel **Perangkat & Sesi Aktif** di CMS (*Keamanan Akun*): daftar sesi hidup bertanda "sesi ini", **cabut satu perangkat** (logout paksa jarak jauh) atau **cabut semua perangkat lain**, SUPER_ADMIN dapat mencabut sesi akun lain saat insiden — semuanya berjejak audit
+- **Landing Kampanye Musiman** (`R-089`) — SSR `/kampanye/[slug]` ber-metadata + **JSON-LD Event**, form lead anti-spam (**honeypot + rate-limit**) dengan sumber `?ref=utm_source`, CMS **Kampanye Musiman** (CRUD + aktif/nonaktif + drawer follow-up lead: status Baru→Dihubungi→Konversi + CTA WhatsApp langsung), sitemap ikut mengindeks kampanye aktif, seed kampanye Ramadan — loop roadmap keenam: **7 item naik status → 52 selesai / 99 (53%)**
 
 ### 🌐 v12.5 «SINERGI» — Sprint Tuntas 15 Item Roadmap
 - **SEO teknis penuh** (`R-057`) — **sitemap.xml dinamis** (paket + artikel dari DB, fallback aman), robots dinamis (fix konflik file publik), **landing page SSR** `/paket/[slug]` (JSON-LD Product + Offer IDR) & `/artikel/[slug]` (JSON-LD Article) dengan metadata lengkap, **OG image dinamis** `next/og` (`/api/og?title=…&kind=…`), metadataBase + JSON-LD Organization/WebSite, slug & gambar paket otomatis
@@ -216,7 +226,7 @@ Skrip produksi: `bun run build` (generate + next build + post-build) · `bun run
 
 ## 🗄️ Strategi Database
 
-Satu skema **67 model** (union dua garis + compliance checker + roadmap item + checkout/payment/invoice + privacy/broadcast/itinerary/waitlist), dua mode jalankan:
+Satu skema **69 model** (union dua garis + compliance checker + roadmap item + checkout/payment/invoice + privacy/broadcast/itinerary/waitlist + kampanye/lead + sesi perangkat), dua mode jalankan:
 
 | Mode | Provider | Cara |
 | --- | --- | --- |
@@ -267,6 +277,7 @@ Semua respons konsisten `ok()` / `fail()`, audit via `logAudit`, dilindungi `gua
 | Publik | `/api/settings` · `/api/members` (+verify) · `/api/track` · `/api/stats` (+public/insights) · `/api/rss` · `/api/search` · `/api/health` · `/api/promo/counter` · `/api/applications` (+live/track) |
 | Transaksi v6 | `/api/packages` · `/api/package-bookings` · `/api/forum` (+replies/moderation) · `/api/pilgrim-cards` (+verify) · `/api/reviews` |
 | Checkout v12.4 | `/api/checkout` (POST publik) · `/api/orders` (admin + agregat) · `/api/orders/[id]` (aksi admin) · `/api/orders/track` (publik) · `/api/payments/callback` (webhook HMAC) · `/api/payments/simulate` (sandbox) · `/api/invoices/[number]` (PDF) |
+| Gerbang v13.0 | `/api/auth/sessions` (GET/DELETE — perangkat & logout paksa) · `/api/management/omzet` (agregat omzet) · `/api/campaigns` (+`[id]`, `[id]/leads` — kampanye & lead) · `/kampanye/[slug]` (SSR) |
 | Sinergi v12.5 | `/api/import` (CSV massal admin) · `/api/privacy-requests` (+`[id]`, UU PDP) · `/api/metrics` (observability) · `/api/broadcasts` (+`[id]` send) · `/api/vendor-scores` (skor & recalc) · `/api/packages/[id]/itinerary` · `/api/packages/[id]/waitlist` (+auto-offer) · `/api/og` (OG image dinamis) · `/sitemap.xml` dinamis |
 | B2B v6 | `/api/vendors` · `/api/seat-exchange` · `/api/muthowif` · `/api/license-registry` · `/api/license-scan` · `/api/compliance-docs` · `/api/jamaah-docs` · `/api/trip-composer` · `/api/sos-points` |
 | Compliance v12.1 | `/api/compliance/scoreboard` (publik) · `/api/compliance/report?id=` (publik) · `/api/compliance/audit` (POST jalankan · GET riwayat — admin) |
@@ -336,7 +347,8 @@ docs/                       # aset & tangkapan layar
 | `prisma/seed-fitur-v5/v6/v7.ts` | Seed marketplace/forum/kartu, bisnis/SOS, pindai izin |
 | `scripts/seed-membership.ts` | KTA + poin + akademi + slot + benefit |
 | `scripts/seed-compliance.ts` | Riwayat audit + tren kepatuhan izin (ComplianceAudit/Score/Finding) |
-| `scripts/seed-roadmap99.ts` | 99 item upgrade 6 pilar (RoadmapItem — status jujur per v12.5: 45 DONE) |
+| `scripts/seed-roadmap99.ts` | 99 item upgrade 6 pilar (RoadmapItem — status jujur per v13.0: 52 DONE) |
+| `scripts/e2e-seed.ts` | Seed uji E2E idempoten: paket + sertifikat + kampanye + admin env-gated |
 | `scripts/backfill-seo.ts` / `seed-seo-content.ts` / `seed-itinerary.ts` | backfill meta SEO + 3 artikel pilar + itinerary 5 paket (semuanya idempoten) |
 | `scripts/optimize-images.mjs` / `broadcast-worker.ts` / `check-postgres-ready.ts` | konversi WebP sharp · eksekutor broadcast terjadwal (crontab) · audit dual-ready Postgres |
 | `scripts/backup-db.ts` | Snapshot + drill pemulihan + retensi 14 terakhir (`bun run backup`) |
@@ -378,6 +390,7 @@ Varian API PHP murni tanpa Node (`shared-hosting/`, `PANDUAN-SHARED-HOSTING.md`,
 | **v12.2 «99 ROADMAP»** | **Peta jalan 99 upgrade granular × 6 pilar: portal interaktif + filter + progres, modul CMS CRUD, API publik, seed 99 item** |
 | **v12.3 «AMANAH»** | **Sprint keamanan P0: 2FA TOTP admin, kebijakan sandi + lockout brute-force, backup terjadwal ber-drill — 27/99 roadmap selesai** |
 | **v12.4 «LUNAS»** | **Sprint transaksi P0: checkout lengkap, payment gateway adapter (SANDBOX + webhook HMAC idempoten), invoice PDF ber-QR, CMS Pesanan & Invoice — 30/99 roadmap selesai** |
+| **v13.0 «GERBANG»** | **Gerbang mutu + manajemen: CI/CD GitHub Actions (verify+e2e), Playwright 12+ tes jalur kritis, verifikasi sertifikat QR dituntaskan, Dashboard Omzet CMS, Sesi & Device Management (logout paksa), Landing Kampanye Musiman SSR + lead — 52/99 roadmap selesai** |
 | **v12.5 «SINERGI»** | **Sprint tuntas 15 item: SEO penuh (sitemap+landing SSR+OG dinamis), WebP lazy, impor CSV, Help Center, UU PDP (consent+hak subjek), rate-limit adaptif, anti-spam forum, observability, broadcast WA, skor vendor, poin KTA lintas layanan, itinerary, seat map+waitlist, dual-ready Postgres — 45/99 roadmap selesai** |
 
 ---
