@@ -2131,3 +2131,17 @@ Stage Summary:
 - i18n: fitur-v12d (help + iten), checkout.pdpConsent, join.pdpConsent, nusTrust.priv.dsr* — 3 bahasa penuh; bug "chips.map" (array dalam dict) diperbaiki dengan CONTENT per-locale; bantuan-view sempat terpotong 0 byte oleh heredoc gagal → ditulis ulang penuh.
 - tsc: 0 error di semua file baru/tersentuh; error pra-eksisting (pindai-view, mitra-dashboard, seed-membership, quiz/webhook lama) tidak disentuh.
 - Push GitHub per batch (52a696b → 384a413 → b8f15b6 → 5fd1cc7 → c40ed15 → 19bd699) + commit README/worklog.
+
+## Task ID 21 — Urutan Formulir PPIU/PIHK: Nomor Izin Selalu Pertama
+Tanggal: 2026-11-08
+
+Task: "di formulir profile PPIU dan PIHK formulirnya nomor izin selalu nomor pertama setelah itu baru Nama Perusahaan/Organisasi" + push GitHub (token baru, push 5 commit tertunda c2d8aa1..6083fe6) + paket download ZIP lengkap.
+
+Work Log:
+- **join-view.tsx** (formulir #/gabung): blok Nomor Izin (Kemenag RI) dinaikkan ke posisi pertama (full-width), Nama Organisasi turun ke posisi kedua (full-width), sisanya tetap (Jenis Mitra, Kontak, Email, Telepon, Kota, Provinsi, Profil).
+- **daftar-view.tsx** (wizard #/daftar, kind org — PPIU/PIHK/dll): urutan field profil diubah → license (full, required dinamis) → name (full) → contact → email → phone → city → province; langkah dokumen wizard sudah benar sebelumnya (legalitas → license → orgProfile).
+- **admin-sections.tsx** (CMS Direktori Anggota, form tambah/edit): fields diurut ulang → Nomor Izin → Nama Perusahaan/Organisasi (label diselaraskan) → Jenis Mitra → Kota → dst.
+- **i18n 3 bahasa**: join.ts labelOrg → "Nama Perusahaan / Organisasi *" (id/en/ar); indonesia-join.ts (nusJoin) labelOrgName → "Nama Perusahaan / Organisasi" + labelLicense "No. Izin" → "Nomor Izin" (id), "Company / Organization Name" + "Licence Number" (en), "اسم الشركة / المنظمة" (ar).
+- Verifikasi browser (agent-browser): #/gabung — j-license y=936 (pertama) → j-org y=1008 (kedua) ✓; #/daftar peran PPIU — "Nomor Izin *" pertama dengan hint Kemenag, lalu "Nama Perusahaan / Organisasi *" ✓; CMS login → Direktori Anggota → Tambah — dialog: Nomor Izin * → Nama Perusahaan/Organisasi * → Jenis Mitra * → Kota * … ✓; 0 page error.
+- tsc: 0 error pada seluruh file tersentuh (error pra-eksisting examples/mini-services/scripts tidak disentuh).
+- Paket download: scripts/buat-paket-download.py → MUHDIN-Paket-Lengkap-2026-11-08.zip (71 file, 14,2 MB, integritas OK) berisi template impor, tutorial, materi master, naskah demo, bukti pengembangan + manifest BACA-DULU.

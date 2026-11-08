@@ -224,9 +224,9 @@ export function AdminMembers() {
       memberSince: new Date().getFullYear(),
     }),
     fields: [
-      { key: "name", label: "Nama Organisasi", type: "text", required: true },
-      { key: "type", label: "Jenis Mitra", type: "select", options: TYPE_OPTS, required: true },
       { key: "licenseNo", label: "Nomor Izin", type: "text", required: true },
+      { key: "name", label: "Nama Perusahaan/Organisasi", type: "text", required: true },
+      { key: "type", label: "Jenis Mitra", type: "select", options: TYPE_OPTS, required: true },
       { key: "city", label: "Kota", type: "text", required: true },
       { key: "province", label: "Provinsi", type: "text" },
       { key: "phone", label: "Telepon", type: "text" },

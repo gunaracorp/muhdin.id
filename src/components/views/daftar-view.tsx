@@ -221,13 +221,13 @@ export function DaftarView() {
     }
     if (kind === "org") {
       return [
+        { id: "license", required: licenseRequired, full: true },
         { id: "name", required: true, full: true },
         { id: "contact", required: true },
         { id: "email", required: true },
         { id: "phone", required: true },
         { id: "city", required: true },
         { id: "province", required: true },
-        { id: "license", required: licenseRequired, full: true },
       ];
     }
     if (kind === "provider") {

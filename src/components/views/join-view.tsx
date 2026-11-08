@@ -256,6 +256,10 @@ export function JoinView() {
                 />
                 <div className="mt-6 grid gap-4 sm:grid-cols-2">
                   <div className="space-y-1.5 sm:col-span-2">
+                    <Label htmlFor="j-license">{t("join.labelLicense")}</Label>
+                    <Input id="j-license" value={form.licenseNo} onChange={set("licenseNo")} placeholder={t("join.licensePlaceholder")} />
+                  </div>
+                  <div className="space-y-1.5 sm:col-span-2">
                     <Label htmlFor="j-org">{t("join.labelOrg")}</Label>
                     <Input id="j-org" value={form.orgName} onChange={set("orgName")} placeholder={t("join.orgPlaceholder")} />
                   </div>
@@ -273,10 +277,6 @@ export function JoinView() {
                         ))}
                       </SelectContent>
                     </Select>
-                  </div>
-                  <div className="space-y-1.5">
-                    <Label htmlFor="j-license">{t("join.labelLicense")}</Label>
-                    <Input id="j-license" value={form.licenseNo} onChange={set("licenseNo")} placeholder={t("join.licensePlaceholder")} />
                   </div>
                   <div className="space-y-1.5">
                     <Label htmlFor="j-contact">{t("join.labelContact")}</Label>
