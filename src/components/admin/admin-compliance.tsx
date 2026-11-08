@@ -19,6 +19,7 @@ import { apiGet, apiSend } from "@/lib/client-api";
 import { Icon } from "@/components/site/icon";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { ImportCsvButton } from "@/components/admin/import-csv-button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
@@ -139,10 +140,13 @@ export function AdminCompliance() {
               via Email &amp; WhatsApp bila saklar <em>notifyCompliance</em> aktif.
             </p>
           </div>
-          <Button onClick={() => void runAudit()} disabled={running} className="shrink-0 gap-2">
-            <Icon name={running ? "loader" : "play"} className={cn("h-4 w-4", running && "animate-spin")} aria-hidden />
-            {running ? "Menilai registri…" : "JALANKAN AUDIT"}
-          </Button>
+          <div className="flex shrink-0 flex-wrap gap-2">
+            <ImportCsvButton type="registry" />
+            <Button onClick={() => void runAudit()} disabled={running} className="shrink-0 gap-2">
+              <Icon name={running ? "loader" : "play"} className={cn("h-4 w-4", running && "animate-spin")} aria-hidden />
+              {running ? "Menilai registri…" : "JALANKAN AUDIT"}
+            </Button>
+          </div>
         </div>
 
         {lastRun && (

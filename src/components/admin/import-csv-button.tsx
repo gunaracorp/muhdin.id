@@ -30,6 +30,8 @@ const TYPE_HINT: Record<string, string> = {
   articles: "Kolom wajib: title. Opsional: slug, excerpt, content, category, cover, status, author, metaTitle, metaDescription, keywords.",
   applications: "Kolom wajib: orgName, type, contactName, email, phone, city. Opsional: province, licenseNo, message.",
   messages: "Kolom wajib: name, message. Opsional: email, phone, subject.",
+  members: "Kolom wajib: name (nama), type (PPIU/PIHK), city (kota), licenseNo (nomor izin). Opsional: province, phone, email, website, description, status, memberSince, rating. Alias sheet Master dikenali otomatis (nama_resmi, jenis_entitas, nomor_izin_Kemenag, telepon_email_web, status_izin, dst.). Baris dengan nomor izin sama DIPERBARUI, bukan diduplikasi.",
+  registry: "Kolom wajib: NIB, nama/nama_resmi. Opsional: jenis_entitas, nomor_izin_Kemenag + masa_berlaku_izin, nomor_badan_hukum (akta), NPWP, akreditasi, kota, provinsi, telepon_email_web, catatan_risiko. Baris dengan NIB sama DIPERBARUI beserta dokumen izinnya.",
 };
 
 export function ImportCsvButton({ type }: { type: string }) {

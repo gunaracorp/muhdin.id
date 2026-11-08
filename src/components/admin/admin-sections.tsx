@@ -259,7 +259,8 @@ export function AdminMembers() {
   };
   return (
     <div>
-      <div className="flex justify-end mb-2">
+      <div className="flex justify-end gap-2 mb-2">
+        <ImportCsvButton type="members" />
         <ExportCsvButton type="members" />
       </div>
       <CrudManager<Member> config={config} />
