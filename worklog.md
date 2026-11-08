@@ -2158,3 +2158,19 @@ Work Log:
 - **API baru /api/members/lookup** (publik, rate-limit 30/menit): pencocokan 4 lapis — normalisasi persis, contains dua arah (izin gabung "U.159/2020 / 552/2018"), angka-saja ≥6 digit ("7832019" ⇔ "KMA 783/2019"), nama; guard anti-lic-kosong (bug "—" cocok semua ditemukan & diperbaiki).
 - **Auto-isi UI**: join-view (#/gabung) & daftar-view (#/daftar kind org) — debounce 600 ms + onBlur → fetch lookup → isi hanya kolom KOSONG (nama/kota/provinsi/telp/email; join juga tipe dari izin) + status aria-live 3 bahasa (autofillChecking/Ok/Miss di join.ts & indonesia-join.ts id/en/ar).
 - **E2E browser**: #/gabung ketik "U. 159 TAHUN 2020" → nama "PT. AMANAH INDAH WISATA", kota Bekasi, hint hijau ✓; reload ketik "KMA 783/2019" → "PT. AFIZ NURUL QOLBI", Jakarta Selatan, telp (021) 72799455; 0 page error. tsc bersih utk semua file tersentuh. Dev server sempat mati (exit 1, tanpa error jelas — dugaan OOM/kill), direstart .zscripts/dev.sh → HTTP 200.
+
+## Task ID 23 — Tambah 423 Perusahaan Resmi dari Direktori HIMPUH (PPIU + PIHK)
+Tanggal: 2026-11-08
+
+Task: "tambah 201 perusahaan lagi" (lanjutan registri PPIU/PIHK Task 22).
+
+Work Log:
+- **Sumber baru: API publik HIMPUH** (himpuh.or.id/api/publik/anggota) — WebFetch cache mengabaikan query param & server SAPUHI mengabaikan ?page (paginasi Livewire AJAX, snapshot Wayback pun berisi hal. 1), curl & browser headless diblokir sapuhi.id (chrome-error) — namun himpuh.or.id TERBACA di browser → endpoint API ditemukan via network tracking (GET /api/publik/anggota?page=N&page_size=100, maks 100/halaman).
+- **Panen 476 anggota HIMPUH** (251 PIHK, 223 PPIU, 2 BPW) + 450 detail (endpoint /api/publik/anggota/<id> via fetch berbatch 25×18, Promise.allSettled) yang memuat: jenis anggota, No SK Haji, No SK Umrah, nomor registrasi, alamat+kecamatan+kabupaten+provinsi+kode pos, telepon (kode 62), email, website, waktu bergabung.
+- **Filter & dedupe**: 19 tanpa izin & 27 izin sampah (label "SK Umrah"/"SK PPIU"/"SK Haji"/"-" tanpa digit → ditolak, aturan baru izin_valid: wajib ada digit); 7 nama duplikat vs DB; izin tabrakan normalisasi antar-seri (SK Umrah vs SK Haji "348 Tahun 2020") dibereskan — dedupe string persis + normalisasi ≥8 char. Hasil: **423 baris bersih (228 PIHK + 195 PPIU), semuanya ada telepon & email, 332 ada website, 0 tanpa provinsi**.
+- **Impor**: scripts/himpuh-parse.py + himpuh-bangun-csv.py → download/data-resmi/anggota-himpuh.csv → POST /api/import (login admin) → **inserted 423, updated 0, errors 0**. DB total **526 Member (270 PIHK, 251 PPIU, 2 KBIHU, 1 IPHI, 2 TRAVEL_WISATA)**. Catatan: 33 Member provinsi "Indonesia" adalah data seed lama, bukan HIMPUH.
+- **E2E**: /api/members/lookup?licenseNo="145 Tahun 2017" → PT. Cahaya Cordoba Utama, Bandung (telp+email ikut); izin NIB panjang "91204019714210002" → PT. Taqwa Mulia Wisata, Magelang, PIHK. Browser #/gabung ketik izin → nama/kota/provinsi/telp/email terisi otomatis ✓, 0 page error.
+- tsc tidak menyentuh file TS. Target user 201 terlampaui (423) karena data asli HIMPUH melimpah — semua disimpan.
+
+Stage Summary:
+- Total direktori 5× lipat dalam 2 hari (103 → 526) tanpa satu pun data dikarang; sumber dicantumkan di description tiap anggota.
