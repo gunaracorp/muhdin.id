@@ -13,7 +13,7 @@
  * (ROLE 25 — lihat frasa disclaimer di bawah).
  */
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { apiSend } from "@/lib/client-api";
 import { navigate } from "@/hooks/use-hash-route";
 import { Icon } from "@/components/site/icon";
@@ -192,6 +192,42 @@ export function DaftarView() {
   const [consent, setConsent] = useState(false);
   const [loading, setLoading] = useState(false);
   const [ticket, setTicket] = useState<string | null>(null);
+
+  // Task 22 — AUTO-ISI dari registri: nomor izin diketik → nama/kota/provinsi/kontak terisi.
+  const [licAuto, setLicAuto] = useState<{ state: "idle" | "checking" | "ok" | "miss"; name?: string }>({ state: "idle" });
+  const licTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const autoIsiLicense = (value: string) => {
+    const v = value.trim();
+    if (v.length < 4) {
+      setLicAuto({ state: "idle" });
+      return;
+    }
+    setLicAuto({ state: "checking" });
+    fetch(`/api/members/lookup?licenseNo=${encodeURIComponent(v)}`)
+      .then((r) => r.json())
+      .then((d: { found: boolean; member?: { name: string; city: string; province: string; phone: string | null; email: string | null } }) => {
+        if (d?.found && d.member) {
+          const m = d.member;
+          setProfile((p) => ({
+            ...p,
+            name: p.name || m.name,
+            city: p.city || m.city || "",
+            province: p.province || m.province || "",
+            phone: p.phone || m.phone || "",
+            email: p.email || m.email || "",
+          }));
+          setLicAuto({ state: "ok", name: m.name });
+        } else setLicAuto({ state: "miss" });
+      })
+      .catch(() => setLicAuto({ state: "idle" }));
+  };
+
+  const onLicenseChange = (value: string) => {
+    setProfile((p) => ({ ...p, licenseNo: value }));
+    if (licTimer.current) clearTimeout(licTimer.current);
+    licTimer.current = setTimeout(() => autoIsiLicense(value), 600);
+  };
   const [queue, setQueue] = useState<number | null>(null); // Task 53 — nomor urut realtime
 
   /* Turunan dari peran terpilih */
@@ -639,7 +675,8 @@ export function DaftarView() {
                 <Input
                   id={id}
                   value={profile[key]}
-                  onChange={setField(f.id)}
+                  onChange={f.id === "license" ? (e) => onLicenseChange(e.target.value) : setField(f.id)}
+                  onBlur={f.id === "license" ? () => autoIsiLicense(profile.licenseNo) : undefined}
                   placeholder={t(`${NS}.${phKey(f.id)}`)}
                   type={f.id === "email" ? "email" : "text"}
                   autoComplete={
@@ -660,6 +697,17 @@ export function DaftarView() {
                 <p className="text-[11px] leading-relaxed text-muted-foreground">
                   {t(`${NS}.${licenseRequired ? "licenseHint" : "licenseOptHint"}`)}
                 </p>
+              )}
+              {f.id === "license" && licAuto.state === "checking" && (
+                <p className="text-[11px] text-muted-foreground" aria-live="polite">{t(`${NS}.autofillChecking`)}</p>
+              )}
+              {f.id === "license" && licAuto.state === "ok" && (
+                <p className="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400" aria-live="polite">
+                  ✓ {t(`${NS}.autofillOk`)} — {licAuto.name}
+                </p>
+              )}
+              {f.id === "license" && licAuto.state === "miss" && (
+                <p className="text-[11px] text-muted-foreground" aria-live="polite">{t(`${NS}.autofillMiss`)}</p>
               )}
               {renderFieldError(f.id)}
             </div>

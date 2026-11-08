@@ -2145,3 +2145,16 @@ Work Log:
 - Verifikasi browser (agent-browser): #/gabung — j-license y=936 (pertama) → j-org y=1008 (kedua) ✓; #/daftar peran PPIU — "Nomor Izin *" pertama dengan hint Kemenag, lalu "Nama Perusahaan / Organisasi *" ✓; CMS login → Direktori Anggota → Tambah — dialog: Nomor Izin * → Nama Perusahaan/Organisasi * → Jenis Mitra * → Kota * … ✓; 0 page error.
 - tsc: 0 error pada seluruh file tersentuh (error pra-eksisting examples/mini-services/scripts tidak disentuh).
 - Paket download: scripts/buat-paket-download.py → MUHDIN-Paket-Lengkap-2026-11-08.zip (71 file, 14,2 MB, integritas OK) berisi template impor, tutorial, materi master, naskah demo, bukti pengembangan + manifest BACA-DULU.
+
+## Task ID 22 — Registri Data Resmi PPIU/PIHK + Auto-Isi Formulir dari Nomor Izin
+Tanggal: 2026-11-08
+
+Task: "isi data PPIU & PIHK terlengkap, sumber Play Store 'Satu Haji'; di form PPIU cukup masukkan nomor izin → semua data terisi otomatis".
+
+Work Log:
+- **Kejujuran sumber**: data internal aplikasi Play Store (SatuHaji) tidak dapat diekstrak (database tertutup, API tidak publik); diganti sumber publik resmi yang dipakai ekosistem tersebut.
+- **Panen data resmi (58 perusahaan, 0 dikarang)**: scripts/panen-data-resmi.py — (A) 40 anggota DPP SAPUHI sapuhi.id/members hal.1 (izin PPIU & PIHK + alamat; hal. 2–7 gagal: cache WebFetch mengabaikan query param, daemon browser mati, jaringan sandbox terblokir); (B) 18 baris pertama "Daftar Resmi PIHK Kemenag 2025" (izin KMA + alamat + telp + email). Kota/provinsi di-parse dari alamat; sumber dicantumkan di kolom description; 31 nama PPIU baru Kemenag TIDAK diimpor (tanpa nomor izin — jangan mengarang).
+- **Impor**: download/data-resmi/anggota-resmi.csv → /api/import (members, upsert by licenseNo) → 58 inserted, 0 gagal; DB total 103 Member (42 PIHK, 56 PPIU, 2 KBIHU, 1 IPHI, 2 TW); direktori publik ?type=PIHK kini 42.
+- **API baru /api/members/lookup** (publik, rate-limit 30/menit): pencocokan 4 lapis — normalisasi persis, contains dua arah (izin gabung "U.159/2020 / 552/2018"), angka-saja ≥6 digit ("7832019" ⇔ "KMA 783/2019"), nama; guard anti-lic-kosong (bug "—" cocok semua ditemukan & diperbaiki).
+- **Auto-isi UI**: join-view (#/gabung) & daftar-view (#/daftar kind org) — debounce 600 ms + onBlur → fetch lookup → isi hanya kolom KOSONG (nama/kota/provinsi/telp/email; join juga tipe dari izin) + status aria-live 3 bahasa (autofillChecking/Ok/Miss di join.ts & indonesia-join.ts id/en/ar).
+- **E2E browser**: #/gabung ketik "U. 159 TAHUN 2020" → nama "PT. AMANAH INDAH WISATA", kota Bekasi, hint hijau ✓; reload ketik "KMA 783/2019" → "PT. AFIZ NURUL QOLBI", Jakarta Selatan, telp (021) 72799455; 0 page error. tsc bersih utk semua file tersentuh. Dev server sempat mati (exit 1, tanpa error jelas — dugaan OOM/kill), direstart .zscripts/dev.sh → HTTP 200.

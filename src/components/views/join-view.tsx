@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { apiSend } from "@/lib/client-api";
 import { navigate } from "@/hooks/use-hash-route";
 import { Icon } from "@/components/site/icon";
@@ -69,6 +69,43 @@ export function JoinView() {
   });
   // R-078 UU PDP — persetujuan pemrosesan data pribadi wajib.
   const [pdpConsent, setPdpConsent] = useState(false);
+
+  // Task 22 — AUTO-ISI dari registri: ketik nomor izin → data perusahaan terisi otomatis.
+  const [licAuto, setLicAuto] = useState<{ state: "idle" | "checking" | "ok" | "miss"; name?: string }>({ state: "idle" });
+  const licTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const isiOtomatisDariIzin = (value: string) => {
+    const v = value.trim();
+    if (v.length < 4) {
+      setLicAuto({ state: "idle" });
+      return;
+    }
+    setLicAuto({ state: "checking" });
+    fetch(`/api/members/lookup?licenseNo=${encodeURIComponent(v)}`)
+      .then((r) => r.json())
+      .then((d: { found: boolean; member?: { name: string; type: string; city: string; province: string; phone: string | null; email: string | null; website: string | null } }) => {
+        if (d?.found && d.member) {
+          const m = d.member;
+          setForm((f) => ({
+            ...f,
+            orgName: f.orgName || m.name,
+            city: f.city || m.city || "",
+            province: f.province || m.province || "",
+            phone: f.phone || m.phone || "",
+            email: f.email || m.email || "",
+            type: MEMBER_TYPES.includes(m.type as (typeof MEMBER_TYPES)[number]) ? m.type : f.type,
+          }));
+          setLicAuto({ state: "ok", name: m.name });
+        } else setLicAuto({ state: "miss" });
+      })
+      .catch(() => setLicAuto({ state: "idle" }));
+  };
+
+  const onLicenseChange = (value: string) => {
+    setForm((f) => ({ ...f, licenseNo: value }));
+    if (licTimer.current) clearTimeout(licTimer.current);
+    licTimer.current = setTimeout(() => isiOtomatisDariIzin(value), 600);
+  };
 
   const submit = async () => {
     if (!pdpConsent) {
@@ -257,7 +294,24 @@ export function JoinView() {
                 <div className="mt-6 grid gap-4 sm:grid-cols-2">
                   <div className="space-y-1.5 sm:col-span-2">
                     <Label htmlFor="j-license">{t("join.labelLicense")}</Label>
-                    <Input id="j-license" value={form.licenseNo} onChange={set("licenseNo")} placeholder={t("join.licensePlaceholder")} />
+                    <Input
+                      id="j-license"
+                      value={form.licenseNo}
+                      onChange={(e) => onLicenseChange(e.target.value)}
+                      onBlur={() => isiOtomatisDariIzin(form.licenseNo)}
+                      placeholder={t("join.licensePlaceholder")}
+                    />
+                    {licAuto.state === "checking" && (
+                      <p className="text-[11px] text-muted-foreground" aria-live="polite">{t("join.autofillChecking")}</p>
+                    )}
+                    {licAuto.state === "ok" && (
+                      <p className="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400" aria-live="polite">
+                        ✓ {t("join.autofillOk")} — {licAuto.name}
+                      </p>
+                    )}
+                    {licAuto.state === "miss" && (
+                      <p className="text-[11px] text-muted-foreground" aria-live="polite">{t("join.autofillMiss")}</p>
+                    )}
                   </div>
                   <div className="space-y-1.5 sm:col-span-2">
                     <Label htmlFor="j-org">{t("join.labelOrg")}</Label>
