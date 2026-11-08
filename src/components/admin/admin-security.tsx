@@ -16,6 +16,8 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+// v13.0 «GERBANG» — R-077 Sesi & Device Management
+import { AdminSessions } from "@/components/admin/admin-sessions";
 
 type Status = { enabled: boolean };
 type Setup = { secret: string; uri: string; qr: string };
@@ -183,6 +185,9 @@ export function AdminSecurity() {
           </div>
         </div>
       </div>
+
+      {/* v13.0 «GERBANG» — R-077: perangkat aktif + logout paksa jarak jauh */}
+      <AdminSessions />
     </div>
   );
 }

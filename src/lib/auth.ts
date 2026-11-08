@@ -23,10 +23,45 @@ export function verifyPassword(password: string, stored: string): boolean {
   }
 }
 
-export async function createSession(userId: string) {
+/** R-077 — ringkasan perangkat dari User-Agent (Chrome · Windows, dsb.). */
+export function summarizeDevice(ua?: string | null): string {
+  if (!ua) return "Perangkat tidak dikenal";
+  const browser = /Edg\//.test(ua) ? "Edge"
+    : /OPR\/|Opera/.test(ua) ? "Opera"
+    : /Firefox\//.test(ua) ? "Firefox"
+    : /Chrome\//.test(ua) ? "Chrome"
+    : /Safari\//.test(ua) ? "Safari"
+    : /curl|Postman|insomnia/i.test(ua) ? "API Client"
+    : "Browser";
+  const os = /Windows/.test(ua) ? "Windows"
+    : /Android/.test(ua) ? "Android"
+    : /iPhone|iPad|iOS/.test(ua) ? "iOS"
+    : /Mac OS X|Macintosh/.test(ua) ? "macOS"
+    : /Linux/.test(ua) ? "Linux"
+    : "";
+  return os ? `${browser} · ${os}` : browser;
+}
+
+/** R-077 — metadata perangkat yang ikut tersimpan per sesi. */
+export interface SessionMeta {
+  userAgent?: string | null;
+  ip?: string | null;
+}
+
+export async function createSession(userId: string, meta?: SessionMeta) {
   const token = randomBytes(32).toString("hex");
   const expiresAt = new Date(Date.now() + SESSION_DAYS * 24 * 60 * 60 * 1000);
-  await db.session.create({ data: { token, userId, expiresAt } });
+  await db.session.create({
+    data: {
+      token,
+      userId,
+      expiresAt,
+      userAgent: meta?.userAgent?.slice(0, 400) || null,
+      ip: meta?.ip || null,
+      device: summarizeDevice(meta?.userAgent),
+      lastSeenAt: new Date(),
+    },
+  });
   const cookieStore = await cookies();
   cookieStore.set(SESSION_COOKIE, token, {
     httpOnly: true,
@@ -59,6 +94,13 @@ export async function getSessionUser() {
     if (!session.user.isActive) {
       await db.session.deleteMany({ where: { userId: session.user.id } }).catch(() => {});
       return null;
+    }
+    // R-077 — denyut lastSeenAt (maks sekali per 2 menit agar hemat tulis).
+    if (session.revokedAt) return null;
+    if (Date.now() - new Date(session.lastSeenAt).getTime() > 2 * 60_000) {
+      await db.session
+        .update({ where: { id: session.id }, data: { lastSeenAt: new Date() } })
+        .catch(() => {});
     }
     return session.user;
   } catch {

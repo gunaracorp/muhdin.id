@@ -48,6 +48,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     for (const a of articles) {
       entries.push({ url: `${base}/artikel/${a.slug}`, lastModified: a.updatedAt, changeFrequency: "monthly", priority: 0.7 });
     }
+    // R-089 — landing kampanye musiman aktif ikut terindeks.
+    const campaigns = await db.campaign.findMany({
+      where: { active: true },
+      select: { slug: true, updatedAt: true },
+      take: 50,
+    });
+    for (const c of campaigns) {
+      entries.push({ url: `${base}/kampanye/${c.slug}`, lastModified: c.updatedAt, changeFrequency: "weekly", priority: 0.8 });
+    }
   } catch {
     // DB tidak tersedia saat build (mis. CI) — sitemap tetap terbit dengan URL inti.
   } finally {

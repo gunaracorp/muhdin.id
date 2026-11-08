@@ -42,6 +42,9 @@ import { AdminSecurity } from "@/components/admin/admin-security";
 import { AdminPrivacyRequests } from "@/components/admin/admin-privacy";
 import { AdminObservability } from "@/components/admin/admin-observability";
 import { AdminGrowth } from "@/components/admin/admin-growth";
+// v13.0 «GERBANG» — Dashboard Omzet (R-051) + Kampanye Musiman (R-089)
+import { AdminOmzet } from "@/components/admin/admin-omzet";
+import { AdminCampaigns } from "@/components/admin/admin-campaigns";
 // v12.4 «LUNAS» — Pesanan & Invoice (checkout + payment gateway)
 import { AdminOrders } from "@/components/admin/admin-orders";
 import { AdminJamaahOps } from "@/components/admin/admin-jamaah-ops";
@@ -69,6 +72,10 @@ const MENU = [
   { id: "bookings", label: "Booking Paket", icon: "clipboard-list" },
   // v12.4 «LUNAS» — Pesanan & Invoice
   { id: "orders", label: "Pesanan & Invoice", icon: "wallet" },
+  // v13.0 «GERBANG» — Dashboard Omzet Manajemen (R-051)
+  { id: "omzet", label: "Dashboard Omzet", icon: "bar-chart-3" },
+  // v13.0 «GERBANG» — Kampanye Musiman (R-089)
+  { id: "kampanye", label: "Kampanye Musiman", icon: "megaphone" },
   { id: "tutorials", label: "Tutorial", icon: "graduation-cap" },
   { id: "messages", label: "Pesan Masuk", icon: "inbox" },
   { id: "complaints", label: "Pengaduan", icon: "shield-alert" },
@@ -281,6 +288,8 @@ export function AdminView() {
           {section === "pdp" && <AdminPrivacyRequests />}
           {section === "sistem" && <AdminObservability />}
           {section === "growth" && <AdminGrowth />}
+          {section === "omzet" && <AdminOmzet />}
+          {section === "kampanye" && <AdminCampaigns />}
           {section === "audit" && <AdminAudit />}
           {section === "users" && <AdminUsers meId={user.id} />}
           {/* GABUNG v11 — Power Pack */}

@@ -54,7 +54,12 @@ export async function POST(req: NextRequest) {
       }
     }
     clearFails(email);
-    await createSession(user.id);
+    // R-077 — rekam perangkat & IP pada sesi baru (device management).
+    const fwd = req.headers.get("x-forwarded-for") || "";
+    await createSession(user.id, {
+      userAgent: req.headers.get("user-agent"),
+      ip: (fwd.split(",")[0] || "").trim() || req.headers.get("x-real-ip") || null,
+    });
     await db.user
       .update({ where: { id: user.id }, data: { lastLoginAt: new Date() } })
       .catch(() => {});

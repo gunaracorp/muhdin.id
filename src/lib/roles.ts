@@ -40,6 +40,10 @@ export const SECTION_ROLES: { id: string; roles: Role[] }[] = [
   { id: "bookings", roles: ["SUPER_ADMIN", "ADMIN", "VERIFIKATOR"] },
   // v12.4 «LUNAS» — Pesanan & Invoice (checkout + payment gateway)
   { id: "orders", roles: ["SUPER_ADMIN", "ADMIN", "VERIFIKATOR"] },
+  // v13.0 «GERBANG» — Dashboard Omzet Manajemen (R-051)
+  { id: "omzet", roles: ["SUPER_ADMIN", "ADMIN"] },
+  // v13.0 «GERBANG» — Kampanye Musiman (R-089)
+  { id: "kampanye", roles: ["SUPER_ADMIN", "ADMIN", "EDITOR"] },
   { id: "tutorials", roles: ["SUPER_ADMIN", "ADMIN", "EDITOR"] },
   { id: "messages", roles: ["SUPER_ADMIN", "ADMIN"] },
   { id: "complaints", roles: ["SUPER_ADMIN", "ADMIN", "VERIFIKATOR"] },

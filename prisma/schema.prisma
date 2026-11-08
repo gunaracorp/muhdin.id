@@ -29,12 +29,20 @@ model User {
 }
 
 model Session {
-  id        String   @id @default(cuid())
-  token     String   @unique
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  expiresAt DateTime
-  createdAt DateTime @default(now())
+  id         String    @id @default(cuid())
+  token      String    @unique
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt  DateTime
+  // R-077 — Sesi & Device Management: metadata perangkat + logout paksa.
+  userAgent  String?
+  ip         String?
+  device     String    @default("") // ringkas: Chrome · Windows, dsb.
+  lastSeenAt DateTime  @default(now())
+  revokedAt  DateTime?
+  createdAt  DateTime  @default(now())
+
+  @@index([userId, revokedAt])
 }
 
 // ==================== KONTEN ====================
@@ -1199,3 +1207,44 @@ model Invoice {
   issuedAt DateTime @default(now())
 }
 
+
+// ==================== R-089 — LANDING KAMPANYE MUSIMAN (v13.0) ====================
+
+/// Kampanye pemasaran musiman (Ramadan, liburan, awal tahun hijriah…) —
+/// landing page SSR /kampanye/[slug] ber-metadata + pelacakan konversi lead.
+model Campaign {
+  id          String         @id @default(cuid())
+  slug        String         @unique // kampanye-ramadan-2026
+  title       String
+  season      String         @default("RAMADAN") // RAMADAN | HAJI | LIBURAN | HIJRIAH | LAINNYA
+  subtitle    String         @default("")
+  description String         @default("")
+  heroImage   String?
+  ctaText     String         @default("Daftar Sekarang")
+  accent      String         @default("gold") // gold | forest | mint
+  active      Boolean        @default(true)
+  startsAt    DateTime?
+  endsAt      DateTime?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  leads       CampaignLead[]
+
+  @@index([active, season])
+}
+
+/// Lead konversi kampanye — data kontak minimum + sumber (utm) utk evaluasi iklan.
+model CampaignLead {
+  id         String   @id @default(cuid())
+  campaignId String
+  campaign   Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  name       String
+  phone      String
+  email      String?
+  source     String   @default("") // utm_source / kanal (ig, wa, google…)
+  message    String?
+  status     String   @default("NEW") // NEW | CONTACTED | CONVERTED | INVALID
+  createdAt  DateTime @default(now())
+
+  @@index([campaignId, createdAt])
+  @@index([status])
+}
