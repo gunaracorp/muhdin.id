@@ -113,7 +113,7 @@ export async function GET() {
       provMap.set(key, (provMap.get(key) || 0) + 1);
     }
     const byProvince = Array.from(provMap.entries())
-      .map(([name, count]) => ({ name, count }))
+      .map(([name, count], i) => ({ province: i + 1, name, count }))
       .sort((a, b) => b.count - a.count)
       .slice(0, 10);
 

@@ -46,7 +46,10 @@ export async function GET(req: NextRequest, ctx: { params: Promise<{ no: string 
 }
 
 function png(bytes: Uint8Array): Response {
-  return new Response(bytes, {
+  // BodyInit (DOM) menuntut Uint8Array<ArrayBuffer> — salin ke buffer baru.
+  const buf = new Uint8Array(bytes.byteLength);
+  buf.set(bytes);
+  return new Response(buf, {
     headers: {
       "Content-Type": "image/png",
       "Cache-Control": "public, max-age=86400",

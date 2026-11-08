@@ -131,12 +131,12 @@ publicServer.listen(PUBLIC_PORT, () => {
   console.log(`Registration Gateway (socket.io) berjalan di port ${PUBLIC_PORT}`);
 });
 
-process.on("SIGTERM", () => {
+(process as NodeJS.Process).on("SIGTERM", () => {
   console.log("SIGTERM — menutup gateway...");
   internal.close();
   process.exit(0);
 });
-process.on("SIGINT", () => {
+(process as NodeJS.Process).on("SIGINT", () => {
   internal.close();
   process.exit(0);
 });

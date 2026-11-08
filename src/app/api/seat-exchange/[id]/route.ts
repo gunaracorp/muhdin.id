@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
 import { db } from "@/lib/db";
-import { guardRole, ok, fail } from "@/lib/api-helpers";
+import { guardRole, ok, fail, parseIntOr } from "@/lib/api-helpers";
 import { logAudit } from "@/lib/audit";
 
 /**

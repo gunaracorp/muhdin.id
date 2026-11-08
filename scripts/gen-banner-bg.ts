@@ -37,7 +37,7 @@ async function main() {
       try {
         const res = await zai.images.generations.create({
           prompt: job.prompt,
-          size: job.size,
+          size: job.size as unknown as Parameters<typeof zai.images.generations.create>[0]["size"],
         });
         const b64 = res?.data?.[0]?.base64;
         if (!b64) throw new Error("respons kosong");

@@ -74,8 +74,10 @@ export async function POST(req: NextRequest) {
       });
 
       // Poin → bila email peserta terdaftar sebagai email member pemegang KTA aktif.
+      // (SQLite Prisma tanpa mode:"insensitive" — bandingkan dua varian huruf.)
+      const emailVariants = [enrollment.email, enrollment.email.toLowerCase()];
       const member = await db.member.findFirst({
-        where: { email: { equals: enrollment.email, mode: "insensitive" } },
+        where: { email: { in: emailVariants } },
         include: { card: true },
       });
       if (member?.card && member.card.status === "ACTIVE") {

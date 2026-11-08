@@ -28,17 +28,14 @@ export function SmartImage({
   const holder = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(priority);
   const [loaded, setLoaded] = useState(false);
-  const [current, setCurrent] = useState<string>(priority ? source : "");
+  const [failedSrc, setFailedSrc] = useState<string | null>(null);
 
-  // WebP candidate disiapkan sejak awal (bila bukan priority).
-  useEffect(() => {
-    if (priority) {
-      const w = webpCandidate(source);
-      setCurrent(w || source);
-      return;
-    }
-    setCurrent("");
-  }, [source, priority]);
+  // Sumber aktif DITURUNKAN (derive), bukan disinkronkan lewat effect:
+  // priority → langsung; biasa → kosong sampai IntersectionObserver memicu visible.
+  // WebP gagal utk sumber ini → jatuh kembali ke sumber asli otomatis.
+  const webp = webpCandidate(source);
+  const useWebp = !!webp && failedSrc !== source;
+  const current = priority || visible ? (useWebp ? webp! : source) : "";
 
   useEffect(() => {
     if (visible || !holder.current) return;
@@ -47,8 +44,6 @@ export function SmartImage({
       (entries) => {
         if (entries.some((e) => e.isIntersecting)) {
           setVisible(true);
-          const w = webpCandidate(source);
-          setCurrent(w || source);
           io.disconnect();
         }
       },
@@ -71,8 +66,8 @@ export function SmartImage({
           decoding="async"
           onLoad={() => setLoaded(true)}
           onError={() => {
-            // WebP belum tersedia → kembali ke sumber asli.
-            if (current !== source) setCurrent(source);
+            // WebP belum tersedia → kembali ke sumber asli; asli pun gagal → hentikan skeleton.
+            if (useWebp) setFailedSrc(source);
             else setLoaded(true);
           }}
           className={cn(

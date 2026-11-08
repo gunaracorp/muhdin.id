@@ -1,0 +1,92 @@
+# R-060 «CI/CD Pipeline Otomatis» — v13.0 «GERBANG»
+#
+# Gerbang mutu otomatis tiap push/PR ke main:
+#   1. verify  — install → typecheck (tsc, 0 error) → lint (0 error) → build produksi
+#   2. e2e     — DB segar + seed uji → dev server → Playwright jalur kritis
+#                (portal, login CMS, checkout, verifikasi sertifikat)
+#
+# Catatan:
+# - Dependency di-install dengan Bun (lockfile bun.lock, postinstall = prisma generate).
+# - Build tak membutuhkan DB: semua landing SSR memakai force-dynamic + fallback.
+# - E2E memakai kredensial admin dari SECRETS (E2E_ADMIN_EMAIL/E2E_ADMIN_PASSWORD);
+#   bila kosong, tes login otomatis di-skip (lihat tests/e2e/auth-cms.spec.ts).
+# - R-038 Payment Gateway asli (kredensial provider eksternal) tetap di luar CI —
+#   checkout diuji lewat adapter SANDBOX bawaan.
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Verify (typecheck · lint · build)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies (bun, lockfile ketat)
+        run: bun install --frozen-lockfile
+
+      - name: Typecheck — tsc --noEmit (harus 0 error)
+        run: bunx tsc --noEmit --incremental false
+
+      - name: Lint — ESLint (0 error)
+        run: bun run lint
+
+      - name: Build produksi (next build + post-build)
+        run: bun run build
+
+  e2e:
+    name: E2E (Playwright, jalur kritis)
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    needs: verify
+    env:
+      DATABASE_URL: file:/home/runner/work/muhdin/muhdin/db/e2e.db
+      E2E_ADMIN_EMAIL: ${{ secrets.E2E_ADMIN_EMAIL }}
+      E2E_ADMIN_PASSWORD: ${{ secrets.E2E_ADMIN_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Siapkan DB segar (prisma db push)
+        run: bunx prisma db push --accept-data-loss --skip-generate
+
+      - name: Seed data uji (paket, sertifikat, admin E2E, roadmap 99)
+        run: bunx tsx scripts/e2e-seed.ts && bunx tsx scripts/seed-roadmap99.ts
+
+      - name: Pasang browser Playwright (Chromium)
+        run: bunx playwright install --with-deps chromium
+
+      - name: Jalankan suite E2E
+        run: bunx playwright test --project=chromium
+
+      - name: Unggah laporan & jejak gagal
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 7

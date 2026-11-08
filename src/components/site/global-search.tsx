@@ -24,7 +24,7 @@ type SearchResults = {
   query: string;
   articles: { id: string; title: string; excerpt?: string | null; category?: string; href: string }[];
   tutorials: { id: string; title: string; summary?: string | null; category?: string; href: string }[];
-  ecosystems: { id: string; name: string; scope?: string | null; href: string }[];
+  ecosystems: { id: string; number?: number | null; name: string; scope?: string | null; href: string }[];
   members: { id: string; name: string; type?: string; city?: string; province?: string; href: string }[];
   events: { id: string; title: string; startsAt?: string; location?: string; category?: string; href: string }[];
   faqs: { id: string; question: string; category?: string; href: string }[];

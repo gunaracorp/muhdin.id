@@ -132,7 +132,7 @@ export function SitemapView() {
               <div key={g.group} className="mb-6 last:mb-0">
                 <h3 className="mb-2.5 flex items-center gap-2 text-sm font-extrabold uppercase tracking-wider text-muted-foreground">
                   <Icon name={g.groupIcon || "hexagon"} className="h-4 w-4 text-primary" aria-hidden />
-                  {l10n(`layanan.groups.${g.group}`, g.group)}
+                  {l10n(`layanan.groups.${g.group}`, g.group || "")}
                   <span className="rounded-full bg-muted px-2 py-0.5 text-[10px]">{g.children?.length ?? 0}</span>
                 </h3>
                 <div className="flex flex-wrap gap-2">

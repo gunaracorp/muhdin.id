@@ -82,3 +82,7 @@ src/generated/
 
 # v12.3 «AMANAH» — snapshot backup database (jangan pernah di-commit)
 /backups/
+
+# Playwright artefak uji (jangan ter-commit)
+test-results/
+playwright-report/

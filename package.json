@@ -14,6 +14,9 @@
     "hosting:build": "node scripts/build-shared-hosting.mjs",
     "start": "NODE_ENV=production bun .next/standalone/server.js 2>&1 | tee server.log",
     "lint": "eslint .",
+    "typecheck": "tsc --noEmit --incremental false",
+    "e2e": "playwright test",
+    "e2e:seed": "tsx scripts/e2e-seed.ts",
     "backup": "bun scripts/backup-db.ts",
     "db:push": "prisma db push --accept-data-loss",
     "db:generate": "prisma generate",
@@ -100,6 +103,7 @@
     "zustand": "^5.0.6"
   },
   "devDependencies": {
+    "@playwright/test": "^1.65.0",
     "@tailwindcss/postcss": "^4",
     "@types/bun": "^1.4.4",
     "@types/leaflet": "^1.9.22",

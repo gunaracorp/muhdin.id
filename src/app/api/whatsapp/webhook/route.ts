@@ -109,7 +109,7 @@ function extractIncoming(body: unknown): Incoming[] {
               id: m.id ? String(m.id) : undefined,
               name:
                 String(
-                  (v.contacts as Array<Record<string, unknown>> | undefined)?.[0]?.profile?.name ?? ""
+                  (v.contacts as Array<{ profile?: { name?: string } }> | undefined)?.[0]?.profile?.name ?? ""
                 ) || undefined,
             });
           }
@@ -221,7 +221,7 @@ export async function POST(req: NextRequest) {
       const locale: ChatLocale = detectLocale(text);
       const channel: BrainChannel = "WHATSAPP";
       const history = getSession(msg.from);
-      const withUser: BrainMessage[] = [...history, { role: "user", content: text }].slice(
+      const withUser: BrainMessage[] = [...history, { role: "user" as const, content: text }].slice(
         -MAX_HISTORY
       );
 
@@ -234,7 +234,7 @@ export async function POST(req: NextRequest) {
 
         if (reply) {
           const send = await sendBotReply(cfg.provider, cfg.apiUrl, cfg.token, msg.from, reply);
-          saveSession(msg.from, [...withUser, { role: "assistant", content: reply }].slice(-MAX_HISTORY));
+          saveSession(msg.from, [...withUser, { role: "assistant" as const, content: reply }].slice(-MAX_HISTORY));
           await logChat({
             channel,
             locale,

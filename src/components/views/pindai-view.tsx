@@ -140,8 +140,7 @@ export function PindaiView({ initialQuery = "" }: { initialQuery?: string }) {
       <DetailHero
         eyebrow={t("scan.eyebrow")}
         title={t("scan.title")}
-        sub={t("scan.subtitle")}
-        icon="scan"
+        subtitle={t("scan.subtitle")}
         backTo="bisnis"
         backLabel={t("footer.quick.bisnis")}
       />

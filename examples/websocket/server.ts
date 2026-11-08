@@ -121,7 +121,7 @@ httpServer.listen(PORT, () => {
 })
 
 // Graceful shutdown
-process.on('SIGTERM', () => {
+(process as NodeJS.Process).on('SIGTERM', () => {
   console.log('Received SIGTERM signal, shutting down server...')
   httpServer.close(() => {
     console.log('WebSocket server closed')
@@ -129,7 +129,7 @@ process.on('SIGTERM', () => {
   })
 })
 
-process.on('SIGINT', () => {
+(process as NodeJS.Process).on('SIGINT', () => {
   console.log('Received SIGINT signal, shutting down server...')
   httpServer.close(() => {
     console.log('WebSocket server closed')
