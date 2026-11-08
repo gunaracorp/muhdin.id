@@ -2192,3 +2192,20 @@ Work Log:
 Stage Summary:
 - scripts: pihk-kemenag-19-87.py (transkrip 69 baris + parser wilayah), pihk-kemenag-masuk.py (dedupe nama + enrich); CSV: download/data-resmi/pihk-kemenag-19-87.csv (+ -baru.csv).
 - E2E ringkas: lookup tetap normal setelah 38 insert; total direktori 103 → 526 → 564 dalam satu hari, semua bersumber resmi dicantumkan di description.
+
+## Task ID 25 — Panen PDF Resmi Kanwil Kemenag Jateng: SATU HAJI per 15 September 2025 (+171 Member, DB 564 → 735)
+Tanggal: 2026-11-08
+
+Task: "update ke github push dulu lalu lanjutkan cari lagi" (lanjutan Task 24; push dicek ternyata 549512e sudah sinkron).
+
+Work Log:
+- **Verifikasi push**: GitHub main = 549512e = HEAD lokal (push Task 24 ternyata sudah masuk; ref tracking lokal dibetulkan via git fetch).
+- **Jejak sumber yang buntu**: Wayback CDX sapuhi.id = 0 URL diarsipkan; portal baru haji.go.id (LK&PIH/Data) kosong; 2017.kemenag.go.id & haji.kemenag.go.id & simpu.kemenag.go.id memblokir sandbox (curl timeout, chrome-error, DNS gagal); r.jina.ai kena IP-block; PDF kanwil kalteng/sumsel/kalsel timeout. WebFetch Scribd 633280824 "PIHK per 311222" (nasional, KMA diperbarui) hanya terbaca baris 1-76 (sisa paywall).
+- **Jalur emas**: WebSearch menemukan PDF publik jateng.kemenag.go.id (WordPress, TIDAK memblokir sandbox): DATA-PIHK-Pusat-Jateng-per-15-September-2025.pdf (53 PIHK: 13 KMA + 40 NIB) dan DATA-PPIU-Pusat-Jateng-per-15-September-2025.pdf (199 PPIU: 104 NIB + 95 SK "U.xxx Tahun yyyy") — keduanya "***SATU HAJI per 15 September 2025", sumber data resmi terbaru yang pernah dipanen (HIMPUH = snapshot lama).
+- **Parser baru scripts/jateng-parse2.py** (pdfplumber): aliran kata global antar halaman, anchor nomor urut kolom NO, rentang-Y [anchor-22, anchor+1-15) karena konten selalu menjorok di atas angka NO; filter kata header tiap halaman; regex izin KMA/NIB/U.xxx; ekstrak telepon (norm +62), email (fix potongan wrap PDF "GMAIL.CO M"), kota (Kota/Kab + fallback nama kota/kab Jateng), direktur, tanggal SK.
+- **3 bug parser yang ditemukan & diperbaiki**: (1) batas kolom izin/tgl 340 memakan kata tanggal ("19" → izin) sehingga regex KMA gagal — digeser ke 337 + regex tanggal pakai daftar nama bulan (mencegah "58 Tahun 2019" dari "958 Tahun 2019"); (2) `gabung.append(p)` lupa ditambahkan di cabang grup ≥2 — 51 perusahaan tercatat ganda (satu perusahaan di tabel PIHK & PPIU sekaligus) lenyap diam-diam, terdeteksi dari kasus PT. SEKOLAH HAJI UMROH BAITULLAH (ada di PDF, tidak ada di DB/CSV/COCOK); (3) kota di-parse sebelum penggabungan alamat → ditambah isi_kota() dari alamat final + fallback.
+- **Dedupe pintar**: entri ganda PIHK+PPIU digabung (primer PIHK; izin kedua dicatat di description "juga terdaftar sbg PPIU: U.444 Tahun 2020"); dedupe nama/izin vs DB 564: 127 BARU (impor-1: inserted 127, 0 error) + 44 PIHK gabungan (impor-2: inserted 42, 2 skip karena kota kosong → diperbaiki isi_kota → impor-3: inserted 2). Enrichment 24 anggota lama (guard anti-dobel description): izin SATU HAJI terbaru ditambahkan; PT Ameera Hati Mulia dapat telp+email; PT SEKOLAH HAJI dsb. dapat telp dari izin PPIU-nya.
+- **DB**: 564 → **735 Member (PPIU 377, PIHK 353, KBIHU 2, IPHI 1, Travel Wisata 2)**; Jawa Tengah 23 → 150.
+- **CSV deliverable**: download/data-resmi/pihk-ppiu-jateng-satu-haji-2025.csv (129 baris; kolom Master; sumber dicantumkan per baris).
+- **E2E**: lookup NIB 02201073600530004 → PT. SEKOLAH HAJI UMROH BAITULLAH, Kab. Semarang, telp+email ✓; #/gabung ketik izin → nama+kota terisi otomatis ✓; 0 page error.
+- Catatan: 5 entri tanpa nomor izin (ALFATIH BIRO UMRAH, OZMAN, CAHAYA HARAMAIN, NAJAH TOUR & TRAVEL, MADANI MITRA MULIA) TIDAK diimpor sesuai aturan anti-karang; data mentah disimpan /tmp/panen25/.
