@@ -2174,3 +2174,21 @@ Work Log:
 
 Stage Summary:
 - Total direktori 5× lipat dalam 2 hari (103 → 526) tanpa satu pun data dikarang; sumber dicantumkan di description tiap anggota.
+
+## Task ID 24 — Panen Lanjutan: PIHK Kemenag Baris 19-87 (+38 Baru, 31 Diperkaya)
+Tanggal: 2026-11-08
+
+Task: "lanjutkan panen sumber resmi berikutnya (daftar PIHK Kemenag lengkap 88 baris dengan telepon+email, atau halaman 2-7 SAPUHI via jalur lain)".
+
+Work Log:
+- **Kejujuran akses**: SAPUHI memblokir seluruh jalur dari sandbox (curl timeout, chrome-error di browser headless, r.jina.ai "Html Convert Error", paginasi Livewire mengabaikan ?page — snapshot Wayback pun berisi hal. 1); sitemap.xml kena gate JS. IHATA situs mati. Scribd baris 88-300 terpaywall (preview cuma 4 halaman; embed & jina tetap baris 1-87).
+- **Kemenag PIHK (19-87) berhasil dipanen** dari salinan publik "Daftar Penyelenggara Ibadah Haji Khusus (PIHK)" Ditjen PHU (id.scribd.com/document/693210692) — transkrip persis 69 baris (nama, nomor KMA, alamat, telp, email; typo sumber dipertahankan; 1 alamat diperbaiki baca: Gadinganggan/Gandangan).
+- **Parser wilayah baru**: pencocokan case-insensitive + buang kode pos + regex "Kota/Kab X" + set nama provinsi (fix bug lazy-regex memotong nama kota; 69/69 kota+provinsi terisi).
+- **Dedupe pintar**: 38 NAMA BARU → impor /api/login+import → **inserted 38, errors 0**; 31 nama sudah ada di DB → **diperkaya** (description += nomor KMA resmi + sumber; 3 kolom kosong terisi telp/email: Indah Permata Permai, Kemang Nusantara Travel, Madinah Iman Wisata). licenseNo/nama/type existing TIDAK diubah (aman utk auto-isi).
+- **DB**: 526 → **564 Member (308 PIHK, 251 PPIU, 2 KBIHU, 1 IPHI, 2 TRAVEL_WISATA)**.
+- Catatan: 3 Member dengan description "Ditjen PHU (Mei 2025)" (Panguji/Lyla/Nur Al Iffah) adalah seed lama — bukan hasil task ini.
+- Blokir tersisa (dokumentasi): Scribd hal. 5-16 (baris 88-±300) paywall; SAPUHI hal. 2-7 situs memblokir sandbox; tindak lanjut ideal = akses kantor jaringan berbeda atau akun Scribd/berlangganan untuk unduh dokumen resmi.
+
+Stage Summary:
+- scripts: pihk-kemenag-19-87.py (transkrip 69 baris + parser wilayah), pihk-kemenag-masuk.py (dedupe nama + enrich); CSV: download/data-resmi/pihk-kemenag-19-87.csv (+ -baru.csv).
+- E2E ringkas: lookup tetap normal setelah 38 insert; total direktori 103 → 526 → 564 dalam satu hari, semua bersumber resmi dicantumkan di description.
