@@ -1,0 +1,4 @@
+name,type,city,province,licenseNo,phone,email,website,description,status,memberSince
+PT Contoh Wisata Barokah,PPIU,Jakarta Barat,DKI Jakarta,UU-123/2025,021-5550101,info@contohwisata.id,https://contohwisata.id,Contoh PPIU — ganti dengan data asli Anda.,TERVERIFIKASI,2025
+PT Contoh Haji Khusus,PIHK,Surabaya,Jawa Timur,SK-456/Kemenag/2024,031-5550202,cs@contohhaji.id,,Contoh PIHK — ganti dengan data asli Anda.,TERVERIFIKASI,2024
+Travel Contoh Nusantara,TRAVEL_WISATA,Yogyakarta,DI Yogyakarta,,0274-5550303,halo@contohnusantara.id,,Contoh tanpa nomor izin — importer otomatis mengisi tanda —.,PENDING,2026
