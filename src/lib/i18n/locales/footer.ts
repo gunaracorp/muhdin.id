@@ -5,9 +5,11 @@
 export const footerDict = {
   id: {
     footer: {
-      desc: "Asosiasi di Atas Asosiasi Penyelenggara Ibadah — Operator Nusuk Indonesia. Mengawal perjalanan Tamu Allah dari Indonesia hingga Tanah Suci dengan standar mutu terintegrasi.",
+      desc: "Ekosistem digital pendukung penyelenggara haji & umrah Indonesia — terintegrasi dengan kanal resmi Nusuk secara bertahap, di bawah otoritas yang berwenang.",
       tagline: "Bersama Melayani Tamu Allah",
-      freeBadge: "GRATIS SELAMANYA — pendaftaran & iuran Rp 0 untuk semua anggota, tanpa pengecualian",
+      freeBadge: "TANPA BIAYA PENDAFTARAN DI FASE AWAL — model biaya transparan & berkelanjutan",
+      complianceNote:
+        "MUHDIN adalah lapisan pendukung ekosistem — bukan pengganti otoritas resmi. Visa, izin, permit, dan keputusan resmi tetap melalui kanal yang berwenang: Kementerian Haji dan Umrah RI serta Nusuk Saudi.",
       connecting: "Connecting Indonesia to The Holy Journey",
       colNav: "Navigasi",
       colEcosystem: "Layanan Ekosistem",
@@ -97,14 +99,20 @@ export const footerDict = {
       trustPwa: "Siap Offline — PWA",
       trustLang: "3 Bahasa · ID / EN / AR",
       trustSecure: "Terkunci & Ter-Audit",
-      trustNusuk: "Terhubung Nusuk",
+      trustNusuk: "Integrasi Nusuk — Bertahap",
+      trustKemitraan: "Kemitraan FKK Banten",
+      trustPembayaran: "Pembayaran Resmi",
+      trustKeamanan: "Keamanan & Audit",
+      trustBiaya: "Model Biaya",
     },
   },
   en: {
     footer: {
-      desc: "The umbrella association of worship travel operators — Nusuk Operator Indonesia. Guiding the Guests of Allah from Indonesia to the Holy Land with integrated quality standards.",
+      desc: "A digital ecosystem supporting Indonesian hajj & umrah operators — integrating with official Nusuk channels in phases, under the authorized authorities.",
       tagline: "Serving the Guests of Allah Together",
-      freeBadge: "FREE FOREVER — registration & dues Rp 0 for every member, no exceptions",
+      freeBadge: "NO REGISTRATION FEE IN THE EARLY PHASE — a transparent & sustainable fee model",
+      complianceNote:
+        "MUHDIN is a supporting ecosystem layer — not a replacement for official authorities. Visas, permits, and official decisions remain through authorized channels: the Ministry of Hajj and Umrah RI and Nusuk Saudi.",
       connecting: "Connecting Indonesia to The Holy Journey",
       colNav: "Navigation",
       colEcosystem: "Ecosystem Services",
@@ -194,14 +202,19 @@ export const footerDict = {
       trustPwa: "Offline Ready — PWA",
       trustLang: "3 Languages · ID / EN / AR",
       trustSecure: "Secured & Audited",
-      trustNusuk: "Nusuk Connected",
+      trustNusuk: "Nusuk Integration — Phased",
+      trustKemitraan: "FKK Banten Partnership",
+      trustPembayaran: "Official Payments",
+      trustKeamanan: "Security & Audit",
+      trustBiaya: "Fee Model",
     },
   },
   ar: {
     footer: {
-      desc: "اتحاد جمعيات منظمي رحلات العبادة — مشغل نسك في إندونيسيا. نرافق رحلة ضيوف الرحمن من إندونيسيا إلى الأرض المقدسة بمعايير جودة متكاملة.",
+      desc: "منظومة رقمية داعمة لمنظمي الحج والعمرة الإندونيسيين — تتكامل مع قنوات نسك الرسمية تدريجياً تحت السلطات المخولة.",
       tagline: "معا نخدم ضيوف الرحمن",
-      freeBadge: "مجاناً إلى الأبد — التسجيل والرسوم مجانية تماماً لكل الأعضاء، بلا استثناء",
+      freeBadge: "بلا رسوم تسجيل في المرحلة الأولى — نموذج رسوم شفاف ومستدام",
+      complianceNote: "موهدين طبقة داعمة للمنظومة — وليست بديلاً عن السلطات الرسمية. تبقى التأشيرات والتصاريح والقرارات الرسمية عبر القنوات المخولة: وزارة الحج والعمرة الإندونيسية ونسك السعودية.",
       connecting: "نربط إندونيسيا بالرحلة المقدسة",
       colNav: "التنقل",
       colEcosystem: "خدمات المنظومة",
@@ -291,7 +304,11 @@ export const footerDict = {
       trustPwa: "جاهز دون اتصال — PWA",
       trustLang: "٣ لغات · إندونيسية / إنجليزية / عربية",
       trustSecure: "مؤمّن ومدقَّق",
-      trustNusuk: "متصل بنسك",
+      trustNusuk: "تكامل نسك — تدريجي",
+      trustKemitraan: "شراكة منتدى بانتن",
+      trustPembayaran: "الدفع الرسمي",
+      trustKeamanan: "الأمن والتدقيق",
+      trustBiaya: "نموذج الرسوم",
     },
   },
 } as const;

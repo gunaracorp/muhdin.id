@@ -4,7 +4,7 @@
  * Task 44 → Task 52 — SlotCounter: penghitung LIVE pendaftar GRATIS.
  *
  * PERCOBAAN PROMO "200 ANGGOTA PERTAMA" DIHAPUS (permintaan pendiri):
- * keanggotaan MUHDIN 100% gratis tanpa kuota, sehingga counter kelangkaan
+ * pendaftaran MUHDIN tanpa biaya di fase awal (model biaya: #/biaya), sehingga counter kelangkaan
  * ("sisa slot") diubah menjadi counter pertumbuhan — jumlah pendaftar yang
  * telah bergabung gratis (data sama: GET /api/promo/counter, kolom taken).
  *

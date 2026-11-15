@@ -257,6 +257,115 @@ function CopyButton({ text, label }: { text: string; label?: string }) {
   );
 }
 
+/* ================= AUDIT 2026 — KAJIAN STRATEGIS ================= */
+
+/** Kajian Strategis MUHDIN × NUSUK: integrasi resmi — bukan penggantian otoritas. */
+function NusukPositioningSection() {
+  const { t } = useT();
+  const ARCH = ["a1", "a2", "a3", "a4", "a5", "a6"] as const;
+  const FASES = [
+    { p: "f1p", t: "f1t" },
+    { p: "f2p", t: "f2t" },
+    { p: "f3p", t: "f3t" },
+    { p: "f4p", t: "f4t" },
+  ] as const;
+
+  return (
+    <section className="py-14 sm:py-20" aria-labelledby="nusuk-pos-title">
+      <div className="mx-auto max-w-5xl space-y-6 px-4 sm:px-6">
+        <Reveal>
+          <div className="flex items-center gap-3">
+            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
+              <Icon name="landmark" className="h-5 w-5" aria-hidden />
+            </span>
+            <div>
+              <h2 id="nusuk-pos-title" className="text-lg font-extrabold leading-snug">
+                {t("audit13.nusukpos.title")}
+              </h2>
+              <p className="mt-0.5 text-sm text-muted-foreground">{t("audit13.nusukpos.desc")}</p>
+            </div>
+          </div>
+        </Reveal>
+
+        {/* Dua peran — berdampingan */}
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Reveal>
+            <div className="h-full rounded-2xl border bg-card p-5 shadow-sm">
+              <div className="flex items-center gap-3">
+                <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-emerald-500/10 text-emerald-700 dark:text-emerald-400">
+                  <Icon name="building-2" className="h-4.5 w-4.5" aria-hidden />
+                </span>
+                <h3 className="text-[15px] font-extrabold leading-snug">{t("audit13.nusukpos.leftT")}</h3>
+              </div>
+              <p className="mt-3 text-sm leading-relaxed text-foreground/75">{t("audit13.nusukpos.leftD")}</p>
+            </div>
+          </Reveal>
+          <Reveal delay={0.08}>
+            <div className="h-full rounded-2xl border border-gold/40 bg-gold/5 p-5 shadow-sm">
+              <div className="flex items-center gap-3">
+                <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-gold/15 text-gold-deep">
+                  <Icon name="satellite" className="h-4.5 w-4.5" aria-hidden />
+                </span>
+                <h3 className="text-[15px] font-extrabold leading-snug">{t("audit13.nusukpos.rightT")}</h3>
+              </div>
+              <p className="mt-3 text-sm leading-relaxed text-foreground/75">{t("audit13.nusukpos.rightD")}</p>
+            </div>
+          </Reveal>
+        </div>
+
+        {/* Arsitektur integrasi */}
+        <Reveal>
+          <div className="rounded-2xl border bg-card p-5 shadow-sm">
+            <h3 className="text-[15px] font-extrabold">{t("audit13.nusukpos.archTitle")}</h3>
+            <div className="mt-4 flex flex-wrap items-center gap-2">
+              {ARCH.map((k, i) => (
+                <span key={k} className="flex items-center gap-2">
+                  <span className="inline-flex items-center rounded-full border bg-muted/50 px-3 py-1.5 text-xs font-bold text-foreground/85">
+                    {t(`audit13.nusukpos.${k}`)}
+                  </span>
+                  {i < ARCH.length - 1 && (
+                    <Icon name="arrow-right" className="h-3.5 w-3.5 shrink-0 text-muted-foreground icon-flip" aria-hidden />
+                  )}
+                </span>
+              ))}
+            </div>
+          </div>
+        </Reveal>
+
+        {/* Batas tegas */}
+        <Reveal>
+          <aside className="flex items-start gap-3 rounded-2xl border border-red-500/40 bg-red-500/10 p-5">
+            <Icon name="alert-triangle" className="mt-0.5 h-4 w-4 shrink-0 text-red-700 dark:text-red-400" aria-hidden />
+            <div className="text-sm leading-relaxed text-foreground/85">
+              <span className="font-extrabold">{t("audit13.nusukpos.warnTitle")}: </span>
+              {t("audit13.nusukpos.warnText")}
+            </div>
+          </aside>
+        </Reveal>
+
+        {/* Fase integrasi */}
+        <Reveal>
+          <h3 className="text-[15px] font-extrabold">{t("audit13.nusukpos.faseTitle")}</h3>
+        </Reveal>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {FASES.map((f) => (
+            <Reveal key={f.p}>
+              <div className="h-full rounded-xl border bg-card p-4 text-center">
+                <p className="text-xs font-black uppercase tracking-wider text-gold-deep dark:text-gold">
+                  {t(`audit13.nusukpos.${f.p}`)}
+                </p>
+                <p className="mt-1.5 text-[13px] font-bold leading-snug text-foreground/85">
+                  {t(`audit13.nusukpos.${f.t}`)}
+                </p>
+              </div>
+            </Reveal>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 /* ================= HERO ================= */
 
 function Hero({ data }: { data: NusukPublicData | null }) {
@@ -1467,6 +1576,9 @@ export function NusukView() {
   return (
     <div className="flex flex-col">
       <Hero data={data} />
+
+      {/* Audit 2026 — Kajian Strategis: integrasi resmi, bukan penggantian otoritas */}
+      <NusukPositioningSection />
 
       {error ? (
         <>

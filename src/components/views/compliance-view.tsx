@@ -522,7 +522,7 @@ export function ComplianceView({ initialQuery = "" }: { initialQuery?: string })
             <h2 className="text-xl font-black tracking-tight sm:text-2xl">{t("compliance.cta.title")}</h2>
             <p className="mx-auto mt-2 max-w-xl text-sm text-muted-foreground">{t("compliance.cta.sub")}</p>
             <p className="mt-3 text-[11px] font-black uppercase tracking-[0.25em] text-emerald-600 dark:text-emerald-400">
-              GRATIS SELAMANYA · FREE FOREVER · مجاناً للأبد
+              PENDAFTARAN TANPA BIAYA DI FASE AWAL · NO EARLY-PHASE REGISTRATION FEE · التسجيل مجاناً في المرحلة الأولى
             </p>
             <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
               <Button size="sm" variant="outline" className="gap-1.5" onClick={() => (window.location.hash = "/pindai")}>

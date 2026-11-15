@@ -11,6 +11,22 @@ import type { JourneyStep } from "@/lib/types";
 import { useT } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 
+/** Audit 2026 — 12 langkah ARMINA (3 tahap) sesuai alur baku program Umroh Plus. */
+const ARMNA_STEPS: { n: number; phase: 1 | 2 | 3; icon: string }[] = [
+  { n: 1, phase: 1, icon: "clipboard-list" },
+  { n: 2, phase: 1, icon: "book-open" },
+  { n: 3, phase: 1, icon: "package" },
+  { n: 4, phase: 1, icon: "plane-takeoff" },
+  { n: 5, phase: 2, icon: "plane" },
+  { n: 6, phase: 2, icon: "map-pin" },
+  { n: 7, phase: 2, icon: "moon-star" },
+  { n: 8, phase: 2, icon: "landmark" },
+  { n: 9, phase: 2, icon: "graduation-cap" },
+  { n: 10, phase: 3, icon: "package" },
+  { n: 11, phase: 3, icon: "plane-landing" },
+  { n: 12, phase: 3, icon: "heart-handshake" },
+];
+
 export function JourneyView() {
   const { t, locale } = useT();
   const [steps, setSteps] = useState<JourneyStep[] | null>(null);
@@ -119,6 +135,74 @@ export function JourneyView() {
               </div>
             </div>
           )}
+
+          {/* Audit 2026 — Program Umroh Plus di ARMINA: 12 langkah, 3 tahap */}
+          <Reveal className="mt-14">
+            <SectionHeading
+              title={t("audit13.armna.title")}
+              subtitle={t("audit13.armna.subtitle")}
+            />
+            <div className="mt-8 space-y-8">
+              {[1, 2, 3].map((phase) => (
+                <div key={phase}>
+                  <div className="mb-3 flex items-center gap-2.5">
+                    <span className="grid h-8 w-8 place-items-center rounded-lg bg-gradient-to-br from-primary to-forest text-sm font-extrabold text-white">
+                      {phase}
+                    </span>
+                    <h3 className="text-sm font-black uppercase tracking-wider text-foreground/80">
+                      {t(`audit13.armna.tahap${phase}`)}
+                    </h3>
+                  </div>
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    {ARMNA_STEPS.filter((s) => s.phase === phase).map((s) => (
+                      <div
+                        key={s.n}
+                        className="flex items-start gap-3 rounded-2xl border bg-card p-4 shadow-sm transition-colors hover:border-gold/50"
+                      >
+                        <span className="relative grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-gold/15 text-gold-deep">
+                          <Icon name={s.icon} className="h-4.5 w-4.5" strokeWidth={1.9} aria-hidden />
+                          <span className="absolute -end-1.5 -top-1.5 grid h-4.5 w-4.5 place-items-center rounded-full bg-primary text-[9px] font-extrabold text-white">
+                            {s.n}
+                          </span>
+                        </span>
+                        <div className="min-w-0">
+                          <p className="text-sm font-extrabold leading-snug">{t(`audit13.armna.s${s.n}t`)}</p>
+                          <p className="mt-1 text-[13px] leading-relaxed text-muted-foreground">
+                            {t(`audit13.armna.s${s.n}d`)}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Hasil & manfaat */}
+            <div className="mt-8 rounded-2xl border border-gold/40 bg-gold/5 p-5">
+              <p className="text-sm font-extrabold uppercase tracking-wider text-gold-deep dark:text-gold">
+                {t("audit13.armna.hasilTitle")}
+              </p>
+              <ul className="mt-3 grid gap-2.5 sm:grid-cols-2">
+                {["hasil1", "hasil2", "hasil3", "hasil4"].map((k) => (
+                  <li key={k} className="flex items-start gap-2 text-sm text-foreground/85">
+                    <Icon name="check-circle-2" className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" aria-hidden />
+                    <span className="leading-relaxed">{t(`audit13.armna.${k}`)}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="mt-6 flex flex-col items-center gap-3 rounded-2xl border bg-card p-5 text-center">
+              <Icon name="radar" className="h-6 w-6 text-primary" aria-hidden />
+              <p className="text-sm font-extrabold">{t("audit13.armna.trackCta")}</p>
+              <p className="text-[13px] text-muted-foreground">{t("audit13.armna.trackD")}</p>
+              <Button onClick={() => navigate("tracking")} variant="outline" className="rounded-full font-bold">
+                {t("audit13.armna.trackCta")}
+                <Icon name="arrow-right" className="ms-1.5 h-4 w-4 icon-flip" aria-hidden />
+              </Button>
+            </div>
+          </Reveal>
 
           <Reveal className="mt-12">
             <SectionHeading

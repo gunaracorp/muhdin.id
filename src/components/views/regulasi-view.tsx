@@ -25,6 +25,9 @@ const INDUSTRY_ITEMS = [
   { key: "uu13", icon: "file-text" },
   { key: "pp115", icon: "gavel" },
   { key: "kemen", icon: "landmark" },
+  // Audit 2026 — basis hukum baru penyelenggaraan haji & umrah
+  { key: "permen1", icon: "stamp" },
+  { key: "permen2", icon: "stamp" },
 ] as const;
 
 const POLICY_ITEMS = [
@@ -151,6 +154,12 @@ export function RegulasiView() {
                   href={BPK_URL}
                 />
               ))}
+            </div>
+            {/* Audit 2026 — catatan regulasi penting: kewajiban penyelenggara tetap */}
+            <div className="mt-4">
+              <TrustCallout tone="amber" icon="alert-triangle" title={t("regulasi.industry.noteT")}>
+                {t("regulasi.industry.noteD")}
+              </TrustCallout>
             </div>
           </TrustSection>
 

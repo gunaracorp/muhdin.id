@@ -174,7 +174,7 @@ export function AdminDashboard({ onNavigate }: { onNavigate: (s: string) => void
           </div>
           <div className="mt-2 flex items-center justify-between text-xs text-muted-foreground">
             <span>
-              {promo ? `Keanggotaan 100% gratis — tanpa kuota` : "Memuat data…"}
+              {promo ? `Fase awal tanpa biaya pendaftaran — tanpa kuota` : "Memuat data…"}
             </span>
             <button className="font-bold text-primary hover:underline" onClick={() => onNavigate("applications")}>
               Lihat Pendaftar →

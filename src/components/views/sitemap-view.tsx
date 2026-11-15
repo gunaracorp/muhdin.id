@@ -49,11 +49,16 @@ const STATIC_PAGES: { path: string; icon: string; labelKey?: string; labelId: st
   { path: "/dpd", icon: "landmark", labelKey: "navbar.items.dpd", labelId: "Jaringan Daerah" },
   { path: "/privasi", icon: "shield-ellipsis", labelKey: "navbar.items.privasi", labelId: "Kebijakan Privasi" },
   { path: "/syarat", icon: "scale", labelKey: "navbar.items.syarat", labelId: "Syarat & Ketentuan" },
+  // Audit 2026 — kemitraan, pembayaran, keamanan, model biaya
+  { path: "/kemitraan", icon: "handshake", labelId: "Kemitraan FKK Banten" },
+  { path: "/pembayaran", icon: "wallet", labelId: "Pembayaran Resmi" },
+  { path: "/keamanan", icon: "shield-check", labelId: "Keamanan & Audit" },
+  { path: "/biaya", icon: "banknote", labelId: "Model Biaya" },
   { path: "/peta-situs", icon: "map", labelId: "Peta Situs" },
 ];
 
 /** Route hash kustom di luar #/layanan/<slug> (Task 52). */
-const CUSTOM_ROUTES = new Set(["regulasi", "transparansi", "etik", "pdp", "darurat"]);
+const CUSTOM_ROUTES = new Set(["regulasi", "transparansi", "etik", "pdp", "darurat", "kemitraan", "pembayaran", "keamanan", "biaya"]);
 
 function LinkChip({ path, icon, label }: { path: string; icon: string; label: string }) {
   return (

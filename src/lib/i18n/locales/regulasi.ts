@@ -37,6 +37,15 @@ export const regulasiDict = {
         kemenT: "Peraturan Kementerian Haji & Umrah",
         kemenD:
           "Kementerian Haji & Umrah kini berdiri sebagai kementerian tersendiri. Peraturan turunannya terus kami pantau dan akan diperbarui di halaman ini.",
+        permen1T: "Permenhaji No. 1 Tahun 2025",
+        permen1D:
+          "Peraturan Menteri Haji dan Umrah pertama tahun 2025 — bagian dari basis hukum baru penyelenggaraan ibadah yang menjadi rujukan pembaruan standar ekosistem.",
+        permen2T: "Permenhaji No. 2 Tahun 2025",
+        permen2D:
+          "Peraturan Menteri Haji dan Umrah kedua tahun 2025 — kewajiban, perlindungan jamaah, dan tanggung jawab penyelenggara PPIU/PIHK tetap berlaku penuh di bawah otoritas yang berwenang.",
+        noteT: "Catatan Regulasi (Penting)",
+        noteD:
+          "MUHDIN berperan sebagai lapisan pendukung ekosistem dan tidak dapat menggantikan izin pemerintah Indonesia maupun sistem resmi Saudi (Nusuk). Penyelenggara PPIU/PIHK tetap memiliki seluruh kewajiban regulasi, perlindungan jamaah, dan tanggung jawab kepada jamaah.",
         link: "Buka peraturan.bpk.go.id",
       },
       syariah: {
@@ -109,6 +118,15 @@ export const regulasiDict = {
         kemenT: "Ministry of Hajj & Umrah Regulations",
         kemenD:
           "The Ministry of Hajj & Umrah now stands as a ministry in its own right. Its derivative regulations are continuously monitored and will be updated on this page.",
+        permen1T: "Ministerial Regulation No. 1 of 2025",
+        permen1D:
+          "The first 2025 Regulation of the Minister of Hajj and Umrah — part of the new legal basis for worship services that anchors the ecosystem's updated standards.",
+        permen2T: "Ministerial Regulation No. 2 of 2025",
+        permen2D:
+          "The second 2025 Regulation of the Minister of Hajj and Umrah — obligations, pilgrim protection, and the responsibilities of PPIU/PIHK operators remain fully in force under the authorized authorities.",
+        noteT: "Regulatory Note (Important)",
+        noteD:
+          "MUHDIN acts as a supporting ecosystem layer and cannot replace Indonesian government licensing or the official Saudi system (Nusuk). PPIU/PIHK operators retain all regulatory obligations, pilgrim protection duties, and accountability to pilgrims.",
         link: "Open peraturan.bpk.go.id",
       },
       syariah: {
@@ -181,6 +199,12 @@ export const regulasiDict = {
         kemenT: "لوائح وزارة الحج والعمرة",
         kemenD:
           "أصبحت وزارة الحج والعمرة الآن وزارة مستقلة بذاتها؛ نتابع لوائحها المشتقة باستمرار وسنحدّثها في هذه الصفحة.",
+        permen1T: "لائحة الوزير رقم 1 لسنة 2025",
+        permen1D: "اللائحة الأولى لوزير الحج والعمرة لعام 2025 — جزء من الأساس القانوني الجديد لتنظيم الشعائر الذي يرتكز عليه تحديث معايير المنظومة.",
+        permen2T: "لائحة الوزير رقم 2 لسنة 2025",
+        permen2D: "اللائحة الثانية لوزير الحج والعمرة لعام 2025 — الالتزامات وحماية الحجاج ومسؤوليات منظمي الرحلات تظل سارية بالكامل تحت السلطات المخولة.",
+        noteT: "ملاحظة تنظيمية (مهمة)",
+        noteD: "تعمل موهدين كطبقة داعمة للمنظومة ولا يمكنها أن تحل محل تراخيص الحكومة الإندونيسية أو النظام السعودي الرسمي (نسك). يحتفظ منظمو الرحلات بجميع الالتزامات التنظيمية وواجبات حماية الحجاج والمسؤولية تجاههم.",
         link: "افتح peraturan.bpk.go.id",
       },
       syariah: {

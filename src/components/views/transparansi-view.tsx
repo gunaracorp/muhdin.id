@@ -45,6 +45,12 @@ const WATCH_ITEMS = [
   { key: "ticket", icon: "search", route: "lacak" },
 ] as const;
 
+/** Audit 2026 — 8 KPI target awal (6–12 bulan) hasil audit kesiapan go-live. */
+const KPI_AUDIT = ["k1", "k2", "k3", "k4", "k5", "k6", "k7", "k8"] as const;
+
+/** Audit 2026 — roadmap penyiapan operasional (0–30/31–60/61–90 hari/skala penuh). */
+const ROADMAP_OPS = ["rm1", "rm2", "rm3", "rm4"] as const;
+
 /** Label tipe member: pakai kamus members.type.* bila ada, fallback kode mentah. */
 function typeLabel(ty: string, t: (k: string) => string): string {
   const val = t(`members.type.${ty}`);
@@ -267,7 +273,55 @@ export function TransparansiView() {
             </div>
           </TrustSection>
 
-          {/* 5. Callout amber — catatan pendanaan */}
+          {/* 5. Target KPI (Audit 2026) */}
+          <TrustSection icon="target" title={t("audit13.kpi.title")} desc={t("audit13.kpi.desc")}>
+            <div className="overflow-x-auto rounded-2xl border">
+              <table className="w-full min-w-[560px] text-sm">
+                <thead>
+                  <tr className="border-b bg-muted/50">
+                    <th className="p-3.5 text-start font-extrabold">{t("audit13.kpi.colName")}</th>
+                    <th className="p-3.5 text-start font-extrabold">{t("audit13.kpi.colBase")}</th>
+                    <th className="p-3.5 text-start font-extrabold">{t("audit13.kpi.colTarget")}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {KPI_AUDIT.map((k) => (
+                    <tr key={k} className="border-b last:border-b-0">
+                      <td className="p-3.5 font-bold">{t(`audit13.kpi.${k}n`)}</td>
+                      <td className="p-3.5 text-muted-foreground">{t(`audit13.kpi.${k}b`)}</td>
+                      <td className="p-3.5">
+                        <span className="inline-flex rounded-full bg-emerald-500/10 px-2.5 py-1 text-[11px] font-black uppercase tracking-wide text-emerald-700 dark:text-emerald-400">
+                          {t(`audit13.kpi.${k}t`)}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <p className="mt-3 text-xs text-muted-foreground">{t("audit13.kpi.note")}</p>
+          </TrustSection>
+
+          {/* 6. Roadmap penyiapan operasional (Audit 2026) */}
+          <TrustSection icon="calendar" title={t("audit13.kpi.roadmapTitle")} desc={t("audit13.kpi.roadmapDesc")}>
+            <div className="grid gap-4 sm:grid-cols-2">
+              {ROADMAP_OPS.map((r) => (
+                <div key={r} className="flex h-full flex-col rounded-2xl border bg-card p-5 shadow-sm">
+                  <div className="flex items-center gap-3">
+                    <span className="rounded-full bg-gold/15 px-3 py-1 text-[11px] font-black uppercase tracking-wider text-gold-deep dark:text-gold">
+                      {t(`audit13.kpi.${r}p`)}
+                    </span>
+                    <h3 className="text-[15px] font-extrabold leading-snug">{t(`audit13.kpi.${r}t`)}</h3>
+                  </div>
+                  <p className="mt-2.5 flex-1 text-sm leading-relaxed text-foreground/75">
+                    {t(`audit13.kpi.${r}d`)}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </TrustSection>
+
+          {/* 7. Callout amber — catatan pendanaan */}
           <TrustCallout tone="amber" icon="alert-triangle" title={t("transparansi.callout.title")}>
             {t("transparansi.callout.text")}
           </TrustCallout>

@@ -59,7 +59,7 @@ export const pengurusDict = {
       cta: {
         title: "Berkumpul di Bawah Satu Kepemimpinan",
         desc: "Bersama Ketua Umum, Sekretaris Jenderal, dan seluruh jaringan kepengurusan — jadilah bagian dari generasi penyelenggara ibadah yang bersatu, terstandar, dan terdigitalisasi.",
-        free: "Keanggotaan 100% GRATIS — MUHDIN tidak menarifkan biaya kepada anggota",
+        free: "Pendaftaran tanpa biaya di fase pendirian — model biaya transparan & berkelanjutan",
         btn: "DAFTAR GRATIS SEKARANG",
         contact: "Hubungi Pengurus",
       },
@@ -138,7 +138,7 @@ export const pengurusDict = {
       cta: {
         title: "Gathered Under One Leadership",
         desc: "Together with the President, Secretary General, and the entire governing network — join the generation of unified, standardized, digitally-empowered pilgrimage service providers.",
-        free: "100% FREE membership — MUHDIN charges its members nothing",
+        free: "Free registration in the founding phase — a transparent & sustainable fee model",
         btn: "Register Free Now",
         contact: "Contact the Board",
       },
@@ -216,7 +216,7 @@ export const pengurusDict = {
       cta: {
         title: "متحدون تحت قيادة واحدة",
         desc: "مع الرئيس العام والأمين العام وكامل شبكة التنظيم — كن جزءاً من جيل مقدمي خدمات العبادة الموحد المعياري الرقمي.",
-        free: "عضوية مجانية ١٠٠٪ — لا تفرض موهدين رسوماً على الأعضاء",
+        free: "تسجيل مجاني في مرحلة التأسيس — نموذج رسوم شفاف ومستدام",
         btn: "سجّل مجاناً — احجز العرض",
         contact: "تواصل مع القيادة",
       },

@@ -132,7 +132,7 @@ export default async function ArtikelLanding({ params }: Props) {
 
         <div className="mt-10 rounded-2xl bg-emerald-50 p-6 text-center">
           <p className="font-extrabold text-forest-deep">Siap berangkat dengan ekosistem terpercaya?</p>
-          <p className="mt-1 text-sm text-foreground/70">Buka portal MUHDIN: verifikasi penyelenggara, marketplace paket, akademi, dan poin KTA — 100% gratis.</p>
+          <p className="mt-1 text-sm text-foreground/70">Buka portal MUHDIN: verifikasi penyelenggara, marketplace paket, akademi, dan poin KTA — tanpa biaya pendaftaran di fase awal.</p>
           <Link
             href={`/#/berita/${a.slug}`}
             className="mt-4 inline-flex items-center gap-2 rounded-full bg-forest px-6 py-3 font-bold text-white shadow-lg transition hover:bg-forest-deep"
