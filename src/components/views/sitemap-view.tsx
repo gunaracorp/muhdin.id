@@ -89,7 +89,7 @@ export function SitemapView() {
   }, []);
 
   // Grup layanan dari MENU_NODES (slug dinamis → #/layanan/<slug>).
-  const layananGroups = MENU_NODES.filter((n) => n.group && n.children);
+  const layananGroups = MENU_NODES.filter((n): n is typeof n & { group: string } => Boolean(n.group) && Boolean(n.children));
   const l10n = (key: string, fallback: string) => {
     const v = t(key);
     return v === key ? fallback : v;

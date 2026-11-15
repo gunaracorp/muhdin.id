@@ -11,7 +11,7 @@ import { fail } from "@/lib/api-helpers";
  */
 
 /** Cache memori kecil agar pemindaian berulang tidak regenerasi PNG. */
-const cache = new Map<string, Uint8Array>();
+const cache = new Map<string, Uint8Array<ArrayBuffer>>();
 const CACHE_MAX = 300;
 
 export async function GET(req: NextRequest, ctx: { params: Promise<{ no: string }> }) {
@@ -45,7 +45,7 @@ export async function GET(req: NextRequest, ctx: { params: Promise<{ no: string 
   }
 }
 
-function png(bytes: Uint8Array): Response {
+function png(bytes: Uint8Array<ArrayBuffer>): Response {
   return new Response(bytes, {
     headers: {
       "Content-Type": "image/png",

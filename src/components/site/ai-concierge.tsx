@@ -158,7 +158,7 @@ export function SahabatMuhdin() {
       const question = text.trim();
       if (!question || busy) return;
 
-      const next: Msg[] = [...messages, { role: "user", content: question }].slice(-MAX_STORED);
+      const next: Msg[] = [...messages, { role: "user" as const, content: question }].slice(-MAX_STORED);
       setMessages(next);
       setInput("");
       setBusy(true);
@@ -172,10 +172,10 @@ export function SahabatMuhdin() {
         const data = await res.json().catch(() => ({}));
         const reply: string = res.ok && data?.reply ? String(data.reply) : "";
         setMessages((prev) =>
-          [...prev, { role: "assistant", content: reply || c.error }].slice(-MAX_STORED)
+          [...prev, { role: "assistant" as const, content: reply || c.error }].slice(-MAX_STORED)
         );
       } catch {
-        setMessages((prev) => [...prev, { role: "assistant", content: c.error }].slice(-MAX_STORED));
+        setMessages((prev) => [...prev, { role: "assistant" as const, content: c.error }].slice(-MAX_STORED));
       } finally {
         setBusy(false);
       }

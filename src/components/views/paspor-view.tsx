@@ -30,7 +30,7 @@ type PublicData = {
   stats: { active: number; haji: number; umrah: number; verifications: number };
 };
 
-type VerifyData = {
+export type VerifyData = {
   found: boolean;
   throttled?: boolean;
   error?: boolean;
@@ -47,6 +47,7 @@ type VerifyData = {
     issuedAt: string;
     expiresAt: string;
     verificationCount: number;
+    lastVerifiedAt: string | null;
     org: { name: string; city: string } | null;
   };
 };

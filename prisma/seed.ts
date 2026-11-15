@@ -13,8 +13,9 @@ import { PrismaClient } from "@prisma/client";
 import { scryptSync, randomBytes } from "node:crypto";
 
 // Fallback agar seed dapat dijalankan langsung dari akar proyek
+// (relatif terhadap cwd — jangan hardcoded path mesin tertentu).
 if (!process.env.DATABASE_URL) {
-  process.env.DATABASE_URL = "file:/home/z/my-project/db/custom.db";
+  process.env.DATABASE_URL = `file:${process.cwd()}/db/custom.db`;
 }
 
 const prisma = new PrismaClient();

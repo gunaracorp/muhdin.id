@@ -14,6 +14,7 @@
     "hosting:build": "node scripts/build-shared-hosting.mjs",
     "start": "NODE_ENV=production bun .next/standalone/server.js 2>&1 | tee server.log",
     "lint": "eslint .",
+    "setup": "node scripts/setup-db.mjs",
     "backup": "bun scripts/backup-db.ts",
     "db:push": "prisma db push --accept-data-loss",
     "db:generate": "prisma generate",

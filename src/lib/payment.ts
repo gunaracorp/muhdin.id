@@ -90,22 +90,32 @@ export function isSandbox(): boolean {
 
 /* ============ Signature webhook (HMAC-SHA256, timing-safe) ============ */
 
-function webhookSecret(): string {
-  return (
-    process.env.PAYMENT_WEBHOOK_SECRET ??
-    // Sandbox tanpa kredensial: kunci turunan lokal, cukup untuk uji/E2E.
-    `muhdin-sandbox-${process.env.NODE_ENV ?? "dev"}`
-  );
+function webhookSecret(): string | null {
+  const explicit = process.env.PAYMENT_WEBHOOK_SECRET;
+  if (explicit) return explicit;
+  // Tanpa kredensial: hanya non-produksi yang boleh memakai kunci sandbox turunan.
+  // Produksi TANPA secret mengembalikan null → callback ditolak (fail-closed).
+  return (process.env.NODE_ENV ?? "development") === "production"
+    ? null
+    : "muhdin-sandbox-local";
 }
 
 /** Header callback yang diverifikasi: `x-muhdin-signature: sha256=<hex>`. */
 export function signWebhook(rawBody: string): string {
-  return `sha256=${createHmac("sha256", webhookSecret()).update(rawBody).digest("hex")}`;
+  const secret = webhookSecret();
+  if (!secret) throw new Error("PAYMENT_WEBHOOK_SECRET wajib diset saat NODE_ENV=production.");
+  return `sha256=${createHmac("sha256", secret).update(rawBody).digest("hex")}`;
 }
 
 export function verifyWebhook(rawBody: string, header: string | null): boolean {
+  const secret = webhookSecret();
+  if (!secret) {
+    // Fail-closed: produksi tanpa secret menolak SEMUA callback — jangan pernah fail-open.
+    console.error("[payment] PAYMENT_WEBHOOK_SECRET belum diset — callback webhook ditolak.");
+    return false;
+  }
   if (!header) return false;
-  const expected = Buffer.from(signWebhook(rawBody), "utf8");
+  const expected = Buffer.from(`sha256=${createHmac("sha256", secret).update(rawBody).digest("hex")}`, "utf8");
   const given = Buffer.from(header, "utf8");
   if (expected.length !== given.length) return false;
   return timingSafeEqual(expected, given);

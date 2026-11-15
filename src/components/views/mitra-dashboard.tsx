@@ -292,22 +292,6 @@ export function MitraDashboard() {
     );
   }
 
-  /* ---------- LOADING ---------- */
-  if (phase === "loading") {
-    return (
-      <section className="py-16" role="status" aria-label={t("dash.sharedLoading")}>
-        <div className="mx-auto max-w-3xl space-y-4 px-4 sm:px-6">
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Icon name="loader-2" className="h-4 w-4 animate-spin motion-reduce:animate-none" aria-hidden />
-            {t("dash.sharedLoading")}
-          </div>
-          <Skeleton className="h-40 rounded-3xl" />
-          <Skeleton className="h-32 rounded-3xl" />
-        </div>
-      </section>
-    );
-  }
-
   /* ---------- DASHBOARD AKTIF ---------- */
   if (!app) return null;
   const isApproved = app.status === "APPROVED";

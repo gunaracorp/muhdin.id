@@ -423,6 +423,7 @@ export async function POST(req: NextRequest) {
           note = note ? `${note} · Status izin: ${rawStatus}` : `Status izin: ${rawStatus}`;
         }
         const cdata: Prisma.RegistryCompanyUncheckedCreateInput = {
+          nib,
           name,
           legalEntity,
           city: pickCell(row, map, ALIAS_REGISTRY.city),
@@ -434,7 +435,7 @@ export async function POST(req: NextRequest) {
         const existing = await db.registryCompany.findUnique({ where: { nib } });
         const company = existing
           ? await db.registryCompany.update({ where: { id: existing.id }, data: cdata })
-          : await db.registryCompany.create({ data: { nib, ...cdata } });
+          : await db.registryCompany.create({ data: cdata });
         if (existing) updated++; else inserted++;
         const jenis = normType(pickCell(row, map, ALIAS_REGISTRY.jenisEntitas));
         const docs: Array<{ requirementKey: string; docNo: string; validUntil: Date | null }> = [

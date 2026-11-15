@@ -2023,7 +2023,7 @@ export function AdminSecurityCard() {
         <div className="min-w-0">
           <h3 className="font-bold leading-tight">Keamanan Akun</h3>
           <p className="text-xs text-muted-foreground">
-            Ganti password default <code className="font-mono">muhdin2026</code> segera setelah situs
+            Ganti password bawaan (lihat <code className="font-mono">prisma/seed.ts</code>) segera setelah situs
             go-live di muhdin.web.id. Perangkat lain akan otomatis dikeluarkan.
           </p>
         </div>

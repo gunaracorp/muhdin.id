@@ -99,7 +99,7 @@ const COURSES: Array<{
 ];
 
 const SERVICES = ["KELAS_MANASIK", "KONSULTASI_SYARIAH", "KLINIK_VAKSIN"] as const;
-const CITIES: Array<[string, string, string]> = [
+const CITIES: Array<[string, string]> = [
   ["Jakarta", "Kantor Pusat MUHDIN, Jakarta Selatan"],
   ["Surabaya", "Kantor DPD Jawa Timur"],
   ["Bandung", "Kantor DPD Jawa Barat"],

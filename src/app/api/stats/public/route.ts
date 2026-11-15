@@ -14,7 +14,7 @@ type Snapshot = {
     total: number;
     verified: number;
     byType: { type: string; count: number }[];
-    byProvince: { province: number; name: string; count: number }[];
+    byProvince: { name: string; count: number }[];
     growth: { month: string; label: string; total: number }[];
   };
   content: {

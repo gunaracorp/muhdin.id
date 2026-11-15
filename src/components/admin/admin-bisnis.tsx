@@ -117,7 +117,7 @@ export function AdminBisnis() {
 
   // v7.0 — Registri Pindai Izin
   const [regForm, setRegForm] = useState(emptyRegistry());
-  const [regDocs, setRegDocs] = useState<(typeof emptyRegDoc)[]>([emptyRegDoc()]);
+  const [regDocs, setRegDocs] = useState<ReturnType<typeof emptyRegDoc>[]>([emptyRegDoc()]);
   const [regEdit, setRegEdit] = useState<RegistryCompanyItem | null>(null);
   const [regDialog, setRegDialog] = useState(false);
 
