@@ -109,7 +109,6 @@ export function AdminSecurity() {
             <div className="rounded-xl border border-gold/40 bg-gold/5 p-4 space-y-4">
               <p className="text-sm font-bold">1. Pindai QR dengan aplikasi authenticator</p>
               <div className="flex flex-wrap items-center gap-5">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={setup.qr} alt="QR 2FA MUHDIN" className="rounded-lg border bg-white p-1.5 h-44 w-44" />
                 <div className="space-y-2 min-w-56">
                   <p className="text-xs text-muted-foreground">Atau masukkan kode manual:</p>

@@ -80,7 +80,6 @@ export function AdminOrders() {
     } catch {
       setData({ stats: { total: 0, paid: 0, pending: 0, closed: 0, revenue: 0 }, orders: [] });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {

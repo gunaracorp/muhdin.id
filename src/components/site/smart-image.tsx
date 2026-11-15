@@ -8,6 +8,10 @@
  * • WebP: mencoba sumber .webp lebih dulu (hasil scripts/optimize-images.mjs);
  *   bila file belum tersedia, onError jatuh kembali ke sumber asli — nol rusak.
  * • SSR-safe & aksesibel: alt wajib, decoding async, eager bila priority.
+ * • Task 27: sumber aktif kini DIHITUNG SAAT RENDER (derived state), bukan
+ *   setState sinkron di dalam effect — menghilangkan cascading render
+ *   (react-hooks/set-state-in-effect) dan bug gambar lenyap saat `src`
+ *   berganti setelah visible (observer kini dipasang ulang otomatis).
  */
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
@@ -26,29 +30,37 @@ export function SmartImage({
 }: React.ImgHTMLAttributes<HTMLImageElement> & { priority?: boolean }) {
   const source = (srcProp as string | undefined) || "";
   const holder = useRef<HTMLDivElement>(null);
-  const [visible, setVisible] = useState(priority);
   const [loaded, setLoaded] = useState(false);
-  const [current, setCurrent] = useState<string>(priority ? source : "");
+  // Sumber yang dipilih IntersectionObserver (lazy): pasangan [basis, terpilih].
+  const [ioBase, setIoBase] = useState("");
+  const [ioSrc, setIoSrc] = useState("");
+  // WebP gagal untuk `source` ini → jatuh ke sumber asli; disimpan per-sumber
+  // sehingga ganti src otomatis pulih tanpa perlu reset di effect.
+  const [failedSrc, setFailedSrc] = useState("");
 
-  // WebP candidate disiapkan sejak awal (bila bukan priority).
-  useEffect(() => {
-    if (priority) {
-      const w = webpCandidate(source);
-      setCurrent(w || source);
-      return;
-    }
-    setCurrent("");
-  }, [source, priority]);
+  // Sumber aktif DIHITUNG SAAT RENDER (bukan effect):
+  // • priority → langsung pakai kandidat WebP (bila ada) sejak render pertama;
+  // • lazy     → kosong sampai observer memicu (ioBase === source).
+  const failed = failedSrc === source;
+  let current = "";
+  if (!failed) {
+    if (priority) current = webpCandidate(source) || source;
+    else if (ioBase === source) current = ioSrc;
+  }
 
+  // Lazy: pasang observer selama sumber ini belum di-resolve; bila `src`
+  // berganti, ioBase ≠ source → observer dipasang ulang (bug lama: setelah
+  // visible, ganti src membuat gambar lenyap selamanya).
+  const resolved = !priority && ioBase === source && ioSrc !== "";
   useEffect(() => {
-    if (visible || !holder.current) return;
+    if (priority || resolved || !holder.current) return;
     const el = holder.current;
     const io = new IntersectionObserver(
       (entries) => {
         if (entries.some((e) => e.isIntersecting)) {
-          setVisible(true);
           const w = webpCandidate(source);
-          setCurrent(w || source);
+          setIoBase(source);
+          setIoSrc(w || source);
           io.disconnect();
         }
       },
@@ -56,7 +68,7 @@ export function SmartImage({
     );
     io.observe(el);
     return () => io.disconnect();
-  }, [visible, source]);
+  }, [priority, resolved, source]);
 
   return (
     <div ref={holder} className={cn("relative overflow-hidden", className)} aria-busy={!loaded}>
@@ -72,7 +84,7 @@ export function SmartImage({
           onLoad={() => setLoaded(true)}
           onError={() => {
             // WebP belum tersedia → kembali ke sumber asli.
-            if (current !== source) setCurrent(source);
+            if (current !== source) setFailedSrc(source);
             else setLoaded(true);
           }}
           className={cn(

@@ -2231,3 +2231,21 @@ Work Log:
 
 Stage Summary:
 - Direktori 735 → 1392 dalam satu sesi (1,9× lipat); total 3 sumber resmi baru dalam 2 hari (HIMPUH, SATU HAJI Jateng, AMPHURI); semua data asli dengan sitasi sumber di description; 44 entri ditolak secara jujur (izin tidak valid/rusak di sumber).
+
+## Task ID 27 — Push Langsung ke GitHub + Hardening Lint (SmartImage) + README Super Lengkap
+Tanggal: 2026-11-15
+
+Task: "kenapa aku harus repot2 download aku lupa langsung aja push kan sayang ke github ku … terus jangan lupa worklog nya updates dan readme nya juga updates yang super lengkap yang pernah ada di dunia ini … fix bug yang ada please god mode tier max" (token GitHub disertakan).
+
+Work Log:
+- **Koneksi remote**: origin lama masih menunjuk bundle lokal (/tmp/…) → remote `gh` ditambahkan ke github.com/gunaracorp/muhdin.id via token. `git ls-remote`: main = 197dfa4 (Task 26) — persis base dari 2 commit siap-push (f46df08 + 86f78a3) → fast-forward murni, tanpa force.
+- **Audit ulang codebase (god mode)**: `bunx tsc --noEmit` = 0 error (fix Task 26 tetap hijau). `bunx eslint .` = **1 error + 5 warning**: (1) ERROR `react-hooks/set-state-in-effect` di `src/components/site/smart-image.tsx:37` — setState sinkron di effect (cascading render); (2–6) 5 directive `eslint-disable` mati (unused) di artikel/[slug]:125, paket/[slug]:88, admin-orders:83, admin-security:112, pesanan-view:133.
+- **Refactor SmartImage (fix error)**: sumber aktif kini DIHITUNG SAAT RENDER (derived state) — `current = priority ? webp||source : (ioBase===source ? ioSrc : "")`, WebP-gagal disimpan per-sumber (`failedSrc === source` → ganti src otomatis pulih tanpa reset effect); IntersectionObserver callback tetap satu-satunya yang setState (diperbolehkan). **Bug laten ikut terperbaiki**: versi lama setelah visible lalu `src` berganti membuat gambar lenyap selamanya (effect gate `visible` menghentikan re-observe) — kini observer dipasang ulang otomatis karena `ioBase !== source`.
+- **5 directive mati dihapus** (sed per baris persis) → `eslint .` = **0 problem**.
+- **Verifikasi penuh**: `tsc --noEmit` 0 · `eslint .` 0 · `bun run build` sukses (post-build standalone OK) — build penuh, bukan hanya typecheck.
+- **README.md super lengkap**: 387 → ~700 baris, semua angka diukur dari repo (bukan diklaim): 67 model, 148 route handler, 76 view, 32 modul CMS, 52 locale file, 34 lib, 60+ rute publik diekstrak dari muhdin-app.tsx, 13 kejadian notifikasi diverifikasi dari email.ts/whatsapp.ts/waitlist.ts. Seksi baru: Angka Proyek (bisa dihitung ulang), Peta Halaman Publik (10 grup rute), v12.6 «AUDIT 2026» (tabel 10 tuntutan + 4 halaman baru + 6 ditingkatkan), v12.6.1 Hardening, Variabel Environment (PAYMENT_WEBHOOK_SECRET fail-closed + BUILD_STATIC; SMTP/WA via CMS), Alur Data Utama (3 diagram ASCII: pendaftaran→KTA, checkout→invoice, compliance loop), Jaminan Kualitas (4 QA gates), Checklist Go-Live 12 langkah, Troubleshooting 9 kasus, FAQ 8 pertanyaan, Kontribusi & Konvensi (format worklog + anti-karang), Dokumentasi Terkait. Versi dinaikkan v12.5 → v12.6, badge audit 10/10 + lint 0 + tsc 0 ditambah. Inkonsistensi lama dirapikan (63→67 model di diagram/struktur, notifikasi 11→13 kejadian dengan bukti kode).
+- **worklog.md**: entri Task 27 ini.
+- **Push**: commit ke branch sempurnakan/typecheck-keamanan-setup lalu fast-forward main → push ke GitHub (lihat Stage Summary).
+
+Stage Summary:
+- ESLint 1 error + 5 warning → **0 problem** dengan refactor idiomatik (bukan suppress); 1 bug UX laten (gambar lenyap saat ganti src) ikut terperbaiki. README 387 → ~700 baris — setiap angka bisa dihitung ulang dari repo. 4 QA gates hijau: tsc 0 · eslint 0 · build sukses · smoke test 200.

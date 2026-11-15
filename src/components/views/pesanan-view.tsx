@@ -130,7 +130,6 @@ export function PesananView() {
   // Auto-lacak saat datang dari deep-link konfirmasi checkout.
   useEffect(() => {
     if (!loadingLink && no && phone) void track(no, phone);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loadingLink]);
 
   const paySandbox = async () => {

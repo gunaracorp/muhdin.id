@@ -122,7 +122,6 @@ export default async function ArtikelLanding({ params }: Props) {
           {a.author} · {a.createdAt.toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })} · {a.views + 1}× dibaca
         </p>
         {a.cover ? (
-          // eslint-disable-next-line @next/next/no-img-element
           <img src={a.cover} alt={a.title} className="mt-6 aspect-[16/9] w-full rounded-2xl object-cover" />
         ) : null}
         <p className="mt-6 border-s-4 border-gold ps-4 text-lg font-medium text-foreground/80">{a.excerpt}</p>
