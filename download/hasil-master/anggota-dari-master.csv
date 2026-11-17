@@ -1,0 +1,4 @@
+﻿name,type,city,province,licenseNo,phone,email,website,description,status,memberSince,rating
+PT Contoh Bakti Wisata Halal,PPIU,Jakarta Selatan,,U-537/2024,021-5550101,info@baktiwisata.example,www.baktiwisata.example,"Alamat: Jl. Melati Raya No. 10, Jakarta Selatan | Wilayah layanan: Jabodetabek;Jawa Barat;Jawa Timur | Kontak PIC: Budi Santoso",TERVERIFIKASI,2024,5.0
+PT Contoh Amanah Haji,PIHK,Jakarta Pusat,,PIHK-088/2024,021-5550202,siti@amanahhaji.example,www.amanahhaji.example,"Alamat: Jl. Kenanga No. 21, Jakarta Pusat | Wilayah layanan: Nasional | Kontak PIC: Siti Aminah",TERVERIFIKASI,2024,4.1
+PT Contoh Nakal Travel,PPIU,Jakarta Barat,,U-999/2023,0812-0000-0000,cs@nakaltravel.example,,"Alamat: Jl. Durian Runtuh No. 13, Jakarta Barat | Wilayah layanan: Jabodetabek | Kontak PIC: (Tidak ada PIC resmi)",SUSPENDED,2023,4.5

@@ -60,7 +60,7 @@ export async function GET(req: NextRequest) {
         </div>
 
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <div style={{ fontSize: 22, color: "rgba(255,255,255,0.75)", letterSpacing: 1 }}>muhdin.web.id · GRATIS SELAMANYA</div>
+          <div style={{ fontSize: 22, color: "rgba(255,255,255,0.75)", letterSpacing: 1 }}>muhdin.web.id · BIAYA TRANSPARAN</div>
           <div style={{ fontSize: 22, color: "#d4af37", fontWeight: 700 }}>WA 0812 2234 5856</div>
         </div>
       </div>

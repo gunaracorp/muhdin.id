@@ -70,6 +70,8 @@ import { turDict } from "@/lib/i18n/locales/tur";
 import { statistikDict } from "@/lib/i18n/locales/statistik";
 import { searchDict } from "@/lib/i18n/locales/search";
 import { keanggotaanDict } from "@/lib/i18n/locales/keanggotaan";
+// Audit 2026 — Kemitraan FKK Banten, Pembayaran, Keamanan, Model Biaya, KPI, ARMINA
+import { audit13Dict } from "@/lib/i18n/locales/audit13";
 
 const dicts = [
   commonDict,
@@ -144,6 +146,8 @@ const dicts = [
   itenDict,
   // GABUNG v11 — Keanggotaan Power Pack
   keanggotaanDict,
+  // Audit 2026 — Kemitraan, Pembayaran, Keamanan, Biaya, KPI, ARMINA, Nusuk positioning
+  audit13Dict,
 ];
 
 export const dictionaries: Record<"id" | "en" | "ar", Record<string, unknown>> = {

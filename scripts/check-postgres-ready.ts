@@ -22,7 +22,7 @@ let checked = 0;
 console.log("== 1. Skema Prisma ==");
 const schema = readFileSync(join(ROOT, "prisma", "schema.prisma"), "utf8");
 checked++;
-const datasource = schema.match(/datasource\s+\w+\s*\{[^}]*\}/s)?.[0] || "";
+const datasource = schema.match(/datasource\s+\w+\s*\{[^}]*\}/)?.[0] || "";
 const provider = datasource.match(/provider\s*=\s*"(\w+)"/)?.[1] || "?";
 console.log(`   provider aktif: ${provider} (target migrasi: postgresql)`);
 for (const banned of ["PRAGMA", "AUTOINCREMENT", "WITHOUT ROWID"]) {

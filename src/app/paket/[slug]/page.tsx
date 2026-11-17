@@ -85,7 +85,6 @@ export default async function PaketLanding({ params }: Props) {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <article className="mx-auto max-w-3xl overflow-hidden rounded-3xl bg-white shadow-2xl">
         {p.image ? (
-          // eslint-disable-next-line @next/next/no-img-element
           <img src={p.image} alt={p.title} className="aspect-[16/7] w-full object-cover" />
         ) : (
           <div className="aspect-[16/7] w-full bg-gradient-to-br from-forest to-primary" />

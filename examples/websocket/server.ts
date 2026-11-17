@@ -121,7 +121,11 @@ httpServer.listen(PORT, () => {
 })
 
 // Graceful shutdown
-(process as NodeJS.Process).on('SIGTERM', () => {
+// (bun-types mempersempit tipe process.on — cast eksplisit untuk sinyal Node standar)
+const signalOn = (signal: string, listener: () => void) =>
+  (process as unknown as { on(event: string, listener: () => void): void }).on(signal, listener)
+
+signalOn('SIGTERM', () => {
   console.log('Received SIGTERM signal, shutting down server...')
   httpServer.close(() => {
     console.log('WebSocket server closed')
@@ -129,7 +133,7 @@ httpServer.listen(PORT, () => {
   })
 })
 
-(process as NodeJS.Process).on('SIGINT', () => {
+signalOn('SIGINT', () => {
   console.log('Received SIGINT signal, shutting down server...')
   httpServer.close(() => {
     console.log('WebSocket server closed')

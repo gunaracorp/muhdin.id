@@ -131,12 +131,16 @@ publicServer.listen(PUBLIC_PORT, () => {
   console.log(`Registration Gateway (socket.io) berjalan di port ${PUBLIC_PORT}`);
 });
 
-(process as NodeJS.Process).on("SIGTERM", () => {
+// (bun-types mempersempit tipe process.on — cast eksplisit untuk sinyal Node standar)
+const signalOn = (signal: string, listener: () => void) =>
+  (process as unknown as { on(event: string, listener: () => void): void }).on(signal, listener);
+
+signalOn("SIGTERM", () => {
   console.log("SIGTERM — menutup gateway...");
   internal.close();
   process.exit(0);
 });
-(process as NodeJS.Process).on("SIGINT", () => {
+signalOn("SIGINT", () => {
   internal.close();
   process.exit(0);
 });

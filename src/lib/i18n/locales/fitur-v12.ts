@@ -73,7 +73,7 @@ export const complianceDict = {
       },
       cta: {
         title: "Perusahaan Anda belum dinilai?",
-        sub: "Pendaftaran anggota MUHDIN GRATIS SELAMANYA — lengkapi izin, masuk registri verifikasi, dan bangun kepercayaan jamaah.",
+        sub: "Pendaftaran anggota MUHDIN tanpa biaya di fase awal — lengkapi izin, masuk registri verifikasi, dan bangun kepercayaan jamaah.",
         scan: "Pindai satu perusahaan",
         join: "Daftar anggota gratis",
       },
@@ -147,7 +147,7 @@ export const complianceDict = {
       },
       cta: {
         title: "Your company isn't assessed yet?",
-        sub: "MUHDIN membership is FREE FOREVER — complete your licenses, enter the verification registry, and earn pilgrims' trust.",
+        sub: "MUHDIN registration is free in the early phase — complete your licenses, enter the verification registry, and earn pilgrims' trust.",
         scan: "Scan a single company",
         join: "Join for free",
       },

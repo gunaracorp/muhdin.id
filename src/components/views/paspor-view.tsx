@@ -47,7 +47,7 @@ export type VerifyData = {
     issuedAt: string;
     expiresAt: string;
     verificationCount: number;
-    lastVerifiedAt?: string | null;
+    lastVerifiedAt: string | null;
     org: { name: string; city: string } | null;
   };
 };

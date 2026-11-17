@@ -1,14 +1,14 @@
-/**
- * Helper bersama untuk skrip seed lama (seed-v5, dst.) — satu koneksi Prisma.
- * Dipanggil lewat `makeDb()`; tsx tidak butuh tsconfig include.
- */
 import { PrismaClient } from "@prisma/client";
+import path from "node:path";
 
-const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient };
-
+/**
+ * PrismaClient untuk skrip seed/maintenance (dipakai seed-v5 dkk.).
+ * DATABASE_URL eksplisit dihormati; default: db/custom.db di root proyek
+ * (pola sama dengan src/lib/db.ts).
+ */
 export function makeDb(): PrismaClient {
-  if (!globalForPrisma.prisma) {
-    globalForPrisma.prisma = new PrismaClient();
+  if (!process.env.DATABASE_URL) {
+    process.env.DATABASE_URL = `file:${path.join(process.cwd(), "db", "custom.db")}`;
   }
-  return globalForPrisma.prisma;
+  return new PrismaClient();
 }

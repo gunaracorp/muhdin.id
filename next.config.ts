@@ -23,7 +23,9 @@ const buildOutput = isStatic
 const nextConfig: NextConfig = {
   ...buildOutput,
   typescript: {
-    ignoreBuildErrors: true,
+    // Typecheck ketat: error TS harus diperbaiki sebelum build (sebelumnya true,
+    // 56 error tersembunyi ikut ter-ship — semua sudah dibersihkan).
+    ignoreBuildErrors: false,
   },
   reactStrictMode: false,
   // v12.4 «LUNAS» — pdfkit memuat font AFM via fs: jangan di-bundle.

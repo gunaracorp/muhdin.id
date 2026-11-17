@@ -83,6 +83,11 @@ import { ComplianceView } from "@/components/views/compliance-view"; // v12.1 �
 // v12.4 «LUNAS» — Checkout & Pesanan
 import { PesananView } from "@/components/views/pesanan-view";
 import { VaultView } from "@/components/views/vault-view";
+// Audit 2026 — Kemitraan FKK Banten, Pembayaran, Keamanan, Model Biaya
+import { KemitraanView } from "@/components/views/kemitraan-view";
+import { PembayaranView } from "@/components/views/pembayaran-view";
+import { KeamananView } from "@/components/views/keamanan-view";
+import { BiayaView } from "@/components/views/biaya-view";
 
 function LoadingSplash() {
   const { t } = useT();
@@ -349,6 +354,19 @@ export function MuhdinApp({ initialLocale = "id" }: { initialLocale?: "id" | "en
       break;
     case "darurat":
       content = <DaruratView />;
+      break;
+    // Audit 2026 — halaman kemitraan, pembayaran, keamanan & model biaya
+    case "kemitraan":
+      content = <KemitraanView />;
+      break;
+    case "pembayaran":
+      content = <PembayaranView />;
+      break;
+    case "keamanan":
+      content = <KeamananView />;
+      break;
+    case "biaya":
+      content = <BiayaView />;
       break;
     case "sehat":
       content = <SehatView />;

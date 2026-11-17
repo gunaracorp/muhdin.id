@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { apiGet, apiSend } from "@/lib/client-api";
+import { navigate } from "@/hooks/use-hash-route";
 import { Icon } from "@/components/site/icon";
 import { Reveal, SectionHeading } from "@/components/site/reveal";
 import { Button } from "@/components/ui/button";
@@ -108,6 +109,47 @@ export function ContactView() {
               </Reveal>
             ))}
           </div>
+
+          {/* Audit 2026 — Kanal Resmi & Terverifikasi (tuntutan audit #2: data kontak resmi) */}
+          <Reveal className="mb-12">
+            <div className="rounded-3xl border border-emerald-500/40 bg-emerald-500/5 p-6 sm:p-8">
+              <div className="flex items-center gap-3">
+                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-emerald-500/10 text-emerald-700 dark:text-emerald-400">
+                  <Icon name="badge-check" className="h-5 w-5" aria-hidden />
+                </span>
+                <div>
+                  <h2 className="text-lg font-extrabold">{t("audit13.kontakv.title")}</h2>
+                  <p className="mt-0.5 text-sm text-muted-foreground">{t("audit13.kontakv.desc")}</p>
+                </div>
+              </div>
+              <div className="mt-5 grid gap-3 sm:grid-cols-2">
+                {["ch1", "ch2", "ch3", "ch4"].map((k) => (
+                  <div key={k} className="flex items-start gap-2.5 rounded-xl border bg-card p-4 text-sm">
+                    <Icon name="check-circle-2" className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" aria-hidden />
+                    <div>
+                      <p className="font-extrabold">{t(`audit13.kontakv.${k}t`)}</p>
+                      <p className="mt-0.5 text-[13px] leading-relaxed text-muted-foreground">{t(`audit13.kontakv.${k}d`)}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-4 rounded-xl border border-gold/40 bg-gold/5 p-4 text-sm text-foreground/85">
+                <p className="font-extrabold text-gold-deep dark:text-gold">{t("audit13.kontakv.badgeT")}</p>
+                <p className="mt-1 leading-relaxed">{t("audit13.kontakv.badgeD")}</p>
+              </div>
+              <div className="mt-3 flex flex-col items-start gap-3 rounded-xl border border-red-500/40 bg-red-500/10 p-4 sm:flex-row sm:items-center">
+                <Icon name="alert-triangle" className="h-5 w-5 shrink-0 text-red-700 dark:text-red-400" aria-hidden />
+                <p className="flex-1 text-sm leading-relaxed text-foreground/85">
+                  <span className="font-extrabold">{t("audit13.kontakv.warnTitle")}: </span>
+                  {t("audit13.kontakv.warnText")}
+                </p>
+                <Button variant="outline" onClick={() => navigate("lapor")} className="shrink-0 rounded-full font-bold">
+                  <Icon name="megaphone" className="me-1.5 h-4 w-4" aria-hidden />
+                  {t("audit13.kontakv.reportCta")}
+                </Button>
+              </div>
+            </div>
+          </Reveal>
 
           <Tabs defaultValue="pesan" className="w-full max-w-4xl mx-auto">
             <TabsList className="grid w-full grid-cols-2 mb-8">

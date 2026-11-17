@@ -40,7 +40,7 @@ export const metadata: Metadata = {
     template: "%s | MUHDIN INDONESIA",
   },
   description:
-    "MUHDIN INDONESIA (Masyarakat Umroh Haji Digital Indonesia) — Trusted Pilgrim Ecosystem. ASOSIASI HAJI UMROH DIGITAL PERTAMA DI INDONESIA — keanggotaan 100% GRATIS, tanpa tarif biaya kepada anggota. Verifikasi, direktori penyelenggara & penyedia, akademi.",
+    "MUHDIN INDONESIA (Masyarakat Umroh Haji Digital Indonesia) — Trusted Pilgrim Ecosystem. ASOSIASI HAJI UMROH DIGITAL PERTAMA DI INDONESIA — tanpa biaya pendaftaran di fase awal; model biaya transparan & berkelanjutan. Verifikasi, direktori penyelenggara & penyedia, akademi.",
   keywords: [
     "MUHDIN",
     "MUHDIN Indonesia",
@@ -82,7 +82,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "MUHDIN INDONESIA — Trusted Pilgrim Ecosystem",
     description:
-      "EKOSISTEM UMROH HAJI DIGITAL — asosiasi digital pertama di Indonesia; keanggotaan 100% gratis tanpa tarif biaya kepada anggota. One Ecosystem. One Data. One Standard. One Trust. One Journey.",
+      "EKOSISTEM UMROH HAJI DIGITAL — asosiasi digital pertama di Indonesia; pendaftaran tanpa biaya di fase awal — model biaya transparan & berkelanjutan. One Ecosystem. One Data. One Standard. One Trust. One Journey.",
     siteName: "MUHDIN INDONESIA",
     type: "website",
     locale: "id_ID",

@@ -11,7 +11,7 @@
  *   ├ blok pelanggan (nama, WA, email)
  *   ├ tabel rincian (uraian · qty · harga · jumlah)
  *   ├ total besar + QR lacak (scan → halaman status pesanan)
- *   └ footer GRATIS SELAMANYA + WA resmi
+ *   └ footer TANPA BIAYA PENDAFTARAN DI FASE AWAL + WA resmi
  */
 
 import PDFDocument from "pdfkit";

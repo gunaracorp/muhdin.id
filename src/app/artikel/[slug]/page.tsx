@@ -122,7 +122,6 @@ export default async function ArtikelLanding({ params }: Props) {
           {a.author} · {a.createdAt.toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })} · {a.views + 1}× dibaca
         </p>
         {a.cover ? (
-          // eslint-disable-next-line @next/next/no-img-element
           <img src={a.cover} alt={a.title} className="mt-6 aspect-[16/9] w-full rounded-2xl object-cover" />
         ) : null}
         <p className="mt-6 border-s-4 border-gold ps-4 text-lg font-medium text-foreground/80">{a.excerpt}</p>
@@ -132,7 +131,7 @@ export default async function ArtikelLanding({ params }: Props) {
 
         <div className="mt-10 rounded-2xl bg-emerald-50 p-6 text-center">
           <p className="font-extrabold text-forest-deep">Siap berangkat dengan ekosistem terpercaya?</p>
-          <p className="mt-1 text-sm text-foreground/70">Buka portal MUHDIN: verifikasi penyelenggara, marketplace paket, akademi, dan poin KTA — 100% gratis.</p>
+          <p className="mt-1 text-sm text-foreground/70">Buka portal MUHDIN: verifikasi penyelenggara, marketplace paket, akademi, dan poin KTA — tanpa biaya pendaftaran di fase awal.</p>
           <Link
             href={`/#/berita/${a.slug}`}
             className="mt-4 inline-flex items-center gap-2 rounded-full bg-forest px-6 py-3 font-bold text-white shadow-lg transition hover:bg-forest-deep"

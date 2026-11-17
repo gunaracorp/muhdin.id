@@ -71,7 +71,7 @@ export function AdminGrowth() {
     try {
       const res = action === "send"
         ? await apiSend<{ message?: string }>(`/api/broadcasts/${id}`, "POST")
-        : await apiSend(`/api/broadcasts/${id}`, "PUT", { action });
+        : await apiSend<{ message?: string }>(`/api/broadcasts/${id}`, "PUT", { action });
       toast({ title: "Selesai ✓", description: res?.message || "Status diperbarui" });
       loadBc();
     } catch (e) {

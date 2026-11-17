@@ -1,0 +1,1763 @@
+Siap. Saya eksekusi **satu per satu** dengan gaya *god mode tier max*: rapi, siap salin, siap tempel, siap audit, dan sekaligus saya buatkan skrip Python/OpenPyXL untuk menghasilkan file `.xlsx` jadi.
+
+> **Catatan penting:**  
+> - Semua nama perusahaan, nomor izin, kontrak, harga, dan contoh data di bawah adalah **fiktif/illustrative** kecuali nama institusi regulator.  
+> - Untuk daftar resmi, tetap wajib diverifikasi ke sumber truth: Ditjen PHU Kemenag, OSS, AHU, OJK, Kemenhub, Kemenkes, KBRI/KJRI, Kementerian Haji & Umrah Saudi, Nusuk, E-Hajj, dll.  
+> - Formula Excel di bagian manual saya tulis dengan pemisah **titik koma (`;`)** agar cocok untuk Excel Indonesia.  
+> - Skrip Python menulis formula dengan pemisah internal **koma (`,`)** karena format file `.xlsx` memang menyimpan formula dengan koma; Excel Indonesia nanti akan menampilkannya sebagai titik koma.
+
+---
+
+# BAGIAN 1 — SHEET TAMBAHAN SIAP SALIN
+
+Buat 3 sheet baru di Excel dengan nama persis:
+
+```text
+Mitra_RantaiPasok
+Insiden_Keluhan
+Audit_Trail
+```
+
+Lalu tempel blok CSV berikut ke masing-masing sheet mulai sel **A1**.  
+Jika semua masuk ke satu kolom, gunakan **Data → Text to Columns → Delimited → Comma → Finish**.
+
+---
+
+## 1.1 Sheet: `Mitra_RantaiPasok`
+
+Gunakan sheet ini untuk memetakan relasi hulu-hilir:
+
+```text
+PPIU/PIHK → Provider Saudi → Maskapai → Hotel → Transport → Catering → Asuransi → Bank → Teknologi → Kesehatan → Keamanan
+```
+
+### CSV siap salin
+
+```csv
+id_relasi,id_ppiu_pihk,nama_ppiu_pihk,jenis_penyelenggara,id_provider_saudi,nama_provider_saudi,id_maskapai,id_hotel,id_transport,id_catering,id_asuransi,id_bank,id_teknologi,id_kesehatan,id_keamanan,tanggal_kontrak,berlaku_sampai,status_relasi,cakupan_layanan,nilai_kontrak,mata_uang,bukti_kontrak,PIC,catatan_risiko,tanggal_update
+REL-000001,PPIU-000001,PT Contoh Bakti Wisata Halal,PPIU,SAUDI-000001,PT Contoh Saudi Services,AIR-000001,HOTEL-000001,TRANS-000001,CATER-000001,INS-000001,BANK-000001,TECH-000001,HEALTH-000001,SEC-000001,2026-01-01,2026-12-31,Aktif,Umrah Reguler Makkah Madinah,150000000,IDR,kontrak_rel_000001.pdf,Tim Procurement,Perlu addendum Armuzna,2026-11-08
+REL-000002,PIHK-000001,PT Contoh Amanah Haji,PIHK,SAUDI-000001,PT Contoh Saudi Services,AIR-000001,HOTEL-000001,TRANS-000001,CATER-000001,INS-000001,BANK-000001,TECH-000001,HEALTH-000001,SEC-000001,2026-02-01,2027-01-31,Aktif,Haji Khusus Armuzna Lengkap,450000000,IDR,kontrak_rel_000002.pdf,Tim Haji Khusus,Perlu verifikasi tenda Mina dan naqlah,2026-11-08
+```
+
+### Kolom penting
+
+| Kolom | Fungsi |
+|---|---|
+| `id_relasi` | Kode unik relasi rantai pasok |
+| `id_ppiu_pihk` | Merujuk ke `id_entitas` di sheet Master |
+| `id_provider_saudi` | Merujuk ke provider Saudi di Master |
+| `id_maskapai` sampai `id_keamanan` | Merujuk ke entitas mitra di Master |
+| `status_relasi` | Aktif / Draft / Berakhir / Dibekukan |
+| `bukti_kontrak` | File kontrak, addendum, SLA, purchase order |
+
+---
+
+## 1.2 Sheet: `Insiden_Keluhan`
+
+Gunakan sheet ini untuk mencatat aduan, insiden operasional, krisis, fraud, keterlambatan, kehilangan bagasi, masalah visa, sakit, wafat, dll.
+
+### CSV siap salin
+
+```csv
+id_insiden,tanggal_kejadian,id_entitas,nama_entitas,jenis_insiden,kategori,sub_kategori,deskripsi,dampak,jumlah_terdampak,prioritas,status_resolusi,PIC,tanggal_open,tanggal_close,SLA_hari,tindakan_korektif,bukti_tindak_lanjut,sumber_laporan,catatan
+INC-000001,2026-10-15,PPIU-000001,PT Contoh Bakti Wisata Halal,Keterlambatan Penerbangan,Operasional,Aviasi,Jamaah terlambat check-in karena bus delay,Keterlambatan keberangkatan 3 jam,45,Tinggi,Open,Tim Crisis Desk,2026-10-15,,2,Bus pengganti dan kompensasi meal,bukti_kompensasi_001.pdf,Laporan jamaah,Perlu evaluasi vendor transport
+INC-000002,2026-10-20,HOTEL-000001,PT Contoh Hotel Makkah,Keluhan Akomodasi,Layanan,Hotel,Kamar tidak sesuai voucher dan jarak terlalu jauh,Ketidakpuasan jamaah dan relokasi,12,Sedang,In Progress,Tim Akomodasi,2026-10-20,,5,Relokasi kamar dan surat klarifikasi hotel,surat_hotel_002.pdf,Keluhan petugas,Perlu audit kontrak hotel
+INC-000003,2026-10-25,SAUDI-000001,PT Contoh Saudi Services,Keterlambatan Transport,Operasional,Armuzna,Bus Arafah telat melebihi jadwal yang disepakati,Risiko tertinggal wukuf,120,Kritis,Escalated,Tim Saudi Desk,2026-10-25,,1,Eskalasi ke provider dan backup armada,laporan_escalation_003.pdf,Laporan lapangan,Perlu penalty clause
+```
+
+### Rekomendasi dropdown
+
+| Kolom | Isi konsisten |
+|---|---|
+| `jenis_insiden` | Keterlambatan Penerbangan, Keterlambatan Transport, Kehilangan Bagasi, Sakit, Wafat, Keluhan Akomodasi, Keluhan Katering, Visa/Dokumen, Fraud, Krisis, Lainnya |
+| `kategori` | Operasional, Layanan, Keuangan, Legal, Kesehatan, Keamanan, Teknologi, SDM |
+| `prioritas` | Rendah, Sedang, Tinggi, Kritis |
+| `status_resolusi` | Open, In Progress, Resolved, Closed, Escalated |
+
+---
+
+## 1.3 Sheet: `Audit_Trail`
+
+Gunakan sheet ini untuk mencatat setiap perubahan data penting. Ini vital jika database dipakai untuk compliance, audit, litigasi, atau pengambilan keputusan.
+
+### CSV siap salin
+
+```csv
+id_audit,timestamp,user,sheet,record_id,kolom,nilai_lama,nilai_baru,alasan,bukti,PIC_review,status_review,catatan
+AUD-000001,2026-11-08 10:00:00,admin,Master,PPIU-000001,status_izin,Dalam Verifikasi,Aktif,Berdasarkan SK Kemenag terbaru,sk_kemenag_001.pdf,Supervisor,Approved,
+AUD-000002,2026-11-08 10:15:00,verificator,Checklist_PPIU_Umrah,CHK-U-013,status_check,Belum Dicek,Lengkap,Lisensi Saudi sudah diverifikasi,license_saudi_001.pdf,Manager,Approved,
+AUD-000003,2026-11-08 10:30:00,risk_officer,Mitra_RantaiPasok,REL-000001,status_relasi,Aktif,Dibekukan,Provider Saudi sedang kena sanksi,announcement_saudi.pdf,Chief Risk,Review,Perlu eskalasi legal
+```
+
+### Kolom wajib
+
+| Kolom | Fungsi |
+|---|---|
+| `timestamp` | Waktu perubahan |
+| `user` | Siapa yang mengubah |
+| `sheet` | Sheet yang diubah |
+| `record_id` | ID baris yang diubah |
+| `kolom` | Kolom yang diubah |
+| `nilai_lama` | Nilai sebelum |
+| `nilai_baru` | Nilai sesudah |
+| `alasan` | Justifikasi perubahan |
+| `bukti` | File bukti |
+| `status_review` | Draft / Review / Approved / Rejected |
+
+---
+
+# BAGIAN 2 — FORMULA AUTOMATIC RISK SCORE 100 POIN
+
+Kita buat sistem skor risiko:
+
+```text
+Risk Score 0–100
+0–19  = RENDAH
+20–39 = SEDANG
+40–59 = TINGGI
+60–100 = EKSTREM
+```
+
+Semakin tinggi angka, semakin berisiko.
+
+Sekalian kita buat:
+
+```text
+Kelayakan Score = 100 - Risk Score
+```
+
+Semakin tinggi kelayakan, semakin layak direkomendasikan.
+
+---
+
+## 2.1 Komponen Penilaian Risiko
+
+| Komponen | Maksimum Poin | Dasar Penilaian |
+|---|---:|---|
+| Status izin | 25 / 100 jika dicabut | `status_izin`, `masa_berlaku_izin` |
+| Dokumen bukti | 15 | `dokumen_bukti` |
+| Sanksi | 25 | `rekor_sanksi` |
+| Keluhan publik | 20 | `keluhan_publik` |
+| Mitra Saudi & lisensi Saudi | 20 | `mitra_Saudi`, `lisensi_Saudi`, `jenis_entitas`, `negara_yurisdiksi` |
+| Asuransi | 10 | `asuransi_partner` |
+| Audit terakhir | 15 | `audit_terakhir` |
+| Override whitelist | 100 | jika `status_whitelist = STOP` |
+
+Total dibatasi maksimum 100.
+
+---
+
+## 2.2 Tambahkan Kolom Bantu di Sheet `Master`
+
+Setelah kolom ke-40 yaitu `dokumen_bukti`, tambahkan kolom berikut mulai kolom **AO** sampai **AZ**:
+
+| Kolom Excel | Nama Field | Fungsi |
+|---|---|---|
+| AO | `flag_izin` | Status izin berdasarkan tanggal berlaku |
+| AP | `flag_dokumen` | Cek dokumen bukti kosong/tidak |
+| AQ | `risk_izin` | Skor risiko izin |
+| AR | `risk_dokumen` | Skor risiko kelengkapan dokumen |
+| AS | `risk_sanksi` | Skor risiko sanksi |
+| AT | `risk_keluhan` | Skor risiko keluhan publik |
+| AU | `risk_mitra_saudi` | Skor risiko mitra/lisensi Saudi |
+| AV | `risk_asuransi` | Skor risiko asuransi |
+| AW | `risk_audit` | Skor risiko audit terakhir |
+| AX | `risk_score_total` | Total risiko 0–100 |
+| AY | `risk_label` | RENDAH / SEDANG / TINGGI / EKSTREM |
+| AZ | `kelayakan_score` | 100 minus risk score |
+
+---
+
+## 2.3 Formula Manual untuk Excel Indonesia
+
+Tempel formula berikut ke baris pertama data, misalnya baris 2, lalu copy ke bawah.
+
+> Jika Excel Anda memakai pemisah koma, ganti semua `;` menjadi `,`.
+
+### AO2 — `flag_izin`
+
+```excel
+=IF(AND(ISNUMBER(K2);K2<TODAY());"KADALUARSA";IF(AND(ISNUMBER(K2);K2<=TODAY()+90);"SEGERA HABIS";"OK"))
+```
+
+### AP2 — `flag_dokumen`
+
+```excel
+=IF(OR(AN2="";AN2="-");"KURANG";"CEK")
+```
+
+### AQ2 — `risk_izin`
+
+```excel
+=IF(L2="Dicabut";100;MIN(25;IF(L2="Aktif";0;IF(L2="Dalam Verifikasi";10;IF(L2="Kadaluarsa";20;IF(L2="Dibekukan";25;15))))+IF(AND(ISNUMBER(K2);K2<TODAY());10;0)))
+```
+
+### AR2 — `risk_dokumen`
+
+Formula ini menghitung jumlah dokumen berdasarkan pemisah titik koma di kolom `dokumen_bukti`.
+
+```excel
+=IF(OR(AN2="";AN2="-");15;IF((LEN(AN2)-LEN(SUBSTITUTE(AN2;";";""))+1)>=3;0;IF((LEN(AN2)-LEN(SUBSTITUTE(AN2;";";""))+1)=2;5;10)))
+```
+
+Artinya:
+
+| Jumlah dokumen bukti | Skor |
+|---:|---:|
+| 0 / kosong / `-` | 15 |
+| 1 dokumen | 10 |
+| 2 dokumen | 5 |
+| 3 dokumen atau lebih | 0 |
+
+### AS2 — `risk_sanksi`
+
+```excel
+=IF(AE2="Tidak ada";0;IF(AE2="-";10;IF(ISNUMBER(SEARCH("pencabutan";AE2));25;IF(ISNUMBER(SEARCH("beku";AE2));20;IF(ISNUMBER(SEARCH("teguran";AE2));10;15)))))
+```
+
+### AT2 — `risk_keluhan`
+
+```excel
+=IF(AF2="Rendah";0;IF(AF2="Sedang";8;IF(AF2="Tinggi";15;IF(AF2="Kritis";20;IF(AF2="Tidak Diketahui";10;12)))))
+```
+
+### AU2 — `risk_mitra_saudi`
+
+```excel
+=IF(OR(D2="PPIU";D2="PIHK");IF(OR(R2="";R2="-");12;0)+IF(OR(S2="";S2="-");8;0);IF(OR(D2="Penyedia Layanan Saudi";E2="Arab Saudi");IF(OR(S2="";S2="-");15;0);0))
+```
+
+Logika:
+
+- Untuk PPIU/PIHK:
+  - mitra Saudi kosong: +12
+  - lisensi Saudi kosong: +8
+- Untuk provider Saudi atau entitas Arab Saudi:
+  - lisensi Saudi kosong: +15
+- Untuk entitas lain: tidak penalized di komponen ini.
+
+### AV2 — `risk_asuransi`
+
+```excel
+=IF(OR(X2="";X2="-");10;0)
+```
+
+### AW2 — `risk_audit`
+
+```excel
+=IF(OR(AG2="";AG2="-");15;IF(ISNUMBER(AG2);IF(AG2<TODAY()-730;15;IF(AG2<TODAY()-365;10;0));15))
+```
+
+Logika:
+
+| Kondisi audit | Skor |
+|---|---:|
+| Kosong / `-` | 15 |
+| Lebih dari 2 tahun | 15 |
+| Lebih dari 1 tahun | 10 |
+| Kurang dari 1 tahun | 0 |
+
+### AX2 — `risk_score_total`
+
+```excel
+=IF(AM2="STOP";100;MIN(100;SUM(AQ2:AW2)))
+```
+
+### AY2 — `risk_label`
+
+```excel
+=IF(AX2>=60;"EKSTREM";IF(AX2>=40;"TINGGI";IF(AX2>=20;"SEDANG";"RENDAH")))
+```
+
+### AZ2 — `kelayakan_score`
+
+```excel
+=100-AX2
+```
+
+---
+
+## 2.4 Versi Satu Formula Tanpa Kolom Bantu
+
+Jika Anda tetap ingin hanya satu kolom risk score, gunakan formula berikut di kolom misalnya `AQ2`. Formula ini panjang, jadi sebaiknya pakai versi helper column di atas agar lebih auditable.
+
+```excel
+=IF(AM2="STOP";100;MIN(100;IF(L2="Dicabut";100;MIN(25;IF(L2="Aktif";0;IF(L2="Dalam Verifikasi";10;IF(L2="Kadaluarsa";20;IF(L2="Dibekukan";25;15))))+IF(AND(ISNUMBER(K2);K2<TODAY());10;0)))+IF(OR(AN2="";AN2="-");15;IF((LEN(AN2)-LEN(SUBSTITUTE(AN2;";";""))+1)>=3;0;IF((LEN(AN2)-LEN(SUBSTITUTE(AN2;";";""))+1)=2;5;10)))+IF(AE2="Tidak ada";0;IF(AE2="-";10;IF(ISNUMBER(SEARCH("pencabutan";AE2));25;IF(ISNUMBER(SEARCH("beku";AE2));20;IF(ISNUMBER(SEARCH("teguran";AE2));10;15)))))+IF(AF2="Rendah";0;IF(AF2="Sedang";8;IF(AF2="Tinggi";15;IF(AF2="Kritis";20;IF(AF2="Tidak Diketahui";10;12)))))+IF(OR(D2="PPIU";D2="PIHK");IF(OR(R2="";R2="-");12;0)+IF(OR(S2="";S2="-");8;0);IF(OR(D2="Penyedia Layanan Saudi";E2="Arab Saudi");IF(OR(S2="";S2="-");15;0);0))+IF(OR(X2="";X2="-");10;0)+IF(OR(AG2="";AG2="-");15;IF(ISNUMBER(AG2);IF(AG2<TODAY()-730;15;IF(AG2<TODAY()-365;10;0));15))))
+```
+
+---
+
+## 2.5 Conditional Formatting Risiko
+
+Blok kolom `AY2:AY10000`.
+
+Gunakan **Conditional Formatting → New Rule → Use a formula**.
+
+| Formula | Warna | Makna |
+|---|---|---|
+| `=$AY2="EKSTREM"` | Merah | Jangan dipakai sebelum clearing |
+| `=$AY2="TINGGI"` | Oranye | Perlu mitigasi ketat |
+| `=$AY2="SEDANG"` | Kuning | Perlu monitoring |
+| `=$AY2="RENDAH"` | Hijau | Relatif aman |
+
+Contoh formula untuk merah:
+
+```excel
+=$AY2="EKSTREM"
+```
+
+Untuk oranye:
+
+```excel
+=$AY2="TINGGI"
+```
+
+Untuk kuning:
+
+```excel
+=$AY2="SEDANG"
+```
+
+Untuk hijau:
+
+```excel
+=$AY2="RENDAH"
+```
+
+---
+
+# BAGIAN 3 — CHECKLIST KHUSUS TERPISAH
+
+Berikut tiga checklist khusus:
+
+1. `Checklist_PPIU_Umrah`
+2. `Checklist_PIHK_Haji_Khusus`
+3. `Checklist_Provider_Saudi`
+
+Masing-masing saya buat 30 item inti. Struktur kolom yang disarankan:
+
+```text
+id_checklist
+kategori
+item_check
+bukti_dokumen
+tingkat
+status_check
+verifier
+tanggal_check
+catatan
+keputusan
+```
+
+Nilai yang disarankan:
+
+| Field | Pilihan |
+|---|---|
+| `tingkat` | Wajib / Kritis / Pendukung |
+| `status_check` | Lengkap / Belum Dicek / Tidak Relevan / Bermasalah / Perlu Dokumen |
+| `keputusan` | Lanjut / Hold / Stop / Perlu Dokumen / Eskalasi |
+
+---
+
+## 3.1 Checklist PPIU Umrah
+
+Buat sheet:
+
+```text
+Checklist_PPIU_Umrah
+```
+
+Header:
+
+```csv
+id_checklist,kategori,item_check,bukti_dokumen,tingkat,status_check,verifier,tanggal_check,catatan,keputusan
+```
+
+Item siap salin:
+
+```csv
+CHK-U-001,Legalitas,Badan hukum jelas sesuai AHU,Akta dan SK AHU,Wajib,Belum Dicek,,,,
+CHK-U-002,Legalitas,NIB aktif di OSS,Tangkapan layar OSS,Wajib,Belum Dicek,,,,
+CHK-U-003,Legalitas,NPWP valid dan aktif,Kartu NPWP,Wajib,Belum Dicek,,,,
+CHK-U-004,Legalitas,Alamat kantor fisik dapat diverifikasi,Foto kantor dan maps,Wajib,Belum Dicek,,,,
+CHK-U-005,Legalitas,Kontak resmi dapat dihubungi,Telepon email dan web,Wajib,Belum Dicek,,,,
+CHK-U-006,Izin Kemenag,Nomor SK PPIU tercatat,SK Kemenag,Wajib,Belum Dicek,,,,
+CHK-U-007,Izin Kemenag,Masa berlaku izin masih aktif,SK dan daftar Kemenag,Wajib,Belum Dicek,,,,
+CHK-U-008,Izin Kemenag,Status izin tidak dibekukan atau dicabut,Pengumuman resmi,Kritis,Belum Dicek,,,,
+CHK-U-009,Izin Kemenag,Izin sesuai jenis layanan umrah,SK dan brosur,Wajib,Belum Dicek,,,,
+CHK-U-010,Keuangan,Rekening penerima pembayaran atas nama perusahaan,Buku rekening,Kritis,Belum Dicek,,,,
+CHK-U-011,Keuangan,Tidak ada permintaan transfer ke rekening pribadi,Bukti komunikasi,Kritis,Belum Dicek,,,,
+CHK-U-012,Keuangan,Mekanisme refund dan cancellation jelas,Kontrak jamaah,Wajib,Belum Dicek,,,,
+CHK-U-013,Mitra Saudi,Mitra Saudi memiliki lisensi resmi,Lisensi Saudi,Kritis,Belum Dicek,,,,
+CHK-U-014,Mitra Saudi,Kontrak kerja sama mitra Saudi tersedia,Kontrak notaril,Kritis,Belum Dicek,,,,
+CHK-U-015,Visa Umrah,Jalur visa umrah resmi melalui portal Saudi,Tangkapan layar Nusuk,Kritis,Belum Dicek,,,,
+CHK-U-016,Visa Umrah,Tidak memakai visa non-umrah untuk ibadah,Dokumen visa,Kritis,Belum Dicek,,,,
+CHK-U-017,Akomodasi,Hotel Makkah disebut spesifik,Kontrak dan voucher,Wajib,Belum Dicek,,,,
+CHK-U-018,Akomodasi,Hotel Madinah disebut spesifik,Kontrak dan voucher,Wajib,Belum Dicek,,,,
+CHK-U-019,Akomodasi,Jarak ke Masjidil Haram atau Nabawi dinyatakan,Peta dan fakta sheet,Wajib,Belum Dicek,,,,
+CHK-U-020,Transportasi,Maskapai dan rute jelas,Tiket dan itinerary,Wajib,Belum Dicek,,,,
+CHK-U-021,Transportasi,Transfer bandara dan city tour dikontrak,Kontrak transport,Wajib,Belum Dicek,,,,
+CHK-U-022,Katering,Menu dan jumlah meal sesuai paket,Menu plan,Wajib,Belum Dicek,,,,
+CHK-U-023,Katering,Sertifikat halal dan SFDA tersedia,Sertifikat,Wajib,Belum Dicek,,,,
+CHK-U-024,Asuransi,Polis perjalanan kesehatan dan jiwa tersedia,Polis,Kritis,Belum Dicek,,,,
+CHK-U-025,SDM,Rasio petugas dan jamaah masuk akal,Manifest dan struktur tim,Wajib,Belum Dicek,,,,
+CHK-U-026,SDM,Muthawwif bersertifikat manasik,Sertifikat petugas,Wajib,Belum Dicek,,,,
+CHK-U-027,Kesehatan,Surat keterangan sehat dan vaksinasi diverifikasi,Dokumen jamaah,Wajib,Belum Dicek,,,,
+CHK-U-028,Operasional,Emergency desk 24 jam aktif,Kontak dan SLA,Kritis,Belum Dicek,,,,
+CHK-U-029,Operasional,SOP lost pilgrim dan lost document tersedia,SOP,Wajib,Belum Dicek,,,,
+CHK-U-030,Pasca Layanan,Keluhan ditindaklanjuti dan diaudit,Laporan resolusi,Wajib,Belum Dicek,,,,
+```
+
+---
+
+## 3.2 Checklist PIHK Haji Khusus
+
+Buat sheet:
+
+```text
+Checklist_PIHK_Haji_Khusus
+```
+
+Header sama:
+
+```csv
+id_checklist,kategori,item_check,bukti_dokumen,tingkat,status_check,verifier,tanggal_check,catatan,keputusan
+```
+
+Item siap salin:
+
+```csv
+CHK-H-001,Legalitas,Badan hukum jelas sesuai AHU,Akta dan SK AHU,Wajib,Belum Dicek,,,,
+CHK-H-002,Legalitas,NIB aktif di OSS,Tangkapan layar OSS,Wajib,Belum Dicek,,,,
+CHK-H-003,Legalitas,NPWP valid dan aktif,Kartu NPWP,Wajib,Belum Dicek,,,,
+CHK-H-004,Legalitas,Alamat kantor fisik dapat diverifikasi,Foto kantor dan maps,Wajib,Belum Dicek,,,,
+CHK-H-005,Legalitas,Kontak resmi dapat dihubungi,Telepon email dan web,Wajib,Belum Dicek,,,,
+CHK-H-006,Izin Kemenag,Nomor SK PIHK tercatat,SK Kemenag,Wajib,Belum Dicek,,,,
+CHK-H-007,Izin Kemenag,Masa berlaku izin masih aktif,SK dan daftar Kemenag,Wajib,Belum Dicek,,,,
+CHK-H-008,Izin Kemenag,Status izin tidak dibekukan atau dicabut,Pengumuman resmi,Kritis,Belum Dicek,,,,
+CHK-H-009,Kuota Haji Khusus,Alokasi kuota sesuai regulasi Kemenag,Surat kuota,Kritis,Belum Dicek,,,,
+CHK-H-010,Visa Haji,Visa haji resmi bukan visa umrah,Dokumen visa,Kritis,Belum Dicek,,,,
+CHK-H-011,Dokumen,Paspor dan visa haji cocok dengan manifest,Sistem dan dokumen,Wajib,Belum Dicek,,,,
+CHK-H-012,Keuangan,Pembayaran melalui jalur resmi BPKH atau bank penerima,Bukti setor,Kritis,Belum Dicek,,,,
+CHK-H-013,Keuangan,Rekening perusahaan atas nama PIHK,Buku rekening,Kritis,Belum Dicek,,,,
+CHK-H-014,Asuransi,Polis haji jiwa kesehatan dan wafat tersedia,Polis,Kritis,Belum Dicek,,,,
+CHK-H-015,Akomodasi,Hotel Makkah dan Madinah spesifik,Kontrak dan voucher,Wajib,Belum Dicek,,,,
+CHK-H-016,Akomodasi,Tenda Mina sesuai kelas paket,Kontrak camp,Wajib,Belum Dicek,,,,
+CHK-H-017,Armuzna,Layanan Arafah Muzdalifah Mina jelas,Kontrak dan SOP,Kritis,Belum Dicek,,,,
+CHK-H-018,Transportasi,Naqlah atau transport Armuzna resmi,Kontrak transport,Kritis,Belum Dicek,,,,
+CHK-H-019,Katering,Katering Armuzna halal dan SFDA,Sertifikat dan menu,Wajib,Belum Dicek,,,,
+CHK-H-020,Pembimbing,Pembimbing ibadah haji bersertifikat,Sertifikat muthawwif,Wajib,Belum Dicek,,,,
+CHK-H-021,SDM,Rasio petugas haji khusus dan jamaah masuk akal,Manifest,Wajib,Belum Dicek,,,,
+CHK-H-022,Kesehatan,Screening kesehatan haji dan penyakit berisiko,Surat sehat,Kritis,Belum Dicek,,,,
+CHK-H-023,Kesehatan,Protokol heatstroke dehidrasi dan evakuasi medis,SOP medis,Kritis,Belum Dicek,,,,
+CHK-H-024,Krisis,SOP wafat pemakaman atau repatriasi jelas,SOP,Kritis,Belum Dicek,,,,
+CHK-H-025,Krisis,SOP kehilangan dokumen dan jamaah jelas,SOP,Wajib,Belum Dicek,,,,
+CHK-H-026,Manasik,Pembekalan manasik haji sebelum berangkat,Absensi dan materi,Wajib,Belum Dicek,,,,
+CHK-H-027,Itinerary,Itinerary resmi dan jadwal Armuzna jelas,Dokumen,Wajib,Belum Dicek,,,,
+CHK-H-028,Operasional,Crisis desk 24 jam selama musim haji,Kontak dan SLA,Kritis,Belum Dicek,,,,
+CHK-H-029,Pasca Layanan,Klaim asuransi dan kompensasi tertangani,Bukti klaim,Wajib,Belum Dicek,,,,
+CHK-H-030,Audit,Audit pasca musim dan lessons learned report,Laporan,Wajib,Belum Dicek,,,,
+```
+
+---
+
+## 3.3 Checklist Provider Saudi
+
+Buat sheet:
+
+```text
+Checklist_Provider_Saudi
+```
+
+Header sama:
+
+```csv
+id_checklist,kategori,item_check,bukti_dokumen,tingkat,status_check,verifier,tanggal_check,catatan,keputusan
+```
+
+Item siap salin:
+
+```csv
+CHK-S-001,Legalitas,Commercial registration valid,Certificate of Registration,Wajib,Belum Dicek,,,,
+CHK-S-002,Lisensi Saudi,Lisensi Kementerian Haji dan Umrah sesuai aktivitas,License,Kritis,Belum Dicek,,,,
+CHK-S-003,Perpajakan,Registrasi pajak dan ZATCA aktif,Sertifikat pajak,Wajib,Belum Dicek,,,,
+CHK-S-004,Ketenagakerjaan,Kepatuhan labor law dan Iqama pekerja,Dokumen HR,Kritis,Belum Dicek,,,,
+CHK-S-005,Keuangan,Laporan keuangan dan kapasitas modal,Audit report,Wajib,Belum Dicek,,,,
+CHK-S-006,Keuangan,Rekening bank atas nama perusahaan Saudi,Bank statement,Wajib,Belum Dicek,,,,
+CHK-S-007,Akomodasi,Kontrak hotel atau properti yang dikelola,Kontrak,Wajib,Belum Dicek,,,,
+CHK-S-008,Transportasi,Kontrak armada transport dan naqlah,Kontrak,Wajib,Belum Dicek,,,,
+CHK-S-009,Katering,Kontrak dapur dan distribusi katering,Kontrak,Wajib,Belum Dicek,,,,
+CHK-S-010,Pangan,Sertifikat SFDA untuk food dan beverage,Sertifikat,Kritis,Belum Dicek,,,,
+CHK-S-011,Halal,Sertifikat halal untuk makanan dan daging,Sertifikat,Wajib,Belum Dicek,,,,
+CHK-S-012,Keselamatan,Fire safety certificate untuk hotel atau camp,Sertifikat,Kritis,Belum Dicek,,,,
+CHK-S-013,Crowd,Management plan untuk area padat,Dokumen,Kritis,Belum Dicek,,,,
+CHK-S-014,Darurat,Emergency response plan dan koordinasi Red Crescent,SOP,Kritis,Belum Dicek,,,,
+CHK-S-015,Kesehatan,MOU dengan rumah sakit atau klinik lapangan,MOU,Wajib,Belum Dicek,,,,
+CHK-S-016,Asuransi,Asuransi liability dan pekerja,Polis,Wajib,Belum Dicek,,,,
+CHK-S-017,Data,Perlindungan data pribadi dan cybersecurity policy,Policy,Wajib,Belum Dicek,,,,
+CHK-S-018,Teknologi,Integrasi platform Nusuk atau E-Hajj,API atau kontrak,Wajib,Belum Dicek,,,,
+CHK-S-019,SLA,SLA layanan kepada PPIU atau PIHK,Kontrak,Wajib,Belum Dicek,,,,
+CHK-S-020,Keluhan,Mekanisme complaint handling dan eskalasi,SOP,Wajib,Belum Dicek,,,,
+CHK-S-021,Penalti,Klausul penalti untuk breach kontrak,Kontrak,Wajib,Belum Dicek,,,,
+CHK-S-022,Pekerja,Kesejahteraan akomodasi dan jam kerja pekerja,Audit sosial,Kritis,Belum Dicek,,,,
+CHK-S-023,Pelatihan,Pelatihan staf lapangan dan pembimbing,Sertifikat,Wajib,Belum Dicek,,,,
+CHK-S-024,Aksesibilitas,Layanan lansia dan disabilitas tersedia,SOP,Wajib,Belum Dicek,,,,
+CHK-S-025,Armada,Kelaikan kendaraan dan maintenance record,Sertifikat,Wajib,Belum Dicek,,,,
+CHK-S-026,Monitoring,GPS fleet tracking aktif,Sistem,Wajib,Belum Dicek,,,,
+CHK-S-027,Pangan,Meal traceability dan cold chain audit,Laporan,Wajib,Belum Dicek,,,,
+CHK-S-028,Air,Distribusi air minum dan Zamzam melalui kanal resmi,Bukti,Wajib,Belum Dicek,,,,
+CHK-S-029,Audit,Audit internal dan eksternal terbaru,Laporan,Wajib,Belum Dicek,,,,
+CHK-S-030,Rekam Jejak,Tidak sedang disanksi regulator Saudi,Pengumuman resmi,Kritis,Belum Dicek,,,,
+```
+
+---
+
+# BAGIAN 4 — SKRIP PYTHON / OPENPYXL UNTUK MENGHASILKAN FILE `.XLSX`
+
+Skrip berikut akan membuat file:
+
+```text
+Master_Penyelenggara_Haji_Umrah.xlsx
+```
+
+Isinya:
+
+1. `Master`  
+   - 40 kolom utama  
+   - 12 kolom helper risk score  
+   - data validation  
+   - conditional formatting  
+   - formula risk score otomatis sampai baris 1000
+
+2. `Referensi`  
+   - daftar dropdown
+
+3. `Checklist_PPIU_Umrah`  
+4. `Checklist_PIHK_Haji_Khusus`  
+5. `Checklist_Provider_Saudi`
+
+6. `Mitra_RantaiPasok`  
+7. `Insiden_Keluhan`  
+8. `Audit_Trail`
+
+9. `Sumber_Resmi`  
+   - berisi sumber utama; Anda bisa tambahkan penuh dari blok CSV sebelumnya
+
+10. `Dashboard`  
+   - metrik otomatis
+
+---
+
+## 4.1 Cara Jalankan
+
+Install dependency:
+
+```bash
+pip install openpyxl
+```
+
+Simpan skrip sebagai:
+
+```text
+build_haji_umrah_workbook.py
+```
+
+Jalankan:
+
+```bash
+python build_haji_umrah_workbook.py
+```
+
+File hasil:
+
+```text
+Master_Penyelenggara_Haji_Umrah.xlsx
+```
+
+---
+
+## 4.2 Skrip Lengkap
+
+```python
+# build_haji_umrah_workbook.py
+#
+# Generate workbook master ekosistem Penyelenggara Haji & Umrah.
+# Dependency:
+#   pip install openpyxl
+#
+# Run:
+#   python build_haji_umrah_workbook.py
+
+from openpyxl import Workbook
+from openpyxl.styles import Font, PatternFill, Alignment
+from openpyxl.worksheet.datavalidation import DataValidation
+from openpyxl.formatting.rule import FormulaRule
+from openpyxl.utils import get_column_letter
+
+MAX_ROW = 1000
+OUTPUT_FILE = "Master_Penyelenggara_Haji_Umrah.xlsx"
+
+# ----------------------------------------------------------------------
+# STYLE
+# ----------------------------------------------------------------------
+HEADER_FILL = PatternFill(start_color="1F4E78", end_color="1F4E78", fill_type="solid")
+HEADER_FONT = Font(bold=True, color="FFFFFF")
+HEADER_ALIGN = Alignment(horizontal="center", vertical="center", wrap_text=True)
+
+RED_FILL = PatternFill(start_color="FFC7CE", end_color="FFC7CE", fill_type="solid")
+ORANGE_FILL = PatternFill(start_color="FFEB9C", end_color="FFEB9C", fill_type="solid")
+YELLOW_FILL = PatternFill(start_color="FFF2CC", end_color="FFF2CC", fill_type="solid")
+GREEN_FILL = PatternFill(start_color="C6EFCE", end_color="C6EFCE", fill_type="solid")
+GRAY_FILL = PatternFill(start_color="D9D9D9", end_color="D9D9D9", fill_type="solid")
+
+# ----------------------------------------------------------------------
+# HEADERS
+# ----------------------------------------------------------------------
+MASTER_HEADERS = [
+    "id_entitas",
+    "nama_resmi",
+    "nama_dagang",
+    "jenis_entitas",
+    "negara_yurisdiksi",
+    "nomor_badan_hukum",
+    "NIB",
+    "NPWP",
+    "nomor_izin_Kemenag",
+    "tanggal_izin",
+    "masa_berlaku_izin",
+    "status_izin",
+    "alamat_pusat",
+    "cabang",
+    "kontak_pic",
+    "telepon_email_web",
+    "wilayah_layanan",
+    "mitra_Saudi",
+    "lisensi_Saudi",
+    "maskapai_partner",
+    "hotel_partner",
+    "transport_partner",
+    "catering_partner",
+    "asuransi_partner",
+    "bank_partner",
+    "platform_tech",
+    "jumlah_petugas",
+    "kapasitas_tahunan",
+    "paket_layanan",
+    "range_harga",
+    "rekor_sanksi",
+    "keluhan_publik",
+    "audit_terakhir",
+    "sertifikasi_mutu",
+    "sumber_verifikasi",
+    "tanggal_update",
+    "PIC_monitoring",
+    "catatan_risiko",
+    "status_whitelist",
+    "dokumen_bukti",
+]
+
+HELPER_HEADERS = [
+    "flag_izin",
+    "flag_dokumen",
+    "risk_izin",
+    "risk_dokumen",
+    "risk_sanksi",
+    "risk_keluhan",
+    "risk_mitra_saudi",
+    "risk_asuransi",
+    "risk_audit",
+    "risk_score_total",
+    "risk_label",
+    "kelayakan_score",
+]
+
+ALL_MASTER_HEADERS = MASTER_HEADERS + HELPER_HEADERS
+
+CHECKLIST_HEADERS = [
+    "id_checklist",
+    "kategori",
+    "item_check",
+    "bukti_dokumen",
+    "tingkat",
+    "status_check",
+    "verifier",
+    "tanggal_check",
+    "catatan",
+    "keputusan",
+]
+
+MITRA_HEADERS = [
+    "id_relasi",
+    "id_ppiu_pihk",
+    "nama_ppiu_pihk",
+    "jenis_penyelenggara",
+    "id_provider_saudi",
+    "nama_provider_saudi",
+    "id_maskapai",
+    "id_hotel",
+    "id_transport",
+    "id_catering",
+    "id_asuransi",
+    "id_bank",
+    "id_teknologi",
+    "id_kesehatan",
+    "id_keamanan",
+    "tanggal_kontrak",
+    "berlaku_sampai",
+    "status_relasi",
+    "cakupan_layanan",
+    "nilai_kontrak",
+    "mata_uang",
+    "bukti_kontrak",
+    "PIC",
+    "catatan_risiko",
+    "tanggal_update",
+]
+
+INSIDEN_HEADERS = [
+    "id_insiden",
+    "tanggal_kejadian",
+    "id_entitas",
+    "nama_entitas",
+    "jenis_insiden",
+    "kategori",
+    "sub_kategori",
+    "deskripsi",
+    "dampak",
+    "jumlah_terdampak",
+    "prioritas",
+    "status_resolusi",
+    "PIC",
+    "tanggal_open",
+    "tanggal_close",
+    "SLA_hari",
+    "tindakan_korektif",
+    "bukti_tindak_lanjut",
+    "sumber_laporan",
+    "catatan",
+]
+
+AUDIT_HEADERS = [
+    "id_audit",
+    "timestamp",
+    "user",
+    "sheet",
+    "record_id",
+    "kolom",
+    "nilai_lama",
+    "nilai_baru",
+    "alasan",
+    "bukti",
+    "PIC_review",
+    "status_review",
+    "catatan",
+]
+
+SUMBER_HEADERS = [
+    "kode_sumber",
+    "nama_sumber",
+    "institusi",
+    "url_atau_akses",
+    "jenis_data",
+    "cakupan",
+    "frekuensi_update",
+    "pic",
+    "priority",
+    "catatan_verifikasi",
+]
+
+# ----------------------------------------------------------------------
+# REFERENCE LISTS
+# ----------------------------------------------------------------------
+REFERENCE = {
+    "jenis_entitas": [
+        "PPIU",
+        "PIHK",
+        "Penyelenggara Pemerintah",
+        "Penyedia Layanan Saudi",
+        "Maskapai",
+        "Hotel/Akomodasi",
+        "Transport",
+        "Catering",
+        "Asuransi",
+        "Bank/Payment",
+        "Teknologi",
+        "Kesehatan",
+        "Keamanan",
+        "Legal/Audit",
+        "Regulator",
+        "Lainnya",
+    ],
+    "status_izin": [
+        "Aktif",
+        "Dibekukan",
+        "Dicabut",
+        "Kadaluarsa",
+        "Dalam Verifikasi",
+        "Tidak Berlaku",
+        "Belum Ada",
+    ],
+    "status_whitelist": [
+        "REKOMENDASI",
+        "VERIFIKASI",
+        "HATI-HATI",
+        "STOP",
+        "TIDAK DIAJUKAN",
+    ],
+    "negara_yurisdiksi": [
+        "Indonesia",
+        "Arab Saudi",
+        "Malaysia",
+        "Singapura",
+        "Turki",
+        "Uni Emirat Arab",
+        "Yordania",
+        "Mesir",
+        "Lainnya",
+    ],
+    "level_keluhan": [
+        "Rendah",
+        "Sedang",
+        "Tinggi",
+        "Kritis",
+        "Tidak Diketahui",
+    ],
+    "kategori_risiko": [
+        "Rendah",
+        "Sedang",
+        "Tinggi",
+        "Ekstrem",
+        "Perlu Monitoring",
+    ],
+    "ya_tidak": [
+        "Ya",
+        "Tidak",
+        "Tidak Relevan",
+        "Belum Dicek",
+    ],
+    "prioritas": [
+        "Utama",
+        "Pendukung",
+        "Opsional",
+        "Kritis",
+        "Darurat",
+    ],
+    "jenis_dokumen": [
+        "SK Izin Kemenag",
+        "Akta AHU",
+        "NIB OSS",
+        "NPWP",
+        "Lisensi Saudi",
+        "Kontrak Mitra Saudi",
+        "Kontrak Hotel",
+        "Kontrak Transport",
+        "Kontrak Catering",
+        "Polis Asuransi",
+        "Rekening Perusahaan",
+        "Bukti Transfer",
+        "Sertifikat Vaksin",
+        "Surat Sehat",
+        "Itinerary",
+        "Tiket Pesawat",
+        "Voucher Hotel",
+        "Passport Copy",
+        "Visa Copy",
+        "Audit Report",
+        "Sertifikasi ISO",
+        "Sertifikasi Halal",
+        "Fire Safety Certificate",
+        "SLA Teknologi",
+        "MOU Kesehatan",
+        "Izin Keamanan",
+        "Dokumen Lainnya",
+    ],
+    "kode_sumber": [f"SRC-{i:03d}" for i in range(1, 46)],
+    "status_check": [
+        "Lengkap",
+        "Belum Dicek",
+        "Tidak Relevan",
+        "Bermasalah",
+        "Perlu Dokumen",
+    ],
+    "keputusan_check": [
+        "Lanjut",
+        "Hold",
+        "Stop",
+        "Perlu Dokumen",
+        "Eskalasi",
+    ],
+    "kategori_check": [
+        "Legalitas",
+        "Izin Kemenag",
+        "Mitra Saudi",
+        "Akomodasi",
+        "Transportasi",
+        "Katering",
+        "Asuransi dan Keuangan",
+        "Operasional dan SDM",
+        "Kesehatan dan Keselamatan",
+        "Teknologi dan Data",
+        "Pengawasan dan Audit",
+        "Pasca Layanan",
+    ],
+    "tingkat": [
+        "Wajib",
+        "Kritis",
+        "Pendukung",
+    ],
+    "status_relasi": [
+        "Aktif",
+        "Draft",
+        "Berakhir",
+        "Dibekukan",
+    ],
+    "jenis_insiden": [
+        "Keterlambatan Penerbangan",
+        "Keterlambatan Transport",
+        "Kehilangan Bagasi",
+        "Sakit",
+        "Wafat",
+        "Keluhan Akomodasi",
+        "Keluhan Katering",
+        "Visa/Dokumen",
+        "Fraud",
+        "Krisis",
+        "Lainnya",
+    ],
+    "status_resolusi": [
+        "Open",
+        "In Progress",
+        "Resolved",
+        "Closed",
+        "Escalated",
+    ],
+    "status_audit": [
+        "Draft",
+        "Review",
+        "Approved",
+        "Rejected",
+    ],
+}
+
+# ----------------------------------------------------------------------
+# CHECKLIST RAW DATA
+# Format: (id, kategori, item, bukti, tingkat)
+# ----------------------------------------------------------------------
+CHECKLIST_PPIU_UMRAH_RAW = [
+    ("CHK-U-001", "Legalitas", "Badan hukum jelas sesuai AHU", "Akta dan SK AHU", "Wajib"),
+    ("CHK-U-002", "Legalitas", "NIB aktif di OSS", "Tangkapan layar OSS", "Wajib"),
+    ("CHK-U-003", "Legalitas", "NPWP valid dan aktif", "Kartu NPWP", "Wajib"),
+    ("CHK-U-004", "Legalitas", "Alamat kantor fisik dapat diverifikasi", "Foto kantor dan maps", "Wajib"),
+    ("CHK-U-005", "Legalitas", "Kontak resmi dapat dihubungi", "Telepon email dan web", "Wajib"),
+    ("CHK-U-006", "Izin Kemenag", "Nomor SK PPIU tercatat", "SK Kemenag", "Wajib"),
+    ("CHK-U-007", "Izin Kemenag", "Masa berlaku izin masih aktif", "SK dan daftar Kemenag", "Wajib"),
+    ("CHK-U-008", "Izin Kemenag", "Status izin tidak dibekukan atau dicabut", "Pengumuman resmi", "Kritis"),
+    ("CHK-U-009", "Izin Kemenag", "Izin sesuai jenis layanan umrah", "SK dan brosur", "Wajib"),
+    ("CHK-U-010", "Keuangan", "Rekening penerima pembayaran atas nama perusahaan", "Buku rekening", "Kritis"),
+    ("CHK-U-011", "Keuangan", "Tidak ada permintaan transfer ke rekening pribadi", "Bukti komunikasi", "Kritis"),
+    ("CHK-U-012", "Keuangan", "Mekanisme refund dan cancellation jelas", "Kontrak jamaah", "Wajib"),
+    ("CHK-U-013", "Mitra Saudi", "Mitra Saudi memiliki lisensi resmi", "Lisensi Saudi", "Kritis"),
+    ("CHK-U-014", "Mitra Saudi", "Kontrak kerja sama mitra Saudi tersedia", "Kontrak notaril", "Kritis"),
+    ("CHK-U-015", "Visa Umrah", "Jalur visa umrah resmi melalui portal Saudi", "Tangkapan layar Nusuk", "Kritis"),
+    ("CHK-U-016", "Visa Umrah", "Tidak memakai visa non-umrah untuk ibadah", "Dokumen visa", "Kritis"),
+    ("CHK-U-017", "Akomodasi", "Hotel Makkah disebut spesifik", "Kontrak dan voucher", "Wajib"),
+    ("CHK-U-018", "Akomodasi", "Hotel Madinah disebut spesifik", "Kontrak dan voucher", "Wajib"),
+    ("CHK-U-019", "Akomodasi", "Jarak ke Masjidil Haram atau Nabawi dinyatakan", "Peta dan fakta sheet", "Wajib"),
+    ("CHK-U-020", "Transportasi", "Maskapai dan rute jelas", "Tiket dan itinerary", "Wajib"),
+    ("CHK-U-021", "Transportasi", "Transfer bandara dan city tour dikontrak", "Kontrak transport", "Wajib"),
+    ("CHK-U-022", "Katering", "Menu dan jumlah meal sesuai paket", "Menu plan", "Wajib"),
+    ("CHK-U-023", "Katering", "Sertifikat halal dan SFDA tersedia", "Sertifikat", "Wajib"),
+    ("CHK-U-024", "Asuransi", "Polis perjalanan kesehatan dan jiwa tersedia", "Polis", "Kritis"),
+    ("CHK-U-025", "SDM", "Rasio petugas dan jamaah masuk akal", "Manifest dan struktur tim", "Wajib"),
+    ("CHK-U-026", "SDM", "Muthawwif bersertifikat manasik", "Sertifikat petugas", "Wajib"),
+    ("CHK-U-027", "Kesehatan", "Surat keterangan sehat dan vaksinasi diverifikasi", "Dokumen jamaah", "Wajib"),
+    ("CHK-U-028", "Operasional", "Emergency desk 24 jam aktif", "Kontak dan SLA", "Kritis"),
+    ("CHK-U-029", "Operasional", "SOP lost pilgrim dan lost document tersedia", "SOP", "Wajib"),
+    ("CHK-U-030", "Pasca Layanan", "Keluhan ditindaklanjuti dan diaudit", "Laporan resolusi", "Wajib"),
+]
+
+CHECKLIST_PIHK_HAJI_KHUSUS_RAW = [
+    ("CHK-H-001", "Legalitas", "Badan hukum jelas sesuai AHU", "Akta dan SK AHU", "Wajib"),
+    ("CHK-H-002", "Legalitas", "NIB aktif di OSS", "Tangkapan layar OSS", "Wajib"),
+    ("CHK-H-003", "Legalitas", "NPWP valid dan aktif", "Kartu NPWP", "Wajib"),
+    ("CHK-H-004", "Legalitas", "Alamat kantor fisik dapat diverifikasi", "Foto kantor dan maps", "Wajib"),
+    ("CHK-H-005", "Legalitas", "Kontak resmi dapat dihubungi", "Telepon email dan web", "Wajib"),
+    ("CHK-H-006", "Izin Kemenag", "Nomor SK PIHK tercatat", "SK Kemenag", "Wajib"),
+    ("CHK-H-007", "Izin Kemenag", "Masa berlaku izin masih aktif", "SK dan daftar Kemenag", "Wajib"),
+    ("CHK-H-008", "Izin Kemenag", "Status izin tidak dibekukan atau dicabut", "Pengumuman resmi", "Kritis"),
+    ("CHK-H-009", "Kuota Haji Khusus", "Alokasi kuota sesuai regulasi Kemenag", "Surat kuota", "Kritis"),
+    ("CHK-H-010", "Visa Haji", "Visa haji resmi bukan visa umrah", "Dokumen visa", "Kritis"),
+    ("CHK-H-011", "Dokumen", "Paspor dan visa haji cocok dengan manifest", "Sistem dan dokumen", "Wajib"),
+    ("CHK-H-012", "Keuangan", "Pembayaran melalui jalur resmi BPKH atau bank penerima", "Bukti setor", "Kritis"),
+    ("CHK-H-013", "Keuangan", "Rekening perusahaan atas nama PIHK", "Buku rekening", "Kritis"),
+    ("CHK-H-014", "Asuransi", "Polis haji jiwa kesehatan dan wafat tersedia", "Polis", "Kritis"),
+    ("CHK-H-015", "Akomodasi", "Hotel Makkah dan Madinah spesifik", "Kontrak dan voucher", "Wajib"),
+    ("CHK-H-016", "Akomodasi", "Tenda Mina sesuai kelas paket", "Kontrak camp", "Wajib"),
+    ("CHK-H-017", "Armuzna", "Layanan Arafah Muzdalifah Mina jelas", "Kontrak dan SOP", "Kritis"),
+    ("CHK-H-018", "Transportasi", "Naqlah atau transport Armuzna resmi", "Kontrak transport", "Kritis"),
+    ("CHK-H-019", "Katering", "Katering Armuzna halal dan SFDA", "Sertifikat dan menu", "Wajib"),
+    ("CHK-H-020", "Pembimbing", "Pembimbing ibadah haji bersertifikat", "Sertifikat muthawwif", "Wajib"),
+    ("CHK-H-021", "SDM", "Rasio petugas haji khusus dan jamaah masuk akal", "Manifest", "Wajib"),
+    ("CHK-H-022", "Kesehatan", "Screening kesehatan haji dan penyakit berisiko", "Surat sehat", "Kritis"),
+    ("CHK-H-023", "Kesehatan", "Protokol heatstroke dehidrasi dan evakuasi medis", "SOP medis", "Kritis"),
+    ("CHK-H-024", "Krisis", "SOP wafat pemakaman atau repatriasi jelas", "SOP", "Kritis"),
+    ("CHK-H-025", "Krisis", "SOP kehilangan dokumen dan jamaah jelas", "SOP", "Wajib"),
+    ("CHK-H-026", "Manasik", "Pembekalan manasik haji sebelum berangkat", "Absensi dan materi", "Wajib"),
+    ("CHK-H-027", "Itinerary", "Itinerary resmi dan jadwal Armuzna jelas", "Dokumen", "Wajib"),
+    ("CHK-H-028", "Operasional", "Crisis desk 24 jam selama musim haji", "Kontak dan SLA", "Kritis"),
+    ("CHK-H-029", "Pasca Layanan", "Klaim asuransi dan kompensasi tertangani", "Bukti klaim", "Wajib"),
+    ("CHK-H-030", "Audit", "Audit pasca musim dan lessons learned report", "Laporan", "Wajib"),
+]
+
+CHECKLIST_PROVIDER_SAUDI_RAW = [
+    ("CHK-S-001", "Legalitas", "Commercial registration valid", "Certificate of Registration", "Wajib"),
+    ("CHK-S-002", "Lisensi Saudi", "Lisensi Kementerian Haji dan Umrah sesuai aktivitas", "License", "Kritis"),
+    ("CHK-S-003", "Perpajakan", "Registrasi pajak dan ZATCA aktif", "Sertifikat pajak", "Wajib"),
+    ("CHK-S-004", "Ketenagakerjaan", "Kepatuhan labor law dan Iqama pekerja", "Dokumen HR", "Kritis"),
+    ("CHK-S-005", "Keuangan", "Laporan keuangan dan kapasitas modal", "Audit report", "Wajib"),
+    ("CHK-S-006", "Keuangan", "Rekening bank atas nama perusahaan Saudi", "Bank statement", "Wajib"),
+    ("CHK-S-007", "Akomodasi", "Kontrak hotel atau properti yang dikelola", "Kontrak", "Wajib"),
+    ("CHK-S-008", "Transportasi", "Kontrak armada transport dan naqlah", "Kontrak", "Wajib"),
+    ("CHK-S-009", "Katering", "Kontrak dapur dan distribusi katering", "Kontrak", "Wajib"),
+    ("CHK-S-010", "Pangan", "Sertifikat SFDA untuk food dan beverage", "Sertifikat", "Kritis"),
+    ("CHK-S-011", "Halal", "Sertifikat halal untuk makanan dan daging", "Sertifikat", "Wajib"),
+    ("CHK-S-012", "Keselamatan", "Fire safety certificate untuk hotel atau camp", "Sertifikat", "Kritis"),
+    ("CHK-S-013", "Crowd", "Management plan untuk area padat", "Dokumen", "Kritis"),
+    ("CHK-S-014", "Darurat", "Emergency response plan dan koordinasi Red Crescent", "SOP", "Kritis"),
+    ("CHK-S-015", "Kesehatan", "MOU dengan rumah sakit atau klinik lapangan", "MOU", "Wajib"),
+    ("CHK-S-016", "Asuransi", "Asuransi liability dan pekerja", "Polis", "Wajib"),
+    ("CHK-S-017", "Data", "Perlindungan data pribadi dan cybersecurity policy", "Policy", "Wajib"),
+    ("CHK-S-018", "Teknologi", "Integrasi platform Nusuk atau E-Hajj", "API atau kontrak", "Wajib"),
+    ("CHK-S-019", "SLA", "SLA layanan kepada PPIU atau PIHK", "Kontrak", "Wajib"),
+    ("CHK-S-020", "Keluhan", "Mekanisme complaint handling dan eskalasi", "SOP", "Wajib"),
+    ("CHK-S-021", "Penalti", "Klausul penalti untuk breach kontrak", "Kontrak", "Wajib"),
+    ("CHK-S-022", "Pekerja", "Kesejahteraan akomodasi dan jam kerja pekerja", "Audit sosial", "Kritis"),
+    ("CHK-S-023", "Pelatihan", "Pelatihan staf lapangan dan pembimbing", "Sertifikat", "Wajib"),
+    ("CHK-S-024", "Aksesibilitas", "Layanan lansia dan disabilitas tersedia", "SOP", "Wajib"),
+    ("CHK-S-025", "Armada", "Kelaikan kendaraan dan maintenance record", "Sertifikat", "Wajib"),
+    ("CHK-S-026", "Monitoring", "GPS fleet tracking aktif", "Sistem", "Wajib"),
+    ("CHK-S-027", "Pangan", "Meal traceability dan cold chain audit", "Laporan", "Wajib"),
+    ("CHK-S-028", "Air", "Distribusi air minum dan Zamzam melalui kanal resmi", "Bukti", "Wajib"),
+    ("CHK-S-029", "Audit", "Audit internal dan eksternal terbaru", "Laporan", "Wajib"),
+    ("CHK-S-030", "Rekam Jejak", "Tidak sedang disanksi regulator Saudi", "Pengumuman resmi", "Kritis"),
+]
+
+# ----------------------------------------------------------------------
+# SUMBER RESMI UTAMA
+# Anda dapat menambahkan penuh dari blok CSV sebelumnya.
+# ----------------------------------------------------------------------
+SUMBER_RESMI_ROWS = [
+    ("SRC-001", "Ditjen PHU Kemenag", "Kementerian Agama RI", "https://haji.kemenag.go.id", "Daftar PPIU dan PIHK; status izin; sanksi", "Nasional", "Harian sampai mingguan", "Tim Regulasi", "Utama", "Cek pengumuman resmi dan lampiran SK"),
+    ("SRC-002", "SISKOHAT", "Kementerian Agama RI", "https://sisohat.haji.kemenag.go.id", "Data jamaah haji; nomor porsi; jadwal", "Nasional", "Realtime saat musim", "Tim Data", "Utama", "Akses terbatas sesuai kewenangan"),
+    ("SRC-005", "OSS", "BKPM", "https://oss.go.id", "NIB; izin berusaha; KBLI", "Nasional", "Realtime", "Tim Legal", "Utama", "Cek status NIB dan risiko usaha"),
+    ("SRC-006", "AHU Online", "Kemenkumham", "https://ahu.go.id", "Badan hukum; akta; direksi", "Nasional", "Sesuai kebutuhan", "Tim Legal", "Utama", "Cocokkan nama dan nomor AHU"),
+    ("SRC-007", "Imigrasi RI", "Kemenkumham", "https://www.imigrasi.go.id", "Paspor; keimigrasian", "Nasional", "Realtime", "Tim Dokumen", "Utama", "Validasi masa berlaku paspor"),
+    ("SRC-008", "Kemenkes", "Kementerian Kesehatan RI", "https://kemkes.go.id", "Syarat kesehatan; vaksinasi", "Nasional", "Musiman", "Tim Kesehatan", "Utama", "Cek edaran kesehatan haji umrah"),
+    ("SRC-010", "Kemenhub", "Kementerian Perhubungan RI", "https://dephub.go.id", "Maskapai; slot; keselamatan aviasi", "Nasional", "Berkala", "Tim Aviasi", "Utama", "Cek AOC dan izin rute"),
+    ("SRC-011", "OJK", "Otoritas Jasa Keuangan", "https://ojk.go.id", "Asuransi; lembaga keuangan; sanksi", "Nasional", "Berkala", "Tim Risiko", "Utama", "Cek izin insurer dan produk"),
+    ("SRC-012", "BPKH", "Badan Pengelola Keuangan Haji", "https://bpkh.go.id", "Setoran haji; nilai manfaat; bank penerima", "Nasional", "Berkala", "Tim Keuangan", "Utama", "Cek rekening resmi dan kebijakan"),
+    ("SRC-020", "KBRI Riyadh", "Kementerian Luar Negeri RI", "https://kbri-riyadh.com", "Perlindungan WNI; konsuler", "Arab Saudi", "Insidental", "Tim Konsuler", "Utama", "Cek layanan darurat dan legalisasi"),
+    ("SRC-021", "KJRI Jeddah", "Kementerian Luar Negeri RI", "https://kjri-jeddah.go.id", "Perlindungan WNI; umrah haji", "Jeddah dan sekitar", "Insidental", "Tim Konsuler", "Utama", "Penting untuk crisis desk"),
+    ("SRC-022", "Kementerian Haji dan Umrah Saudi", "Government of Saudi Arabia", "https://www.haj.gov.sa", "Lisensi provider; regulasi musim haji umrah", "Arab Saudi", "Musiman", "Tim Saudi", "Utama", "Cek daftar perusahaan terverifikasi"),
+    ("SRC-023", "Nusuk", "Platform resmi Saudi", "https://www.nusuk.sa", "Visa umrah; itinerary; Raudhah; provider", "Global", "Realtime", "Tim Digital", "Utama", "Gunakan sebagai sumber truth visa umrah"),
+    ("SRC-028", "GACA", "General Authority of Civil Aviation", "https://gaca.gov.sa", "Regulasi penerbangan; bandara; AOC", "Arab Saudi", "Berkala", "Tim Aviasi", "Utama", "Cek maskapai dan ground handling"),
+    ("SRC-030", "SFDA", "Saudi Food and Drug Authority", "https://sfda.gov.sa", "Pangan; obat; halal; kosmetik", "Arab Saudi", "Berkala", "Tim F and B dan Medis", "Utama", "Wajib untuk catering dan farmasi"),
+]
+
+# ----------------------------------------------------------------------
+# HELPER FUNCTIONS
+# ----------------------------------------------------------------------
+def style_header(ws):
+    for cell in ws[1]:
+        cell.font = HEADER_FONT
+        cell.fill = HEADER_FILL
+        cell.alignment = HEADER_ALIGN
+    ws.row_dimensions[1].height = 32
+    ws.freeze_panes = "A2"
+
+
+def set_column_widths(ws, headers, min_width=14, max_width=38):
+    for idx, header in enumerate(headers, start=1):
+        letter = get_column_letter(idx)
+        width = max(min_width, min(max_width, len(header) + 4))
+        ws.column_dimensions[letter].width = width
+
+
+def set_text_format(ws, col_letter, first_row=2, last_row=MAX_ROW):
+    for row in range(first_row, last_row + 1):
+        ws[f"{col_letter}{row}"].number_format = "@"
+
+
+def set_date_format(ws, col_letter, first_row=2, last_row=MAX_ROW):
+    for row in range(first_row, last_row + 1):
+        ws[f"{col_letter}{row}"].number_format = "yyyy-mm-dd"
+
+
+def expand_checklist_rows(raw_rows):
+    """
+    raw_rows: (id, kategori, item, bukti, tingkat)
+    return full checklist row with empty operational columns.
+    """
+    expanded = []
+    for rid, kategori, item, bukti, tingkat in raw_rows:
+        expanded.append((rid, kategori, item, bukti, tingkat, "Belum Dicek", "", "", "", ""))
+    return expanded
+
+
+# ----------------------------------------------------------------------
+# FORMULA BUILDERS
+# Formula disimpan dengan pemisah koma karena itu format internal XLSX.
+# Excel Indonesia akan menampilkannya dengan titik koma.
+# ----------------------------------------------------------------------
+def f_flag_izin(r):
+    return (
+        f'=IF(AND(ISNUMBER(K{r}),K{r}<TODAY()),"KADALUARSA",'
+        f'IF(AND(ISNUMBER(K{r}),K{r}<=TODAY()+90),"SEGERA HABIS","OK"))'
+    )
+
+
+def f_flag_dokumen(r):
+    return f'=IF(OR(AN{r}="",AN{r}="-"),"KURANG","CEK")'
+
+
+def f_risk_izin(r):
+    return (
+        f'=IF(L{r}="Dicabut",100,'
+        f'MIN(25,'
+        f'IF(L{r}="Aktif",0,'
+        f'IF(L{r}="Dalam Verifikasi",10,'
+        f'IF(L{r}="Kadaluarsa",20,'
+        f'IF(L{r}="Dibekukan",25,15))))'
+        f'+IF(AND(ISNUMBER(K{r}),K{r}<TODAY()),10,0)))'
+    )
+
+
+def f_risk_dokumen(r):
+    return (
+        f'=IF(OR(AN{r}="",AN{r}="-"),15,'
+        f'IF((LEN(AN{r})-LEN(SUBSTITUTE(AN{r},";",""))+1)>=3,0,'
+        f'IF((LEN(AN{r})-LEN(SUBSTITUTE(AN{r},";",""))+1)=2,5,10)))'
+    )
+
+
+def f_risk_sanksi(r):
+    return (
+        f'=IF(AE{r}="Tidak ada",0,'
+        f'IF(AE{r}="-",10,'
+        f'IF(ISNUMBER(SEARCH("pencabutan",AE{r})),25,'
+        f'IF(ISNUMBER(SEARCH("beku",AE{r})),20,'
+        f'IF(ISNUMBER(SEARCH("teguran",AE{r})),10,15)))))'
+    )
+
+
+def f_risk_keluhan(r):
+    return (
+        f'=IF(AF{r}="Rendah",0,'
+        f'IF(AF{r}="Sedang",8,'
+        f'IF(AF{r}="Tinggi",15,'
+        f'IF(AF{r}="Kritis",20,'
+        f'IF(AF{r}="Tidak Diketahui",10,12)))))'
+    )
+
+
+def f_risk_mitra_saudi(r):
+    return (
+        f'=IF(OR(D{r}="PPIU",D{r}="PIHK"),'
+        f'IF(OR(R{r}="",R{r}="-"),12,0)+IF(OR(S{r}="",S{r}="-"),8,0),'
+        f'IF(OR(D{r}="Penyedia Layanan Saudi",E{r}="Arab Saudi"),'
+        f'IF(OR(S{r}="",S{r}="-"),15,0),0))'
+    )
+
+
+def f_risk_asuransi(r):
+    return f'=IF(OR(X{r}="",X{r}="-"),10,0)'
+
+
+def f_risk_audit(r):
+    return (
+        f'=IF(OR(AG{r}="",AG{r}="-"),15,'
+        f'IF(ISNUMBER(AG{r}),'
+        f'IF(AG{r}<TODAY()-730,15,'
+        f'IF(AG{r}<TODAY()-365,10,0)),15))'
+    )
+
+
+def f_risk_total(r):
+    return f'=IF(AM{r}="STOP",100,MIN(100,SUM(AQ{r}:AW{r})))'
+
+
+def f_risk_label(r):
+    return (
+        f'=IF(AX{r}>=60,"EKSTREM",'
+        f'IF(AX{r}>=40,"TINGGI",'
+        f'IF(AX{r}>=20,"SEDANG","RENDAH")))'
+    )
+
+
+def f_kelayakan(r):
+    return f'=100-AX{r}'
+
+
+# ----------------------------------------------------------------------
+# CREATE WORKBOOK
+# ----------------------------------------------------------------------
+wb = Workbook()
+wb.remove(wb.active)
+
+# ----------------------------------------------------------------------
+# SHEET: REFERENSI
+# ----------------------------------------------------------------------
+ws_ref = wb.create_sheet("Referensi")
+ref_headers = list(REFERENCE.keys())
+ws_ref.append(ref_headers)
+style_header(ws_ref)
+set_column_widths(ws_ref, ref_headers)
+
+REF_COL = {}
+REF_LAST = {}
+
+for col_idx, (name, values) in enumerate(REFERENCE.items(), start=1):
+    letter = get_column_letter(col_idx)
+    REF_COL[name] = letter
+    for row_idx, value in enumerate(values, start=2):
+        ws_ref.cell(row=row_idx, column=col_idx, value=value)
+    REF_LAST[name] = len(values) + 1
+
+
+def add_dropdown(ws, col_letter, ref_name, last_row=MAX_ROW):
+    ref_letter = REF_COL[ref_name]
+    ref_last = REF_LAST[ref_name]
+    dv = DataValidation(
+        type="list",
+        formula1=f"Referensi!${ref_letter}$2:${ref_letter}${ref_last}",
+        allow_blank=True,
+        showDropDown=False,
+    )
+    dv.error = "Pilih nilai dari daftar Referensi."
+    dv.errorTitle = "Input tidak valid"
+    ws.add_data_validation(dv)
+    dv.add(f"{col_letter}2:{col_letter}{last_row}")
+
+
+# ----------------------------------------------------------------------
+# SHEET: MASTER
+# ----------------------------------------------------------------------
+ws_master = wb.create_sheet("Master")
+ws_master.append(ALL_MASTER_HEADERS)
+style_header(ws_master)
+set_column_widths(ws_master, ALL_MASTER_HEADERS)
+
+# Format teks untuk nomor legalitas
+for col in ["F", "G", "H"]:
+    set_text_format(ws_master, col, 2, MAX_ROW)
+
+# Format tanggal
+for col in ["J", "K", "AG", "AJ"]:
+    set_date_format(ws_master, col, 2, MAX_ROW)
+
+# Formula helper columns
+for r in range(2, MAX_ROW + 1):
+    ws_master.cell(row=r, column=41, value=f_flag_izin(r))       # AO
+    ws_master.cell(row=r, column=42, value=f_flag_dokumen(r))    # AP
+    ws_master.cell(row=r, column=43, value=f_risk_izin(r))       # AQ
+    ws_master.cell(row=r, column=44, value=f_risk_dokumen(r))    # AR
+    ws_master.cell(row=r, column=45, value=f_risk_sanksi(r))     # AS
+    ws_master.cell(row=r, column=46, value=f_risk_keluhan(r))    # AT
+    ws_master.cell(row=r, column=47, value=f_risk_mitra_saudi(r))# AU
+    ws_master.cell(row=r, column=48, value=f_risk_asuransi(r))   # AV
+    ws_master.cell(row=r, column=49, value=f_risk_audit(r))      # AW
+    ws_master.cell(row=r, column=50, value=f_risk_total(r))      # AX
+    ws_master.cell(row=r, column=51, value=f_risk_label(r))      # AY
+    ws_master.cell(row=r, column=52, value=f_kelayakan(r))       # AZ
+
+# Dropdown Master
+add_dropdown(ws_master, "D", "jenis_entitas", MAX_ROW)
+add_dropdown(ws_master, "E", "negara_yurisdiksi", MAX_ROW)
+add_dropdown(ws_master, "L", "status_izin", MAX_ROW)
+add_dropdown(ws_master, "AF", "level_keluhan", MAX_ROW)
+add_dropdown(ws_master, "AM", "status_whitelist", MAX_ROW)
+
+# Conditional Formatting Master
+ws_master.conditional_formatting.add(
+    f"AM2:AM{MAX_ROW}",
+    FormulaRule(formula=['$AM2="STOP"'], fill=RED_FILL, stopIfTrue=False),
+)
+ws_master.conditional_formatting.add(
+    f"AM2:AM{MAX_ROW}",
+    FormulaRule(formula=['$AM2="HATI-HATI"'], fill=ORANGE_FILL, stopIfTrue=False),
+)
+ws_master.conditional_formatting.add(
+    f"AM2:AM{MAX_ROW}",
+    FormulaRule(formula=['$AM2="VERIFIKASI"'], fill=YELLOW_FILL, stopIfTrue=False),
+)
+ws_master.conditional_formatting.add(
+    f"AM2:AM{MAX_ROW}",
+    FormulaRule(formula=['$AM2="REKOMENDASI"'], fill=GREEN_FILL, stopIfTrue=False),
+)
+
+ws_master.conditional_formatting.add(
+    f"K2:K{MAX_ROW}",
+    FormulaRule(formula=['AND(ISNUMBER($K2),$K2<TODAY())'], fill=RED_FILL, stopIfTrue=False),
+)
+ws_master.conditional_formatting.add(
+    f"K2:K{MAX_ROW}",
+    FormulaRule(formula=['AND(ISNUMBER($K2),$K2>=TODAY(),$K2<=TODAY()+90)'], fill=ORANGE_FILL, stopIfTrue=False),
+)
+
+ws_master.conditional_formatting.add(
+    f"AF2:AF{MAX_ROW}",
+    FormulaRule(formula=['OR($AF2="Tinggi",$AF2="Kritis")'], fill=RED_FILL, stopIfTrue=False),
+)
+
+ws_master.conditional_formatting.add(
+    f"AY2:AY{MAX_ROW}",
+    FormulaRule(formula=['$AY2="EKSTREM"'], fill=RED_FILL, stopIfTrue=False),
+)
+ws_master.conditional_formatting.add(
+    f"AY2:AY{MAX_ROW}",
+    FormulaRule(formula=['$AY2="TINGGI"'], fill=ORANGE_FILL, stopIfTrue=False),
+)
+ws_master.conditional_formatting.add(
+    f"AY2:AY{MAX_ROW}",
+    FormulaRule(formula=['$AY2="SEDANG"'], fill=YELLOW_FILL, stopIfTrue=False),
+)
+ws_master.conditional_formatting.add(
+    f"AY2:AY{MAX_ROW}",
+    FormulaRule(formula=['$AY2="RENDAH"'], fill=GREEN_FILL, stopIfTrue=False),
+)
+
+# ----------------------------------------------------------------------
+# SHEET: CHECKLIST KHUSUS
+# ----------------------------------------------------------------------
+def create_checklist_sheet(sheet_name, raw_rows):
+    ws = wb.create_sheet(sheet_name)
+    ws.append(CHECKLIST_HEADERS)
+    style_header(ws)
+    set_column_widths(ws, CHECKLIST_HEADERS)
+
+    rows = expand_checklist_rows(raw_rows)
+    for row in rows:
+        ws.append(row)
+
+    last_row = ws.max_row
+
+    add_dropdown(ws, "B", "kategori_check", last_row)
+    add_dropdown(ws, "E", "tingkat", last_row)
+    add_dropdown(ws, "F", "status_check", last_row)
+    add_dropdown(ws, "J", "keputusan_check", last_row)
+
+    set_date_format(ws, "H", 2, last_row)
+
+    ws.conditional_formatting.add(
+        f"F2:F{last_row}",
+        FormulaRule(formula=['$F2="Lengkap"'], fill=GREEN_FILL, stopIfTrue=False),
+    )
+    ws.conditional_formatting.add(
+        f"F2:F{last_row}",
+        FormulaRule(formula=['$F2="Bermasalah"'], fill=RED_FILL, stopIfTrue=False),
+    )
+    ws.conditional_formatting.add(
+        f"J2:J{last_row}",
+        FormulaRule(formula=['$J2="Stop"'], fill=RED_FILL, stopIfTrue=False),
+    )
+    ws.conditional_formatting.add(
+        f"J2:J{last_row}",
+        FormulaRule(formula=['$J2="Eskalasi"'], fill=ORANGE_FILL, stopIfTrue=False),
+    )
+
+    return ws
+
+
+create_checklist_sheet("Checklist_PPIU_Umrah", CHECKLIST_PPIU_UMRAH_RAW)
+create_checklist_sheet("Checklist_PIHK_Haji_Khusus", CHECKLIST_PIHK_HAJI_KHUSUS_RAW)
+create_checklist_sheet("Checklist_Provider_Saudi", CHECKLIST_PROVIDER_SAUDI_RAW)
+
+# ----------------------------------------------------------------------
+# SHEET: MITRA_RANTAI_PASOK
+# ----------------------------------------------------------------------
+ws_mitra = wb.create_sheet("Mitra_RantaiPasok")
+ws_mitra.append(MITRA_HEADERS)
+style_header(ws_mitra)
+set_column_widths(ws_mitra, MITRA_HEADERS)
+
+for col in ["P", "Q", "Y"]:
+    set_date_format(ws_mitra, col, 2, MAX_ROW)
+
+add_dropdown(ws_mitra, "R", "status_relasi", MAX_ROW)
+
+ws_mitra.conditional_formatting.add(
+    f"R2:R{MAX_ROW}",
+    FormulaRule(formula=['$R2="Dibekukan"'], fill=RED_FILL, stopIfTrue=False),
+)
+ws_mitra.conditional_formatting.add(
+    f"R2:R{MAX_ROW}",
+    FormulaRule(formula=['$R2="Aktif"'], fill=GREEN_FILL, stopIfTrue=False),
+)
+
+# ----------------------------------------------------------------------
+# SHEET: INSIDEN_KELUHAN
+# ----------------------------------------------------------------------
+ws_insiden = wb.create_sheet("Insiden_Keluhan")
+ws_insiden.append(INSIDEN_HEADERS)
+style_header(ws_insiden)
+set_column_widths(ws_insiden, INSIDEN_HEADERS)
+
+for col in ["B", "N", "O"]:
+    set_date_format(ws_insiden, col, 2, MAX_ROW)
+
+add_dropdown(ws_insiden, "E", "jenis_insiden", MAX_ROW)
+add_dropdown(ws_insiden, "K", "prioritas", MAX_ROW)
+add_dropdown(ws_insiden, "L", "status_resolusi", MAX_ROW)
+
+ws_insiden.conditional_formatting.add(
+    f"L2:L{MAX_ROW}",
+    FormulaRule(formula=['$L2="Open"'], fill=RED_FILL, stopIfTrue=False),
+)
+ws_insiden.conditional_formatting.add(
+    f"L2:L{MAX_ROW}",
+    FormulaRule(formula=['$L2="Escalated"'], fill=ORANGE_FILL, stopIfTrue=False),
+)
+ws_insiden.conditional_formatting.add(
+    f"L2:L{MAX_ROW}",
+    FormulaRule(formula=['$L2="Closed"'], fill=GREEN_FILL, stopIfTrue=False),
+)
+
+# ----------------------------------------------------------------------
+# SHEET: AUDIT_TRAIL
+# ----------------------------------------------------------------------
+ws_audit = wb.create_sheet("Audit_Trail")
+ws_audit.append(AUDIT_HEADERS)
+style_header(ws_audit)
+set_column_widths(ws_audit, AUDIT_HEADERS)
+
+add_dropdown(ws_audit, "L", "status_audit", MAX_ROW)
+
+ws_audit.conditional_formatting.add(
+    f"L2:L{MAX_ROW}",
+    FormulaRule(formula=['$L2="Approved"'], fill=GREEN_FILL, stopIfTrue=False),
+)
+ws_audit.conditional_formatting.add(
+    f"L2:L{MAX_ROW}",
+    FormulaRule(formula=['$L2="Rejected"'], fill=RED_FILL, stopIfTrue=False),
+)
+ws_audit.conditional_formatting.add(
+    f"L2:L{MAX_ROW}",
+    FormulaRule(formula=['$L2="Review"'], fill=YELLOW_FILL, stopIfTrue=False),
+)
+
+# ----------------------------------------------------------------------
+# SHEET: SUMBER_RESMI
+# ----------------------------------------------------------------------
+ws_sumber = wb.create_sheet("Sumber_Resmi")
+ws_sumber.append(SUMBER_HEADERS)
+style_header(ws_sumber)
+set_column_widths(ws_sumber, SUMBER_HEADERS)
+
+for row in SUMBER_RESMI_ROWS:
+    ws_sumber.append(row)
+
+last_sumber = ws_sumber.max_row
+add_dropdown(ws_sumber, "I", "prioritas", last_sumber)
+
+ws_sumber.conditional_formatting.add(
+    f"I2:I{last_sumber}",
+    FormulaRule(formula=['$I2="Utama"'], fill=GREEN_FILL, stopIfTrue=False),
+)
+ws_sumber.conditional_formatting.add(
+    f"I2:I{last_sumber}",
+    FormulaRule(formula=['$I2="Pendukung"'], fill=YELLOW_FILL, stopIfTrue=False),
+)
+
+# ----------------------------------------------------------------------
+# SHEET: DASHBOARD
+# ----------------------------------------------------------------------
+ws_dash = wb.create_sheet("Dashboard")
+dash_headers = ["No", "Metric", "Value", "Keterangan"]
+ws_dash.append(dash_headers)
+style_header(ws_dash)
+set_column_widths(ws_dash, dash_headers, min_width=12, max_width=55)
+
+MR = MAX_ROW
+
+check_sheets = [
+    "Checklist_PPIU_Umrah",
+    "Checklist_PIHK_Haji_Khusus",
+    "Checklist_Provider_Saudi",
+]
+
+total_checklist_formula = "=" + "+".join(
+    [f"COUNTA({s}!$A$2:$A${MR})" for s in check_sheets]
+)
+lengkap_checklist_formula = "=" + "+".join(
+    [f'COUNTIF({s}!$F$2:$F${MR},"Lengkap")' for s in check_sheets]
+)
+belum_dicek_checklist_formula = "=" + "+".join(
+    [f'COUNTIF({s}!$F$2:$F${MR},"Belum Dicek")' for s in check_sheets]
+)
+bermasalah_checklist_formula = "=" + "+".join(
+    [f'COUNTIF({s}!$F$2:$F${MR},"Bermasalah")' for s in check_sheets]
+)
+stop_checklist_formula = "=" + "+".join(
+    [f'COUNTIF({s}!$J$2:$J${MR},"Stop")' for s in check_sheets]
+)
+
+dashboard_rows = [
+    ("Total Entitas", f"=COUNTA(Master!$A$2:$A${MR})", "Jumlah entitas terdaftar di Master"),
+    ("PPIU Aktif", f'=COUNTIFS(Master!$D$2:$D${MR},"PPIU",Master!$L$2:$L${MR},"Aktif")', "PPIU dengan status izin aktif"),
+    ("PIHK Aktif", f'=COUNTIFS(Master!$D$2:$D${MR},"PIHK",Master!$L$2:$L${MR},"Aktif")', "PIHK dengan status izin aktif"),
+    ("Provider Saudi Aktif", f'=COUNTIFS(Master!$D$2:$D${MR},"Penyedia Layanan Saudi",Master!$L$2:$L${MR},"Aktif")', "Penyedia layanan Saudi aktif"),
+    ("Maskapai Aktif", f'=COUNTIFS(Master!$D$2:$D${MR},"Maskapai",Master!$L$2:$L${MR},"Aktif")', "Maskapai mitra aktif"),
+    ("Hotel Aktif", f'=COUNTIFS(Master!$D$2:$D${MR},"Hotel/Akomodasi",Master!$L$2:$L${MR},"Aktif")', "Hotel/camp aktif"),
+    ("Transport Aktif", f'=COUNTIFS(Master!$D$2:$D${MR},"Transport",Master!$L$2:$L${MR},"Aktif")', "Operator transport aktif"),
+    ("Catering Aktif", f'=COUNTIFS(Master!$D$2:$D${MR},"Catering",Master!$L$2:$L${MR},"Aktif")', "Katering aktif"),
+    ("Asuransi Aktif", f'=COUNTIFS(Master!$D$2:$D${MR},"Asuransi",Master!$L$2:$L${MR},"Aktif")', "Insurer/takaful aktif"),
+    ("Bank Aktif", f'=COUNTIFS(Master!$D$2:$D${MR},"Bank/Payment",Master!$L$2:$L${MR},"Aktif")', "Bank/payment aktif"),
+    ("Teknologi Aktif", f'=COUNTIFS(Master!$D$2:$D${MR},"Teknologi",Master!$L$2:$L${MR},"Aktif")', "Vendor teknologi aktif"),
+    ("Kesehatan Aktif", f'=COUNTIFS(Master!$D$2:$D${MR},"Kesehatan",Master!$L$2:$L${MR},"Aktif")', "Penyedia kesehatan aktif"),
+    ("Keamanan Aktif", f'=COUNTIFS(Master!$D$2:$D${MR},"Keamanan",Master!$L$2:$L${MR},"Aktif")', "Penyedia keamanan aktif"),
+    ("Status REKOMENDASI", f'=COUNTIF(Master!$AM$2:$AM${MR},"REKOMENDASI")', "Entitas dianggap layak"),
+    ("Status VERIFIKASI", f'=COUNTIF(Master!$AM$2:$AM${MR},"VERIFIKASI")', "Masih perlu dicek"),
+    ("Status HATI-HATI", f'=COUNTIF(Master!$AM$2:$AM${MR},"HATI-HATI")', "Ada temuan atau risiko"),
+    ("Status STOP", f'=COUNTIF(Master!$AM$2:$AM${MR},"STOP")', "Jangan dipakai"),
+    ("Izin Kadaluarsa", f'=COUNTIFS(Master!$K$2:$K${MR},"<"&TODAY())', "Lisensi/izin sudah lewat"),
+    ("Izin Habis 90 Hari", f'=COUNTIFS(Master!$K$2:$K${MR},">="&TODAY(),Master!$K$2:$K${MR},"<="&TODAY()+90)', "Perlu renewal segera"),
+    ("Dokumen Bukti Kurang", f'=COUNTIF(Master!$AN$2:$AN${MR},"-")', "Belum ada file bukti atau ditandai -"),
+    ("Mitra Saudi Kosong", f'=COUNTIF(Master!$R$2:$R${MR},"-")', "Perlu cek rantai pasok Saudi"),
+    ("Lisensi Saudi Kosong", f'=COUNTIF(Master!$S$2:$S${MR},"-")', "Perlu verifikasi Saudi"),
+    ("Asuransi Partner Kosong", f'=COUNTIF(Master!$X$2:$X${MR},"-")', "Risiko proteksi jamaah"),
+    ("Hotel Partner Kosong", f'=COUNTIF(Master!$U$2:$U${MR},"-")', "Perlu cek akomodasi"),
+    ("Transport Partner Kosong", f'=COUNTIF(Master!$V$2:$V${MR},"-")', "Perlu cek mobilitas"),
+    ("Rekor Sanksi Tercatat", f'=SUMPRODUCT(--(Master!$AE$2:$AE${MR}<>"Tidak ada"),--(Master!$AE$2:$AE${MR}<>"-"))', "Entitas pernah/ada sanksi"),
+    ("Keluhan Tinggi atau Kritis", f'=COUNTIF(Master!$AF$2:$AF${MR},"Tinggi")+COUNTIF(Master!$AF$2:$AF${MR},"Kritis")', "Early warning publik"),
+    ("Total Kapasitas Tahunan", f"=SUM(Master!$AB$2:$AB${MR})", "Estimasi kapasitas ekosistem"),
+    ("Rata-rata Petugas", f"=IFERROR(AVERAGE(Master!$AA$2:$AA${MR}),\"\")", "Indikator kesiapan SDM"),
+    ("Update Lebih dari 30 Hari", f"=SUMPRODUCT(--(Master!$AJ$2:$AJ${MR}<TODAY()-30))", "Data perlu disegarkan"),
+    ("Rata-rata Risk Score", f"=IFERROR(AVERAGE(Master!$AX$2:$AX${MR}),\"\")", "Rata-rata risiko 0-100"),
+    ("Entitas Risk EKSTREM", f'=COUNTIF(Master!$AY$2:$AY${MR},"EKSTREM")', "Prioritas mitigasi tertinggi"),
+    ("Entitas Risk TINGGI", f'=COUNTIF(Master!$AY$2:$AY${MR},"TINGGI")', "Perlu pengawasan ketat"),
+    ("Entitas Risk SEDANG", f'=COUNTIF(Master!$AY$2:$AY${MR},"SEDANG")', "Perlu monitoring"),
+    ("Entitas Risk RENDAH", f'=COUNTIF(Master!$AY$2:$AY${MR},"RENDAH")', "Relatif aman"),
+    ("Total Checklist", total_checklist_formula, "Gabungan tiga checklist khusus"),
+    ("Checklist Lengkap", lengkap_checklist_formula, "Item sudah terpenuhi"),
+    ("Checklist Belum Dicek", belum_dicek_checklist_formula, "Item masih kosong"),
+    ("Checklist Bermasalah", bermasalah_checklist_formula, "Item gagal verifikasi"),
+    ("Keputusan Stop", stop_checklist_formula, "Item kritis"),
+    ("Sumber Resmi Utama", '=COUNTIF(Sumber_Resmi!$I$2:$I$1000,"Utama")', "Jumlah sumber prioritas utama"),
+]
+
+for idx, (metric, formula, ket) in enumerate(dashboard_rows, start=1):
+    ws_dash.cell(row=idx + 1, column=1, value=idx)
+    ws_dash.cell(row=idx + 1, column=2, value=metric)
+    ws_dash.cell(row=idx + 1, column=3, value=formula)
+    ws_dash.cell(row=idx + 1, column=4, value=ket)
+
+ws_dash.column_dimensions["B"].width = 35
+ws_dash.column_dimensions["C"].width = 18
+ws_dash.column_dimensions["D"].width = 55
+
+# ----------------------------------------------------------------------
+# WORKBOOK PROPERTIES
+# ----------------------------------------------------------------------
+try:
+    wb.calculation.fullCalcOnLoad = True
+except Exception:
+    pass
+
+# ----------------------------------------------------------------------
+# SAVE
+# ----------------------------------------------------------------------
+wb.save(OUTPUT_FILE)
+print(f"File berhasil dibuat: {OUTPUT_FILE}")
+```
+
+---
+
+# CARA PAKAI HASIL SCRIPT
+
+Setelah file `.xlsx` jadi:
+
+## 1. Isi sheet `Master`
+
+Tempel data entitas dari blok CSV Master yang sebelumnya, atau mulai input manual.
+
+Kolom penting:
+
+- `A` = `id_entitas`
+- `D` = `jenis_entitas`
+- `L` = `status_izin`
+- `R` = `mitra_Saudi`
+- `S` = `lisensi_Saudi`
+- `X` = `asuransi_partner`
+- `AE` = `rekor_sanksi`
+- `AF` = `keluhan_publik`
+- `AG` = `audit_terakhir`
+- `AM` = `status_whitelist`
+- `AN` = `dokumen_bukti`
+
+Formula risiko di kolom `AO` sampai `AZ` akan otomatis jalan.
+
+---
+
+## 2. Gunakan checklist khusus
+
+Sheet:
+
+```text
+Checklist_PPIU_Umrah
+Checklist_PIHK_Haji_Khusus
+Checklist_Provider_Saudi
+```
+
+Untuk satu entitas, Anda bisa:
+
+1. Copy seluruh baris checklist.
+2. Paste ke bawah.
+3. Isi kolom `id_entitas` jika Anda tambahkan kolom tersebut, atau cukup catat di `catatan`.
+4. Ubah `status_check` menjadi:
+   - Lengkap
+   - Belum Dicek
+   - Bermasalah
+   - Perlu Dokumen
+5. Isi `keputusan`:
+   - Lanjut
+   - Hold
+   - Stop
+   - Eskalasi
+
+---
+
+## 3. Isi `Mitra_RantaiPasok`
+
+Gunakan untuk memetakan:
+
+```text
+PPIU/PIHK mana pakai provider Saudi siapa,
+hotel siapa,
+transport siapa,
+catering siapa,
+asuransi siapa,
+bank siapa,
+teknologi siapa,
+kesehatan siapa,
+keamanan siapa.
+```
+
+Ini penting untuk crisis management dan audit rantai pasok.
+
+---
+
+## 4. Isi `Insiden_Keluhan`
+
+Setiap ada:
+
+- delay
+- kehilangan bagasi
+- hotel tidak sesuai
+- transport Armuzna bermasalah
+- jamaah sakit
+- wafat
+- fraud
+- visa bermasalah
+- refund tidak jelas
+
+catat di sini.
+
+---
+
+## 5. Isi `Audit_Trail`
+
+Setiap perubahan penting harus dicatat:
+
+- perubahan status izin
+- perubahan whitelist
+- perubahan kontrak mitra
+- perubahan keputusan checklist
+- perubahan risiko
+
+Ini membuat database Anda siap audit dan defensibel secara hukum/manajerial.
+
+---
+
+# REKOMENDASI ALUR KERJA HARIAN / MINGGUAN
+
+## Harian saat musim ramai
+
+1. Cek `Insiden_Keluhan` status Open/Escalated.
+2. Cek `Master` kolom `risk_label` EKSTREM/TINGGI.
+3. Cek `Mitra_RantaiPasok` untuk entitas bermasalah.
+4. Update `Audit_Trail` jika ada perubahan keputusan.
+
+## Mingguan
+
+1. Sinkronkan daftar PPIU/PIHK dari Ditjen PHU Kemenag.
+2. Sinkronkan lisensi provider Saudi dari kanal resmi Saudi.
+3. Cek izin yang akan habis 90 hari.
+4. Update dokumen bukti.
+5. Recalculate dashboard.
+
+## Pra-Ramadan / Pra-Haji
+
+1. Jalankan checklist penuh untuk semua PPIU/PIHK/provider.
+2. Verifikasi kontrak hotel, transport, catering, asuransi.
+3. Verifikasi kapasitas petugas.
+4. Verifikasi SOP krisis, lansia, disabilitas, medis.
+5. Tetapkan whitelist final:
+   - REKOMENDASI
+   - VERIFIKASI
+   - HATI-HATI
+   - STOP
+
+---
+
+# VERSI PALING KUAT UNTUK NEXT LEVEL
+
+Kalau Anda ingin ini menjadi sistem monitoring resmi, tambahkan 3 hal berikut ke workbook:
+
+## 1. Sheet `User_Access`
+
+Untuk mencatat siapa boleh edit apa.
+
+Kolom saran:
+
+```text
+user_id,nama_user,peran,hak_akses_sheet,hak_akses_kolom,status,catatan
+```
+
+## 2. Sheet `SLA_Penyedia`
+
+Untuk mengukur kinerja mitra.
+
+Kolom saran:
+
+```text
+id_sla,id_entitas,jenis_layanan,indikator,target,realisasi,periode,skor,catatan
+```
+
+Indikator contoh:
+
+- ketepatan jadwal transport
+- kesesuaian hotel
+- ketepatan meal
+- response time crisis desk
+- jumlah keluhan per 100 jamaah
+- tingkat kehilangan dokumen
+- kecepatan resolusi aduan
+
+## 3. Sheet `Whitelist_Keputusan`
+
+Untuk keputusan final yang bisa dipertanggungjawabkan.
+
+Kolom saran:
+
+```text
+id_keputusan,tanggal,id_entitas,nama_entitas,status_whitelist_lama,status_whitelist_baru,alasan,PIC_keputusan,persetujuan_legal,persetujuan_risiko,bukti
+```
+
+---
+
+Kalau Anda mau, tahap berikutnya saya bisa lanjutkan dengan salah satu dari ini:
+
+1. **Buatkan sheet tambahan level lanjut**: `User_Access`, `SLA_Penyedia`, `Whitelist_Keputusan`, `Contract_Register`, `Emergency_Contact_Tree`.
+2. **Buatkan formula risk score versi bobot bisa diatur** lewat sheet `Bobot_Risiko`, sehingga Anda bisa ubah bobot izin, sanksi, keluhan, dll tanpa edit formula panjang.
+3. **Buatkan dashboard visual**: chart sebaran status whitelist, risk label, izin kadaluarsa, keluhan, dan kapasitas.
+4. **Buatkan skrip Python versi lebih canggih**: otomatis baca CSV dari folder, validasi duplikat `id_entitas`, cek tanggal, dan generate laporan PDF/Excel summary.

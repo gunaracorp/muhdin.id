@@ -72,7 +72,7 @@ const QUICK_LINKS: [path: string, key: string][] = [
   ["pindai", "pindai"],
 ];
 
-/** Task 52 (P0) — kolom "Tata Kelola & Kepercayaan": 8 halaman infrastruktur kepercayaan. */
+/** Task 52 (P0) — kolom "Tata Kelola & Kepercayaan": infrastruktur kepercayaan + audit 2026. */
 const TRUST_LINKS: [path: string, key: string][] = [
   ["regulasi", "trustRegulasi"],
   ["transparansi", "trustTransparansi"],
@@ -82,6 +82,11 @@ const TRUST_LINKS: [path: string, key: string][] = [
   ["sehat", "trustSehat"],
   ["kalkulator", "trustKalkulator"],
   ["widget", "trustWidget"],
+  // Audit 2026 — kemitraan, pembayaran, keamanan, model biaya
+  ["kemitraan", "trustKemitraan"],
+  ["pembayaran", "trustPembayaran"],
+  ["keamanan", "trustKeamanan"],
+  ["biaya", "trustBiaya"],
 ];
 
 /** Task 30 — tiap layanan footer kini deep-link ke detail ekosistemnya (dialog auto-terbuka). */
@@ -698,11 +703,17 @@ export function Footer() {
             </div>
           </div>
 
-          {/* Task 36→52 — strip keunggulan: asosiasi digital pertama + keanggotaan gratis */}
+          {/* Audit 2026 — strip keberlanjutan (pengganti klaim "gratis selamanya") + disclaimer kepatuhan */}
           <div className="mt-12 rounded-2xl border border-gold/40 bg-gold/10 p-4 text-center">
             <p className="inline-flex flex-wrap items-center justify-center gap-2 text-xs font-extrabold uppercase tracking-widest text-gold sm:text-sm">
               <Icon name="check-circle-2" className="h-4 w-4 shrink-0" aria-hidden />
               {t("footer.freeBadge")}
+            </p>
+          </div>
+          <div className="mt-3 rounded-2xl border border-white/10 bg-white/5 p-4 text-center">
+            <p className="mx-auto flex max-w-3xl flex-wrap items-center justify-center gap-2 text-xs leading-relaxed text-emerald-100/75">
+              <Icon name="scale" className="h-4 w-4 shrink-0 text-gold" aria-hidden />
+              {t("footer.complianceNote")}
             </p>
           </div>
 

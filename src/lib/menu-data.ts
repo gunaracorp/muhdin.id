@@ -140,6 +140,11 @@ export const MENU_NODES: MenuNode[] = [
       { slug: "etik", icon: "gavel", route: "etik" },
       { slug: "pdp", icon: "lock", route: "pdp" },
       { slug: "darurat", icon: "siren", route: "darurat" },
+      // Audit 2026 — kemitraan, pembayaran, keamanan, model biaya
+      { slug: "kemitraan", icon: "handshake", route: "kemitraan" },
+      { slug: "pembayaran", icon: "wallet", route: "pembayaran" },
+      { slug: "keamanan", icon: "shield-ellipsis", route: "keamanan" },
+      { slug: "biaya", icon: "banknote", route: "biaya" },
     ],
   },
 ];

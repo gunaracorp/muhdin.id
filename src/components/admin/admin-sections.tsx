@@ -224,9 +224,9 @@ export function AdminMembers() {
       memberSince: new Date().getFullYear(),
     }),
     fields: [
-      { key: "name", label: "Nama Organisasi", type: "text", required: true },
-      { key: "type", label: "Jenis Mitra", type: "select", options: TYPE_OPTS, required: true },
       { key: "licenseNo", label: "Nomor Izin", type: "text", required: true },
+      { key: "name", label: "Nama Perusahaan/Organisasi", type: "text", required: true },
+      { key: "type", label: "Jenis Mitra", type: "select", options: TYPE_OPTS, required: true },
       { key: "city", label: "Kota", type: "text", required: true },
       { key: "province", label: "Provinsi", type: "text" },
       { key: "phone", label: "Telepon", type: "text" },
@@ -259,7 +259,8 @@ export function AdminMembers() {
   };
   return (
     <div>
-      <div className="flex justify-end mb-2">
+      <div className="flex justify-end gap-2 mb-2">
+        <ImportCsvButton type="members" />
         <ExportCsvButton type="members" />
       </div>
       <CrudManager<Member> config={config} />
@@ -2022,7 +2023,7 @@ export function AdminSecurityCard() {
         <div className="min-w-0">
           <h3 className="font-bold leading-tight">Keamanan Akun</h3>
           <p className="text-xs text-muted-foreground">
-            Ganti password default <code className="font-mono">muhdin2026</code> segera setelah situs
+            Ganti password bawaan (lihat <code className="font-mono">prisma/seed.ts</code>) segera setelah situs
             go-live di muhdin.web.id. Perangkat lain akan otomatis dikeluarkan.
           </p>
         </div>

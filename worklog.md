@@ -2155,3 +2155,120 @@ Stage Summary:
 - API smoke: /api/auth/sessions GET+DELETE revoke 1 ✓; /api/management/omzet summary+monthly+topPackages ✓; /api/campaigns/[id]/leads POST lead ✓ (2 lead di CMS); landing /kampanye/… 200 + judul benar, slug asing 404; sitemap.xml 200.
 - Bukti visual (download/): v13-roadmap-portal.png (52 DONE), v13-cms-omzet.png (Rp 28,5 jt + grafik), v13-cms-sesi.png (Perangkat & Sesi Aktif), v13-cms-kampanye.png (lead 2), v13-kampanye-landing.png (SSR + form).
 - Push GitHub main per batch + commit README/worklog (token baru, selalu di-redact di log).
+## Task ID 21 — Urutan Formulir PPIU/PIHK: Nomor Izin Selalu Pertama
+Tanggal: 2026-11-08
+
+Task: "di formulir profile PPIU dan PIHK formulirnya nomor izin selalu nomor pertama setelah itu baru Nama Perusahaan/Organisasi" + push GitHub (token baru, push 5 commit tertunda c2d8aa1..6083fe6) + paket download ZIP lengkap.
+
+Work Log:
+- **join-view.tsx** (formulir #/gabung): blok Nomor Izin (Kemenag RI) dinaikkan ke posisi pertama (full-width), Nama Organisasi turun ke posisi kedua (full-width), sisanya tetap (Jenis Mitra, Kontak, Email, Telepon, Kota, Provinsi, Profil).
+- **daftar-view.tsx** (wizard #/daftar, kind org — PPIU/PIHK/dll): urutan field profil diubah → license (full, required dinamis) → name (full) → contact → email → phone → city → province; langkah dokumen wizard sudah benar sebelumnya (legalitas → license → orgProfile).
+- **admin-sections.tsx** (CMS Direktori Anggota, form tambah/edit): fields diurut ulang → Nomor Izin → Nama Perusahaan/Organisasi (label diselaraskan) → Jenis Mitra → Kota → dst.
+- **i18n 3 bahasa**: join.ts labelOrg → "Nama Perusahaan / Organisasi *" (id/en/ar); indonesia-join.ts (nusJoin) labelOrgName → "Nama Perusahaan / Organisasi" + labelLicense "No. Izin" → "Nomor Izin" (id), "Company / Organization Name" + "Licence Number" (en), "اسم الشركة / المنظمة" (ar).
+- Verifikasi browser (agent-browser): #/gabung — j-license y=936 (pertama) → j-org y=1008 (kedua) ✓; #/daftar peran PPIU — "Nomor Izin *" pertama dengan hint Kemenag, lalu "Nama Perusahaan / Organisasi *" ✓; CMS login → Direktori Anggota → Tambah — dialog: Nomor Izin * → Nama Perusahaan/Organisasi * → Jenis Mitra * → Kota * … ✓; 0 page error.
+- tsc: 0 error pada seluruh file tersentuh (error pra-eksisting examples/mini-services/scripts tidak disentuh).
+- Paket download: scripts/buat-paket-download.py → MUHDIN-Paket-Lengkap-2026-11-08.zip (71 file, 14,2 MB, integritas OK) berisi template impor, tutorial, materi master, naskah demo, bukti pengembangan + manifest BACA-DULU.
+
+## Task ID 22 — Registri Data Resmi PPIU/PIHK + Auto-Isi Formulir dari Nomor Izin
+Tanggal: 2026-11-08
+
+Task: "isi data PPIU & PIHK terlengkap, sumber Play Store 'Satu Haji'; di form PPIU cukup masukkan nomor izin → semua data terisi otomatis".
+
+Work Log:
+- **Kejujuran sumber**: data internal aplikasi Play Store (SatuHaji) tidak dapat diekstrak (database tertutup, API tidak publik); diganti sumber publik resmi yang dipakai ekosistem tersebut.
+- **Panen data resmi (58 perusahaan, 0 dikarang)**: scripts/panen-data-resmi.py — (A) 40 anggota DPP SAPUHI sapuhi.id/members hal.1 (izin PPIU & PIHK + alamat; hal. 2–7 gagal: cache WebFetch mengabaikan query param, daemon browser mati, jaringan sandbox terblokir); (B) 18 baris pertama "Daftar Resmi PIHK Kemenag 2025" (izin KMA + alamat + telp + email). Kota/provinsi di-parse dari alamat; sumber dicantumkan di kolom description; 31 nama PPIU baru Kemenag TIDAK diimpor (tanpa nomor izin — jangan mengarang).
+- **Impor**: download/data-resmi/anggota-resmi.csv → /api/import (members, upsert by licenseNo) → 58 inserted, 0 gagal; DB total 103 Member (42 PIHK, 56 PPIU, 2 KBIHU, 1 IPHI, 2 TW); direktori publik ?type=PIHK kini 42.
+- **API baru /api/members/lookup** (publik, rate-limit 30/menit): pencocokan 4 lapis — normalisasi persis, contains dua arah (izin gabung "U.159/2020 / 552/2018"), angka-saja ≥6 digit ("7832019" ⇔ "KMA 783/2019"), nama; guard anti-lic-kosong (bug "—" cocok semua ditemukan & diperbaiki).
+- **Auto-isi UI**: join-view (#/gabung) & daftar-view (#/daftar kind org) — debounce 600 ms + onBlur → fetch lookup → isi hanya kolom KOSONG (nama/kota/provinsi/telp/email; join juga tipe dari izin) + status aria-live 3 bahasa (autofillChecking/Ok/Miss di join.ts & indonesia-join.ts id/en/ar).
+- **E2E browser**: #/gabung ketik "U. 159 TAHUN 2020" → nama "PT. AMANAH INDAH WISATA", kota Bekasi, hint hijau ✓; reload ketik "KMA 783/2019" → "PT. AFIZ NURUL QOLBI", Jakarta Selatan, telp (021) 72799455; 0 page error. tsc bersih utk semua file tersentuh. Dev server sempat mati (exit 1, tanpa error jelas — dugaan OOM/kill), direstart .zscripts/dev.sh → HTTP 200.
+
+## Task ID 23 — Tambah 423 Perusahaan Resmi dari Direktori HIMPUH (PPIU + PIHK)
+Tanggal: 2026-11-08
+
+Task: "tambah 201 perusahaan lagi" (lanjutan registri PPIU/PIHK Task 22).
+
+Work Log:
+- **Sumber baru: API publik HIMPUH** (himpuh.or.id/api/publik/anggota) — WebFetch cache mengabaikan query param & server SAPUHI mengabaikan ?page (paginasi Livewire AJAX, snapshot Wayback pun berisi hal. 1), curl & browser headless diblokir sapuhi.id (chrome-error) — namun himpuh.or.id TERBACA di browser → endpoint API ditemukan via network tracking (GET /api/publik/anggota?page=N&page_size=100, maks 100/halaman).
+- **Panen 476 anggota HIMPUH** (251 PIHK, 223 PPIU, 2 BPW) + 450 detail (endpoint /api/publik/anggota/<id> via fetch berbatch 25×18, Promise.allSettled) yang memuat: jenis anggota, No SK Haji, No SK Umrah, nomor registrasi, alamat+kecamatan+kabupaten+provinsi+kode pos, telepon (kode 62), email, website, waktu bergabung.
+- **Filter & dedupe**: 19 tanpa izin & 27 izin sampah (label "SK Umrah"/"SK PPIU"/"SK Haji"/"-" tanpa digit → ditolak, aturan baru izin_valid: wajib ada digit); 7 nama duplikat vs DB; izin tabrakan normalisasi antar-seri (SK Umrah vs SK Haji "348 Tahun 2020") dibereskan — dedupe string persis + normalisasi ≥8 char. Hasil: **423 baris bersih (228 PIHK + 195 PPIU), semuanya ada telepon & email, 332 ada website, 0 tanpa provinsi**.
+- **Impor**: scripts/himpuh-parse.py + himpuh-bangun-csv.py → download/data-resmi/anggota-himpuh.csv → POST /api/import (login admin) → **inserted 423, updated 0, errors 0**. DB total **526 Member (270 PIHK, 251 PPIU, 2 KBIHU, 1 IPHI, 2 TRAVEL_WISATA)**. Catatan: 33 Member provinsi "Indonesia" adalah data seed lama, bukan HIMPUH.
+- **E2E**: /api/members/lookup?licenseNo="145 Tahun 2017" → PT. Cahaya Cordoba Utama, Bandung (telp+email ikut); izin NIB panjang "91204019714210002" → PT. Taqwa Mulia Wisata, Magelang, PIHK. Browser #/gabung ketik izin → nama/kota/provinsi/telp/email terisi otomatis ✓, 0 page error.
+- tsc tidak menyentuh file TS. Target user 201 terlampaui (423) karena data asli HIMPUH melimpah — semua disimpan.
+
+Stage Summary:
+- Total direktori 5× lipat dalam 2 hari (103 → 526) tanpa satu pun data dikarang; sumber dicantumkan di description tiap anggota.
+
+## Task ID 24 — Panen Lanjutan: PIHK Kemenag Baris 19-87 (+38 Baru, 31 Diperkaya)
+Tanggal: 2026-11-08
+
+Task: "lanjutkan panen sumber resmi berikutnya (daftar PIHK Kemenag lengkap 88 baris dengan telepon+email, atau halaman 2-7 SAPUHI via jalur lain)".
+
+Work Log:
+- **Kejujuran akses**: SAPUHI memblokir seluruh jalur dari sandbox (curl timeout, chrome-error di browser headless, r.jina.ai "Html Convert Error", paginasi Livewire mengabaikan ?page — snapshot Wayback pun berisi hal. 1); sitemap.xml kena gate JS. IHATA situs mati. Scribd baris 88-300 terpaywall (preview cuma 4 halaman; embed & jina tetap baris 1-87).
+- **Kemenag PIHK (19-87) berhasil dipanen** dari salinan publik "Daftar Penyelenggara Ibadah Haji Khusus (PIHK)" Ditjen PHU (id.scribd.com/document/693210692) — transkrip persis 69 baris (nama, nomor KMA, alamat, telp, email; typo sumber dipertahankan; 1 alamat diperbaiki baca: Gadinganggan/Gandangan).
+- **Parser wilayah baru**: pencocokan case-insensitive + buang kode pos + regex "Kota/Kab X" + set nama provinsi (fix bug lazy-regex memotong nama kota; 69/69 kota+provinsi terisi).
+- **Dedupe pintar**: 38 NAMA BARU → impor /api/login+import → **inserted 38, errors 0**; 31 nama sudah ada di DB → **diperkaya** (description += nomor KMA resmi + sumber; 3 kolom kosong terisi telp/email: Indah Permata Permai, Kemang Nusantara Travel, Madinah Iman Wisata). licenseNo/nama/type existing TIDAK diubah (aman utk auto-isi).
+- **DB**: 526 → **564 Member (308 PIHK, 251 PPIU, 2 KBIHU, 1 IPHI, 2 TRAVEL_WISATA)**.
+- Catatan: 3 Member dengan description "Ditjen PHU (Mei 2025)" (Panguji/Lyla/Nur Al Iffah) adalah seed lama — bukan hasil task ini.
+- Blokir tersisa (dokumentasi): Scribd hal. 5-16 (baris 88-±300) paywall; SAPUHI hal. 2-7 situs memblokir sandbox; tindak lanjut ideal = akses kantor jaringan berbeda atau akun Scribd/berlangganan untuk unduh dokumen resmi.
+
+Stage Summary:
+- scripts: pihk-kemenag-19-87.py (transkrip 69 baris + parser wilayah), pihk-kemenag-masuk.py (dedupe nama + enrich); CSV: download/data-resmi/pihk-kemenag-19-87.csv (+ -baru.csv).
+- E2E ringkas: lookup tetap normal setelah 38 insert; total direktori 103 → 526 → 564 dalam satu hari, semua bersumber resmi dicantumkan di description.
+
+## Task ID 25 — Panen PDF Resmi Kanwil Kemenag Jateng: SATU HAJI per 15 September 2025 (+171 Member, DB 564 → 735)
+Tanggal: 2026-11-08
+
+Task: "update ke github push dulu lalu lanjutkan cari lagi" (lanjutan Task 24; push dicek ternyata 549512e sudah sinkron).
+
+Work Log:
+- **Verifikasi push**: GitHub main = 549512e = HEAD lokal (push Task 24 ternyata sudah masuk; ref tracking lokal dibetulkan via git fetch).
+- **Jejak sumber yang buntu**: Wayback CDX sapuhi.id = 0 URL diarsipkan; portal baru haji.go.id (LK&PIH/Data) kosong; 2017.kemenag.go.id & haji.kemenag.go.id & simpu.kemenag.go.id memblokir sandbox (curl timeout, chrome-error, DNS gagal); r.jina.ai kena IP-block; PDF kanwil kalteng/sumsel/kalsel timeout. WebFetch Scribd 633280824 "PIHK per 311222" (nasional, KMA diperbarui) hanya terbaca baris 1-76 (sisa paywall).
+- **Jalur emas**: WebSearch menemukan PDF publik jateng.kemenag.go.id (WordPress, TIDAK memblokir sandbox): DATA-PIHK-Pusat-Jateng-per-15-September-2025.pdf (53 PIHK: 13 KMA + 40 NIB) dan DATA-PPIU-Pusat-Jateng-per-15-September-2025.pdf (199 PPIU: 104 NIB + 95 SK "U.xxx Tahun yyyy") — keduanya "***SATU HAJI per 15 September 2025", sumber data resmi terbaru yang pernah dipanen (HIMPUH = snapshot lama).
+- **Parser baru scripts/jateng-parse2.py** (pdfplumber): aliran kata global antar halaman, anchor nomor urut kolom NO, rentang-Y [anchor-22, anchor+1-15) karena konten selalu menjorok di atas angka NO; filter kata header tiap halaman; regex izin KMA/NIB/U.xxx; ekstrak telepon (norm +62), email (fix potongan wrap PDF "GMAIL.CO M"), kota (Kota/Kab + fallback nama kota/kab Jateng), direktur, tanggal SK.
+- **3 bug parser yang ditemukan & diperbaiki**: (1) batas kolom izin/tgl 340 memakan kata tanggal ("19" → izin) sehingga regex KMA gagal — digeser ke 337 + regex tanggal pakai daftar nama bulan (mencegah "58 Tahun 2019" dari "958 Tahun 2019"); (2) `gabung.append(p)` lupa ditambahkan di cabang grup ≥2 — 51 perusahaan tercatat ganda (satu perusahaan di tabel PIHK & PPIU sekaligus) lenyap diam-diam, terdeteksi dari kasus PT. SEKOLAH HAJI UMROH BAITULLAH (ada di PDF, tidak ada di DB/CSV/COCOK); (3) kota di-parse sebelum penggabungan alamat → ditambah isi_kota() dari alamat final + fallback.
+- **Dedupe pintar**: entri ganda PIHK+PPIU digabung (primer PIHK; izin kedua dicatat di description "juga terdaftar sbg PPIU: U.444 Tahun 2020"); dedupe nama/izin vs DB 564: 127 BARU (impor-1: inserted 127, 0 error) + 44 PIHK gabungan (impor-2: inserted 42, 2 skip karena kota kosong → diperbaiki isi_kota → impor-3: inserted 2). Enrichment 24 anggota lama (guard anti-dobel description): izin SATU HAJI terbaru ditambahkan; PT Ameera Hati Mulia dapat telp+email; PT SEKOLAH HAJI dsb. dapat telp dari izin PPIU-nya.
+- **DB**: 564 → **735 Member (PPIU 377, PIHK 353, KBIHU 2, IPHI 1, Travel Wisata 2)**; Jawa Tengah 23 → 150.
+- **CSV deliverable**: download/data-resmi/pihk-ppiu-jateng-satu-haji-2025.csv (129 baris; kolom Master; sumber dicantumkan per baris).
+- **E2E**: lookup NIB 02201073600530004 → PT. SEKOLAH HAJI UMROH BAITULLAH, Kab. Semarang, telp+email ✓; #/gabung ketik izin → nama+kota terisi otomatis ✓; 0 page error.
+- Catatan: 5 entri tanpa nomor izin (ALFATIH BIRO UMRAH, OZMAN, CAHAYA HARAMAIN, NAJAH TOUR & TRAVEL, MADANI MITRA MULIA) TIDAK diimpor sesuai aturan anti-karang; data mentah disimpan /tmp/panen25/.
+
+## Task ID 26 — Panen Direktori Resmi AMPHURI: 779 Anggota, +657 Baru, 79 Diperkaya (DB 735 → 1392)
+Tanggal: 2026-11-09
+
+Task: "ghp_... tolong push yang terbaru lalu gas lagi" (push dicek ternyata 946a3f0 sudah sinkron; lanjut panen sumber baru).
+
+Work Log:
+- **Verifikasi push**: ls-remote langsung ke GitHub = HEAD lokal 946a3f0 (Task 23+24+25 sudah di remote).
+- **Sumber baru: Direktori anggota resmi AMPHURI** (amphuri.org/daftar-member — asosiasi PPIU/PIHK; situs TIDAK memblokir sandbox, berbeda dari sapuhi.id/web.archive.org yang kini ikut timeout). Tabel utama 780 baris (779 anggota + header): nama, no. anggota, pimpinan, License (PIHK 279/PPIU 500), kota, provinsi, DPD.
+- **779 detail modal dipanen** (`/daftar-member/<id>/detail?signature=...`, JSON berisi alamat + "PPIU License Number" + "PIHK License Number"): scripts/amphuri-panen.py (4 worker) → 539 ok + 240 kena HTTP 429 → scripts/amphuri-retry.py (1 worker, jeda 2s, backoff) → **779/779, 0 gagal**.
+- **Parser v2** (scripts/amphuri-parse2.py): perbaikan badge inisial avatar ("AM"/"SR" ikut tertangkap sbg nama), izin via clean-text (label terpotong tag), izin_rapi "TH"→"Tahun". Matcher 3 tahap vs DB 735: (1) norm nama persis 78, (2) norm izin 0, (3) token containment ≥0.75 + provinsi sama = 15 → **review manual**: hanya PT MAKASSAR TORAJA ≡ PT. MAKASSAR TORAJA TOUR & TRAVEL (alamat Jl. Otista Raya 13330 identik) yang benar digabung; 14 lainnya perusahaan berbeda (nama mirip, izin beda) → tetap diimpor sbg baru. Cek silang tambahan 237 kandidat cont 0.5-0.75: hampir semua tabrakan token generik ("indah"/"al"/"prima") — 0 tabrakan izin antar 749 AMPHURI vs 735 DB menguatkan.
+- **Anti-karang**: 30 anggota AMPHURI izinnya "-"/kosong → TIDAK diimpor; 12 izin notasi ilmiah Excel (mis. "1.293000232054E+16", NIB terpotong di sumber) → ditolak; 1 izin berisi angka akuntansi "1.290.000.710.217,00" (PT BUNGOMAS MEGA WISATA) → ditolak; apostrof sumber "…0001'" dibersihkan.
+- **29 baris kota kosong diisi dari alamat sumber** (scripts/amphuri-fix-kota.py; Tebet→Kota Jakarta Selatan dst.) + **4 provinsi tabel AMPHURI salah dikoreksi dari alamat** (ADZAN INSAN KARIMAH Sulsel→Banten/Kota Tangerang; ARYATI Banten→DKI/Jakarta Utara; INHIL ARJUNA DKI→NTB/Lombok Tengah; TRAVELATAYA Riau→Kep. Riau/Batam).
+- **Bug ditemukan & diperbaiki**: 14 cocokan t3 yang divonis "impor sbg baru" ternyata tereliminasi dari CSV (hanya MAKASSAR TORAJA yang dibuang seharusnya) → scripts/amphuri-t14.py memulihkan & mengimpor keduanya.
+- **Impor**: 615 (batch-1) + 28 (fix kota) + 14 (t3) = **657 inserted, 0 error**. **Enrichment 79** anggota lama (guard anti-dobel "Anggota AMPHURI"): no. anggota + DPD + pimpinan + izin versi AMPHURI/izin kedua; MAKASSAR TORAJA kini punya KMA 800/2017 (DB) + KMA 388/2021 & U.76/2021 (AMPHURI). 78 description dibersihkan dari apostrof nyangkut.
+- **DB: 735 → 1392 Member (PIHK 517, PPIU 870, KBIHU 2, IPHI 1, TW 2)**; 736 anggota bersumber AMPHURI.
+- **CSV deliverable**: download/data-resmi/anggota-amphuri.csv (657 baris, kolom Master, sumber per baris).
+- **E2E**: lookup "KMA Nomor 154 Tahun 2021" → PT GELORA INDAH PERDANA Kota Makassar ✓; NIB "02200035922680001/2024" → PT PELANGI WISATA MADANIAH ✓; "U.77 TAHUN 2022" → PT BERKAH ZAMZAM WISATA Situbondo ✓; browser #/gabung ketik izin → nama/kota/provinsi auto-isi ✓, 0 page error.
+- Blokir terdokumentasi: SAPUHI masih diblokir; web.archive.org kini ikut timeout dari sandbox; bali.haji.go.id (pengumuman daftar PPIU/PIHK 1447H/2026) = SPA React 907 byte — kandidat panen berikutnya via API di baliknya.
+
+Stage Summary:
+- Direktori 735 → 1392 dalam satu sesi (1,9× lipat); total 3 sumber resmi baru dalam 2 hari (HIMPUH, SATU HAJI Jateng, AMPHURI); semua data asli dengan sitasi sumber di description; 44 entri ditolak secara jujur (izin tidak valid/rusak di sumber).
+
+## Task ID 27 — Push Langsung ke GitHub + Hardening Lint (SmartImage) + README Super Lengkap
+Tanggal: 2026-11-15
+
+Task: "kenapa aku harus repot2 download aku lupa langsung aja push kan sayang ke github ku … terus jangan lupa worklog nya updates dan readme nya juga updates yang super lengkap yang pernah ada di dunia ini … fix bug yang ada please god mode tier max" (token GitHub disertakan).
+
+Work Log:
+- **Koneksi remote**: origin lama masih menunjuk bundle lokal (/tmp/…) → remote `gh` ditambahkan ke github.com/gunaracorp/muhdin.id via token. `git ls-remote`: main = 197dfa4 (Task 26) — persis base dari 2 commit siap-push (f46df08 + 86f78a3) → fast-forward murni, tanpa force.
+- **Audit ulang codebase (god mode)**: `bunx tsc --noEmit` = 0 error (fix Task 26 tetap hijau). `bunx eslint .` = **1 error + 5 warning**: (1) ERROR `react-hooks/set-state-in-effect` di `src/components/site/smart-image.tsx:37` — setState sinkron di effect (cascading render); (2–6) 5 directive `eslint-disable` mati (unused) di artikel/[slug]:125, paket/[slug]:88, admin-orders:83, admin-security:112, pesanan-view:133.
+- **Refactor SmartImage (fix error)**: sumber aktif kini DIHITUNG SAAT RENDER (derived state) — `current = priority ? webp||source : (ioBase===source ? ioSrc : "")`, WebP-gagal disimpan per-sumber (`failedSrc === source` → ganti src otomatis pulih tanpa reset effect); IntersectionObserver callback tetap satu-satunya yang setState (diperbolehkan). **Bug laten ikut terperbaiki**: versi lama setelah visible lalu `src` berganti membuat gambar lenyap selamanya (effect gate `visible` menghentikan re-observe) — kini observer dipasang ulang otomatis karena `ioBase !== source`.
+- **5 directive mati dihapus** (sed per baris persis) → `eslint .` = **0 problem**.
+- **Verifikasi penuh**: `tsc --noEmit` 0 · `eslint .` 0 · `bun run build` sukses (post-build standalone OK) — build penuh, bukan hanya typecheck.
+- **README.md super lengkap**: 387 → ~700 baris, semua angka diukur dari repo (bukan diklaim): 67 model, 148 route handler, 76 view, 32 modul CMS, 52 locale file, 34 lib, 60+ rute publik diekstrak dari muhdin-app.tsx, 13 kejadian notifikasi diverifikasi dari email.ts/whatsapp.ts/waitlist.ts. Seksi baru: Angka Proyek (bisa dihitung ulang), Peta Halaman Publik (10 grup rute), v12.6 «AUDIT 2026» (tabel 10 tuntutan + 4 halaman baru + 6 ditingkatkan), v12.6.1 Hardening, Variabel Environment (PAYMENT_WEBHOOK_SECRET fail-closed + BUILD_STATIC; SMTP/WA via CMS), Alur Data Utama (3 diagram ASCII: pendaftaran→KTA, checkout→invoice, compliance loop), Jaminan Kualitas (4 QA gates), Checklist Go-Live 12 langkah, Troubleshooting 9 kasus, FAQ 8 pertanyaan, Kontribusi & Konvensi (format worklog + anti-karang), Dokumentasi Terkait. Versi dinaikkan v12.5 → v12.6, badge audit 10/10 + lint 0 + tsc 0 ditambah. Inkonsistensi lama dirapikan (63→67 model di diagram/struktur, notifikasi 11→13 kejadian dengan bukti kode).
+- **worklog.md**: entri Task 27 ini.
+- **Push**: commit ke branch sempurnakan/typecheck-keamanan-setup lalu fast-forward main → push ke GitHub (lihat Stage Summary).
+
+Stage Summary:
+- ESLint 1 error + 5 warning → **0 problem** dengan refactor idiomatik (bukan suppress); 1 bug UX laten (gambar lenyap saat ganti src) ikut terperbaiki. README 387 → ~700 baris — setiap angka bisa dihitung ulang dari repo. 4 QA gates hijau: tsc 0 · eslint 0 · build sukses · smoke test 200.
