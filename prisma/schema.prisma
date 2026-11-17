@@ -1248,3 +1248,48 @@ model CampaignLead {
   @@index([campaignId, createdAt])
   @@index([status])
 }
+
+// ==================== v13.1 «PANEN & PANTAU» ====================
+
+/// R-096 Duty Officer 24/7 — jadwal piket petugas darurat dengan eskalasi berjenjang.
+/// shiftDays = hari aktif piket (0=Minggu … 6=Sabtu), dipisah koma: "1,2,3,4,5".
+model DutyOfficer {
+  id            String   @id @default(cuid())
+  name          String
+  phone         String // format internasional tanpa + (62812…) — dipakai tel: & wa.me
+  role          String   @default("KOORDINATOR") // KOORDINATOR | MARSHAL | MEDIS | IT_SUPPORT
+  shiftDays     String   @default("0,1,2,3,4,5,6")
+  escalationMin Int      @default(15) // menit sebelum naik ke petugas berikutnya
+  active        Boolean  @default(true)
+  sortOrder     Int      @default(0) // urutan eskalasi (1 = pertama)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([role, active])
+  @@index([sortOrder])
+}
+
+/// R-092 Survei NPS Pasca-Perjalanan — skor 0-10 dari jamaah; NPS = %promoter − %detractor.
+model NpsResponse {
+  id        String   @id @default(cuid())
+  score     Int // 0-10 (9-10 promoter, 7-8 passive, 0-6 detractor)
+  comment   String?
+  cardNo    String? // nomor kartu jamaah (opsional, identitas terverifikasi)
+  source    String  @default("TRACKING") // TRACKING | ORDER | WA | CMS
+  createdAt DateTime @default(now())
+
+  @@index([score])
+  @@index([createdAt])
+}
+
+/// R-097 Papan Status Layanan Publik — riwayat sampel kesehatan (dibatasi 200 terakhir).
+model StatusCheck {
+  id          String   @id @default(cuid())
+  dbLatencyMs Int
+  uptimeSec   Int
+  memoryMb    Int
+  ok          Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  @@index([createdAt])
+}

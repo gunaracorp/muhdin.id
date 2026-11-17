@@ -79,6 +79,7 @@ const TRUST_LINKS: [path: string, key: string][] = [
   ["etik", "trustEtik"],
   ["pdp", "trustPdp"],
   ["darurat", "trustDarurat"],
+  ["status", "trustStatus"],
   ["sehat", "trustSehat"],
   ["kalkulator", "trustKalkulator"],
   ["widget", "trustWidget"],

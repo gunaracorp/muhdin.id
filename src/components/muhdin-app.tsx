@@ -41,6 +41,7 @@ import { TransparansiView } from "@/components/views/transparansi-view";
 import { EtikView } from "@/components/views/etik-view";
 import { PdpView } from "@/components/views/pdp-view";
 import { DaruratView } from "@/components/views/darurat-view";
+import { StatusView } from "@/components/views/status-view";
 import { SehatView } from "@/components/views/sehat-view";
 import { KalkulatorView } from "@/components/views/kalkulator-view";
 import { WidgetView } from "@/components/views/widget-view";
@@ -354,6 +355,10 @@ export function MuhdinApp({ initialLocale = "id" }: { initialLocale?: "id" | "en
       break;
     case "darurat":
       content = <DaruratView />;
+      break;
+    // v13.1 — Papan Status Layanan Publik (R-097)
+    case "status":
+      content = <StatusView />;
       break;
     // Audit 2026 — halaman kemitraan, pembayaran, keamanan & model biaya
     case "kemitraan":

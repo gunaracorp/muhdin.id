@@ -86,3 +86,4 @@ src/generated/
 # Playwright artefak uji (jangan ter-commit)
 test-results/
 playwright-report/
+/upload/

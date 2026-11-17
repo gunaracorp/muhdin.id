@@ -58,6 +58,8 @@ import { scanDict } from "@/lib/i18n/locales/fitur-v7";
 import { complianceDict } from "@/lib/i18n/locales/fitur-v12";
 // v12.2 «99 ROADMAP UPGRADE» — peta jalan 99 item (root `roadmap99`)
 import { roadmap99Dict } from "@/lib/i18n/locales/fitur-v12b";
+// v13.1 «PANEN & PANTAU» — Papan Status (R-097) + Duty Officer (R-096) + NPS (R-092)
+import { v131Dict } from "@/lib/i18n/locales/v131";
 // v12.4 «LUNAS» — Checkout + Pesanan & Invoice (root `checkout`, `pesanan`)
 import { checkoutDict } from "@/lib/i18n/locales/fitur-v12c";
 // v12.5 — Help Center #/bantuan (R-095, root `help`)
@@ -138,6 +140,8 @@ const dicts = [
   complianceDict,
   // v12.2 — 99 Roadmap Upgrade (seksi Tentang Kami)
   roadmap99Dict,
+  // v13.1 — status + duty + nps
+  v131Dict,
   // v12.4 «LUNAS» — Checkout & Lacak Pesanan
   checkoutDict,
   // v12.5 — Help Center (R-095)

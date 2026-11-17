@@ -21,6 +21,7 @@ import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { BRAND } from "@/lib/constants";
+import { NpsWidget } from "@/components/site/nps-widget";
 import { DetailHero } from "@/components/views/detail-shell";
 import { cn } from "@/lib/utils";
 
@@ -328,6 +329,9 @@ export function PesananView() {
               </div>
             </div>
           )}
+
+          {/* v13.1 — R-092 Survei NPS pasca-perjalanan (widget opsional) */}
+          <NpsWidget source="ORDER" />
         </div>
       </section>
     </div>

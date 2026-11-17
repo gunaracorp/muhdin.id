@@ -19,6 +19,164 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useT } from "@/lib/i18n";
 
+/* ============================================================
+ * v13.1 — R-096 «Duty Officer 24/7» — petugas jaga berjenjang.
+ * Data: GET /api/duty-officer (publik). Eskalasi = urutan sortOrder.
+ * ============================================================ */
+
+interface DutyOfficerItem {
+  id: string;
+  name: string;
+  phone: string;
+  role: string;
+  shiftDays: string;
+  escalationMin: number;
+  sortOrder: number;
+}
+
+const DAY_OF_WEEK = [0, 1, 2, 3, 4, 5, 6];
+
+function dutyDays(shiftDays: string): number[] {
+  return shiftDays.split(",").map((d) => Number(d)).filter((d) => d >= 0 && d <= 6);
+}
+
+function DutyBadge({ role }: { role: string }) {
+  const { t } = useT();
+  const tone =
+    role === "MEDIS"
+      ? "border-red-500/40 bg-red-500/10 text-red-700 dark:text-red-300"
+      : role === "MARSHAL"
+        ? "border-primary/40 bg-primary/10 text-primary"
+        : role === "IT_SUPPORT"
+          ? "border-sky-500/40 bg-sky-500/10 text-sky-700 dark:text-sky-300"
+          : "border-gold/40 bg-gold/10 text-gold-deep dark:text-gold-soft";
+  return (
+    <span className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-extrabold ${tone}`}>
+      <Icon name="shield" className="h-3 w-3" aria-hidden />
+      {t(`duty.role.${role}`)}
+    </span>
+  );
+}
+
+function DutyOfficerSection() {
+  const { t } = useT();
+  const [data, setData] = useState<{ onDuty: DutyOfficerItem[]; roster: DutyOfficerItem[] } | null>(null);
+  const [today, setToday] = useState(0);
+
+  useEffect(() => {
+    apiGet<{ today: number; onDuty: DutyOfficerItem[]; roster: DutyOfficerItem[] }>("/api/duty-officer")
+      .then((d) => {
+        setData({ onDuty: d.onDuty, roster: d.roster });
+        setToday(d.today);
+      })
+      .catch(() => setData({ onDuty: [], roster: [] }));
+  }, []);
+
+  return (
+    <div>
+      <SectionHeading
+        align="left"
+        eyebrow={t("duty.eyebrow")}
+        title={t("duty.title")}
+        subtitle={t("duty.subtitle")}
+      />
+      {!data ? (
+        <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-40 rounded-2xl" />)}
+        </div>
+      ) : data.onDuty.length === 0 ? (
+        <p className="mt-6 rounded-2xl border border-dashed p-5 text-sm text-muted-foreground">{t("duty.empty")}</p>
+      ) : (
+        <ul className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {data.onDuty.map((o, i) => (
+            <Reveal key={o.id} delay={Math.min(i * 0.05, 0.25)}>
+              <li className="flex h-full flex-col rounded-2xl border border-emerald-500/40 bg-emerald-500/5 p-5 shadow-sm">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="flex items-center gap-2.5">
+                    <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-emerald-600/15 text-emerald-700 dark:text-emerald-300">
+                      <Icon name="headphones" className="h-5 w-5" aria-hidden />
+                    </span>
+                    <div>
+                      <p className="text-sm font-extrabold leading-snug">{o.name}</p>
+                      <p className="text-[11px] text-muted-foreground">
+                        {t("duty.onDuty")} · {t("duty.order")} {o.sortOrder}
+                      </p>
+                    </div>
+                  </div>
+                  <DutyBadge role={o.role} />
+                </div>
+                <p className="mt-3 font-mono text-lg font-bold tracking-tight" dir="ltr">
+                  +{o.phone.replace(/^\+?/, "")}
+                </p>
+                <p className="mt-1 text-[11px] text-muted-foreground">
+                  {t("duty.escalation")}: {o.escalationMin} {t("duty.minutes")}
+                </p>
+                <div className="mt-auto flex flex-wrap gap-2 pt-4">
+                  <a href={`tel:+${o.phone.replace(/^\+?/, "")}`} className="inline-flex items-center gap-1.5 rounded-full bg-emerald-600 px-3 py-1.5 text-xs font-extrabold text-white shadow-md transition-transform hover:scale-105">
+                    <Icon name="phone" className="h-3.5 w-3.5" aria-hidden /> {t("duty.callCta")}
+                  </a>
+                  <a
+                    href={`https://wa.me/${o.phone.replace(/\D/g, "")}?text=${encodeURIComponent("Assalamu'alaikum, saya butuh bantuan darurat (MUHDIN Duty Officer).")}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/50 px-3 py-1.5 text-xs font-extrabold text-emerald-700 dark:text-emerald-300"
+                  >
+                    <Icon name="message-circle" className="h-3.5 w-3.5" aria-hidden /> {t("duty.waCta")}
+                  </a>
+                </div>
+              </li>
+            </Reveal>
+          ))}
+        </ul>
+      )}
+      {data && data.roster.length > 0 && (
+        <div className="mt-6 overflow-hidden rounded-2xl border bg-card">
+          <table className="w-full text-left text-sm">
+            <thead>
+              <tr className="border-b bg-muted/40 text-xs uppercase tracking-wide text-muted-foreground">
+                <th className="px-4 py-2.5 font-extrabold">{t("duty.roster")}</th>
+                <th className="px-4 py-2.5 font-extrabold">{t("duty.shiftDays")}</th>
+                <th className="px-4 py-2.5 font-extrabold">{t("duty.escalation")}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {data.roster.map((o) => (
+                <tr key={o.id} className="border-b last:border-0">
+                  <td className="px-4 py-2.5">
+                    <span className="font-bold">{o.name}</span>
+                    <span className="ml-2"><DutyBadge role={o.role} /></span>
+                  </td>
+                  <td className="px-4 py-2.5">
+                    <span className="inline-flex gap-1">
+                      {DAY_OF_WEEK.map((di) => (
+                        <span
+                          key={di}
+                          className={`inline-grid h-6 w-6 place-items-center rounded-md text-[10px] font-bold ${
+                            dutyDays(o.shiftDays).includes(di)
+                              ? di === today
+                                ? "bg-emerald-600 text-white"
+                                : "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300"
+                              : "bg-muted text-muted-foreground/50"
+                          }`}
+                        >
+                          {t(`duty.days.${di}`)}
+                        </span>
+                      ))}
+                    </span>
+                  </td>
+                  <td className="px-4 py-2.5 tabular-nums">
+                    {o.sortOrder} · {o.escalationMin} {t("duty.minutes")}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  );
+}
+
 /* ---------- tipe & helper ---------- */
 
 /** Bentuk minimum baris /api/branches (publik, published). */
@@ -252,6 +410,9 @@ export function DaruratView() {
               </Reveal>
             </ul>
           </div>
+
+          {/* v13.1 — Duty Officer 24/7 (R-096) */}
+          <DutyOfficerSection />
 
           {/* Perwakilan RI */}
           <div>

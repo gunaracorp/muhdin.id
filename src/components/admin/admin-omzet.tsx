@@ -56,11 +56,16 @@ const STATUS_LABEL: Record<string, string> = {
 export function AdminOmzet() {
   const [data, setData] = useState<OmzetData | null>(null);
   const [error, setError] = useState("");
+  const [nps, setNps] = useState<{ nps: number | null; total: number; promoters: number; passives: number; detractors: number } | null>(null);
 
   useEffect(() => {
     apiGet<OmzetData>("/api/management/omzet")
       .then(setData)
       .catch((e) => setError((e as Error).message));
+    // v13.1 — R-092 NPS pasca-perjalanan tampil di papan manajemen
+    apiGet<{ nps: number | null; total: number; promoters: number; passives: number; detractors: number }>("/api/nps")
+      .then(setNps)
+      .catch(() => setNps(null));
   }, []);
 
   const s = data?.summary;
@@ -100,7 +105,26 @@ export function AdminOmzet() {
         ))}
       </div>
 
-      {/* Grafik 12 bulan */}
+      {/* v13.1 — NPS pasca-perjalanan (R-092) */}
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        {[
+          { icon: "heart", label: "NPS Jamaah", value: nps?.nps != null ? String(nps.nps) : "—", sub: nps && nps.total > 0 ? "Dari " + nps.total + " respons" : "Belum ada respons", tone: "text-rose-600 bg-rose-500/10" },
+          { icon: "smile", label: "Promoter (9-10)", value: nps ? String(nps.promoters) : "—", tone: "text-emerald-600 bg-emerald-500/10" },
+          { icon: "meh", label: "Passive (7-8)", value: nps ? String(nps.passives) : "—", tone: "text-amber-600 bg-amber-500/10" },
+          { icon: "frown", label: "Detractor (0-6)", value: nps ? String(nps.detractors) : "—", tone: "text-red-600 bg-red-500/10" },
+        ].map((c) => (
+          <div key={c.label} className="rounded-2xl border bg-card p-4 shadow-sm">
+            <div className="flex items-center gap-2">
+              <span className={cn("rounded-lg p-1.5", c.tone)}>
+                <Icon name={c.icon} className="h-4 w-4" aria-hidden />
+              </span>
+              <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">{c.label}</p>
+            </div>
+            <p className="mt-2 text-lg font-extrabold tabular-nums">{c.value}</p>
+            {c.sub && <p className="text-[11px] text-muted-foreground">{c.sub}</p>}
+          </div>
+        ))}
+      </div>
       <div className="rounded-2xl border bg-card p-5 shadow-sm">
         <div className="flex items-center justify-between gap-3">
           <h2 className="font-extrabold">Omzet Lunas — 12 Bulan Terakhir</h2>

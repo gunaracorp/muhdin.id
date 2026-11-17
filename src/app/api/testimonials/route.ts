@@ -4,6 +4,7 @@ import { guardAdmin, ok, fail } from "@/lib/api-helpers";
 import { localeFromRequest, applyEntityTranslations } from "@/lib/i18n-server";
 import { notifyEmailTestimonial } from "@/lib/email"; // Task 60 — notifikasi email sekretariat
 import { notifyTestimonial } from "@/lib/whatsapp"; // Task 60 — notifikasi WhatsApp
+import { rateLimit } from "@/lib/ratelimit";
 
 export async function GET(req: NextRequest) {
   try {
@@ -27,6 +28,10 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  // v13.1 (R-079) — form publik wajib anti-abuse: rate-limit sebelum create
+  if (!rateLimit(req, "testimonials-post", 3, 60_000)) {
+    return fail("Terlalu banyak testimoni dikirim. Coba lagi beberapa menit lagi.", 429);
+  }
   try {
     const body = await req.json();
     if (!body.name || !body.content) return fail("Nama dan isi testimoni wajib diisi.");

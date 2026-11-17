@@ -48,14 +48,21 @@ export function ReviewsSection({ packageId }: { packageId: string }) {
   const { t } = useT();
   const { toast } = useToast();
   const [reviews, setReviews] = useState<PilgrimReviewItem[] | null>(null);
+  const [aggCount, setAggCount] = useState<number | null>(null);
   const [open, setOpen] = useState(false);
   const [sending, setSending] = useState(false);
   const [form, setForm] = useState({ cardNo: "", rating: 5, hotelRate: 5, transportRate: 5, guideRate: 5, body: "" });
 
   const load = useCallback(() => {
-    apiGet<PilgrimReviewItem[]>(`/api/reviews?packageId=${encodeURIComponent(packageId)}`)
-      .then(setReviews)
-      .catch(() => setReviews([]));
+    // Server mengirim { reviews, aggregate } (R-014); array lama tetap ditoleransi.
+    apiGet<PilgrimReviewItem[] | { reviews: PilgrimReviewItem[]; aggregate: { count: number } }>(
+      `/api/reviews?packageId=${encodeURIComponent(packageId)}`
+    )
+      .then((d) => {
+        if (Array.isArray(d)) { setReviews(d); setAggCount(null); }
+        else { setReviews(d.reviews); setAggCount(d.aggregate.count); }
+      })
+      .catch(() => { setReviews([]); setAggCount(null); });
   }, [packageId]);
 
   useEffect(() => {
@@ -92,7 +99,7 @@ export function ReviewsSection({ packageId }: { packageId: string }) {
           <p className="text-4xl font-extrabold text-gold-deep tabular-nums">{avg.toFixed(1)}</p>
           <div className="mt-1.5 flex justify-center"><Stars value={Math.round(avg)} /></div>
           <p className="mt-1 text-xs text-muted-foreground">
-            {avg.toFixed(1)} {t("ulasan.avg")} · {list.length} {t("ulasan.count")}
+            {avg.toFixed(1)} {t("ulasan.avg")} · {aggCount ?? list.length} {t("ulasan.count")}
           </p>
           {list.length > 0 && (
             <div className="mt-4 space-y-2 border-t pt-4 text-start">

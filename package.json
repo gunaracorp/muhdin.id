@@ -14,13 +14,13 @@
     "hosting:build": "node scripts/build-shared-hosting.mjs",
     "start": "NODE_ENV=production bun .next/standalone/server.js 2>&1 | tee server.log",
     "lint": "eslint .",
-<<<<<<< HEAD
     "typecheck": "tsc --noEmit --incremental false",
     "e2e": "playwright test",
     "e2e:seed": "tsx scripts/e2e-seed.ts",
-=======
     "setup": "node scripts/setup-db.mjs",
->>>>>>> origin/main
+    "test:roles": "bun scripts/test-role-matrix.mts",
+    "audit:deps": "bash scripts/audit-deps.sh",
+    "seed:duty": "tsx scripts/seed-duty-officer.ts",
     "backup": "bun scripts/backup-db.ts",
     "db:push": "prisma db push --accept-data-loss",
     "db:generate": "prisma generate",

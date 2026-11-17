@@ -34,13 +34,29 @@ export async function GET(req: NextRequest) {
     }
 
     if (!packageId) return fail("packageId wajib diisi.");
-    const rows = await db.pilgrimReview.findMany({
-      where: { packageId, status: "APPROVED" },
-      orderBy: [{ createdAt: "desc" }],
-      take: 50,
+    const [rows, aggregate] = await Promise.all([
+      db.pilgrimReview.findMany({
+        where: { packageId, status: "APPROVED" },
+        orderBy: [{ createdAt: "desc" }],
+        take: 50,
+      }),
+      db.pilgrimReview.aggregate({
+        where: { packageId, status: "APPROVED" },
+        _avg: { rating: true, hotelRate: true, transportRate: true, guideRate: true },
+        _count: true,
+      }),
+    ]);
+    // Sembunyikan cardNo penuh dari publik + lampirkan agregat (R-014).
+    return ok({
+      reviews: rows.map((r) => ({ ...r, cardNo: r.cardNo.slice(0, 8) + "••••" })),
+      aggregate: {
+        count: aggregate._count,
+        avgRating: aggregate._avg.rating ? Number(aggregate._avg.rating.toFixed(2)) : null,
+        avgHotel: aggregate._avg.hotelRate ? Number(aggregate._avg.hotelRate.toFixed(2)) : null,
+        avgTransport: aggregate._avg.transportRate ? Number(aggregate._avg.transportRate.toFixed(2)) : null,
+        avgGuide: aggregate._avg.guideRate ? Number(aggregate._avg.guideRate.toFixed(2)) : null,
+      },
     });
-    // Sembunyikan cardNo penuh dari publik.
-    return ok(rows.map((r) => ({ ...r, cardNo: r.cardNo.slice(0, 8) + "••••" })));
   } catch {
     return fail("Gagal memuat ulasan.", 500);
   }
@@ -68,6 +84,20 @@ export async function POST(req: NextRequest) {
     const text = String(body.body || "").trim();
     if (text.length < 15) return fail("Tulis ulasan minimal 15 karakter agar bermanfaat bagi jamaah lain.");
     if (text.length > 1200) return fail("Ulasan maksimal 1200 karakter.");
+
+    // R-014 — satu ulasan per kartu per paket (cegah spam dan manipulasi rating).
+    const duplicate = await db.pilgrimReview.findFirst({
+      where: { packageId, cardNo, status: { in: ["PENDING", "APPROVED"] } },
+      select: { id: true, status: true },
+    });
+    if (duplicate) {
+      return fail(
+        duplicate.status === "PENDING"
+          ? "Anda sudah mengirim ulasan untuk paket ini — sedang menunggu moderasi."
+          : "Anda sudah mengulas paket ini — satu ulasan per perjalanan.",
+        409
+      );
+    }
 
     const review = await db.pilgrimReview.create({
       data: {

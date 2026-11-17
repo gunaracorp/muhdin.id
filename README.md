@@ -3,7 +3,7 @@
 
 ![MUHDIN.ID — Portal Digital Ekosistem Umrah dan Haji Indonesia](docs/assets/banner.svg)
 
-# 🕋 MUHDIN.ID — v12.6.0 «AUDIT 2026»
+# 🕋 MUHDIN.ID — v13.1.0 «PANEN & PANTAU»
 
 ### **MU**asyarakat **U**mroh **H**aji **D**igital **I**ndonesia
 
@@ -25,6 +25,9 @@
 [![PWA](https://img.shields.io/badge/PWA-installable_+_offline-5A0FC8?logo=pwa)](#-tema-gelap-pwa-dan-animasi)
 [![WA Gateway](https://img.shields.io/badge/WA-4_provider_+_AI_Bot-25D366?logo=whatsapp)](#-notifikasi-13-kejadian--2-kanal)
 [![Audit](https://img.shields.io/badge/Audit_Go_Live-10/10_terimplementasi-b8860b)](#-v126-audit-2026--kesiapan-go-live)
+[![CI](https://img.shields.io/badge/CI-verify_·_e2e_·_security-2088FF?logo=githubactions)](.github/workflows/ci.yml)
+[![E2E](https://img.shields.io/badge/E2E-Playwright_jalur_kritis-2EAD33?logo=playwright)](tests/e2e)
+[![Roles](https://img.shields.io/badge/Role_Matrix-tested_156_route-4B32C3)](scripts/test-role-matrix.mts)
 [![Lint](https://img.shields.io/badge/ESLint-0_problem-4B32C3?logo=eslint)](#-jaminan-kualitas-qa-gates)
 
 > 🕌 **MUHDIN tanpa biaya pendaftaran di fase awal** — struktur biaya & sumber pembiayaan
@@ -45,9 +48,19 @@ NUSUK, alur ARMINA 12 langkah, master kemitraan Banten 2026–2030): 4 halaman b
 Permenhaji 2025, footer), 52 klaim biaya absolut dibersihkan jadi bahasa model biaya yang jujur —
 ditambah **penguatan teknis**: 58 error TypeScript dibersihkan dan typecheck kini **ketat**
 (`ignoreBuildErrors: false`), webhook pembayaran **fail-closed** di produksi, first-run bootstrap
-satu perintah (`bun run setup`), serta refactor `SmartImage` bebas cascading render. Semua fitur
-hidup, satu database, satu CMS, tiga bahasa.
+satu perintah (`bun run setup`), serta refactor `SmartImage` bebas cascading render.
 
+Lalu **v13.0 «GERBANG»** membangun gerbang mutu: **CI/CD GitHub Actions** (verify: tsc 0 error →
+lint 0 error → build; e2e: Playwright jalur kritis di DB segar), **Dashboard Omzet** manajemen,
+**Sesi & Device Management** (revoke paksa), dan **Landing Kampanye Musiman** SSR ber-JSON-LD.
+Kemudian **v13.1 «PANEN & PANTAU»** membuka dua bidang sekaligus. *Panen*: direktori resmi direkonstruksi
+penuh dari 7 sumber (SAPUHI, PIHK Kemenag, SATU HAJI Jateng, HIMPUH, AMPHURI + **Direktori Nasional
+2.087 entri** ekstraksi PDF 124 halaman) dengan dedupe nama + pengayaan kontak — **2.507 anggota
+terverifikasi di 37 wilayah**, tiap entri bersitasi sumber. *Pantau*: **Papan Status Layanan Publik**
+(`#/status`, R-097), **Duty Officer 24/7** (`#/darurat`, R-096), **Survei NPS** di Dashboard Omzet
+(R-092), **Role Matrix test 156 route** di CI (R-079), **audit dependensi otomatis** (R-083),
+**Runbook Pemulihan Bencana** (R-084), ulasan terverifikasi ber-agregat (R-014) — **61/99 item
+roadmap selesai**. Semua fitur hidup, satu database, satu CMS, tiga bahasa.
 ---
 
 ## 📑 Isi
@@ -88,13 +101,13 @@ terpercaya: satu data, satu standar, satu pengalaman.
 
 | Angka | Artinya |
 | --- | --- |
-| **67 model** Prisma | Skema terpadu: dua garis + compliance + roadmap + checkout + PDP + broadcast + itinerary/waitlist |
-| **148 route handler** `/api/*` | Semua ter-guard RBAC + rate-limit + audit (lihat [Peta API](#-peta-api)) |
+| **69 model** Prisma | Skema terpadu: dua garis + compliance + roadmap + checkout + PDP + broadcast + itinerary/waitlist + duty officer + NPS + status check |
+| **156 route handler** `/api/*` | Semua ter-guard RBAC/rate-limit + audit — diuji matriks peran otomatis (lihat [Peta API](#-peta-api)) |
 | **60+ rute halaman publik** | Beranda → ekosistem → layanan digital → trust center → kemitraan (lihat [Peta Halaman](#-peta-halaman-publik-60-rute)) |
 | **32 modul CMS** | Semua konten & transaksi dikelola tanpa sentuh kode |
 | **13 kejadian notifikasi × 2 kanal** | Email sekretariat + WhatsApp admin, otomatis (termasuk ORDER, BROADCAST, WAITLIST) |
 | **3 bahasa (ID/EN/AR)** | Arab sungguhan RTL, bukan tempelan — 52 file kamus locale |
-| **1.392 anggota** terverifikasi | Direktori tumbuh 103 → 735 → **1.392** dari panen 3 sumber resmi (HIMPUH, SATU HAJI Jateng, AMPHURI), semua bersitasi sumber |
+| **2.507 anggota** terverifikasi | Direktori tumbuh 103 → 735 → 1.392 → **2.507** dari 7 sumber (SAPUHI, PIHK Kemenag, SATU HAJI Jateng, HIMPUH, AMPHURI, Direktori Nasional 2.087), dedupe nama + pengayaan kontak, semua bersitasi sumber |
 | **10/10 tuntutan audit** go-live | Terimplementasi & terdokumentasi (15 Nov 2026) — bukan klaim, ada bukti |
 | **Rp 0 di fase awal** | Tanpa biaya pendaftaran; model biaya & keberlanjutan transparan di `#/biaya` |
 
@@ -105,8 +118,8 @@ terpercaya: satu data, satu standar, satu pengalaman.
 Semua angka di README ini bisa Anda hitung ulang sendiri di root repo:
 
 ```bash
-grep -c '^model ' prisma/schema.prisma          # 67 model
-find src/app/api -name route.ts | wc -l          # 148 route handler
+grep -c '^model ' prisma/schema.prisma          # 69 model
+find src/app/api -name route.ts | wc -l          # 156 route handler
 ls src/components/views/*.tsx | wc -l            # 76 komponen view
 ls src/components/admin/*.tsx | wc -l            # 32 modul CMS
 ls src/lib/i18n/locales/*.ts | wc -l             # 52 file kamus locale
@@ -129,7 +142,7 @@ setiap anggota direktori membawa sitasi sumber resmi di deskripsinya.
   Widget Verifikasi, Kesehatan Jamaah, **Posko Darurat** (nomor resmi Saudi + direktori SOS
   live: KJRI, KKI, RS — dari database), **Kemitraan** (master kemitraan Banten 2026–2030)
 - **Direktori Anggota** terverifikasi + halaman detail per anggota + **Widget & QR verifikasi**
-  publik — 1.392 anggota, setiap entri membawa sitasi sumber resmi
+  publik — 2.507 anggota, setiap entri membawa sitasi sumber resmi
 - **Statistik Nasional** transparansi + **Global Search ⌘K** (Ctrl/⌘+K, satu kotak cari semua entitas)
 - **Berita, Tutorial bertingkat (Pemula/Menengah/Mahir), Agenda, Galeri, Unduhan, Pengaduan,
   Lacak Tiket** — semua ber-CMS
@@ -262,7 +275,7 @@ setiap anggota direktori membawa sitasi sumber resmi di deskripsinya.
 - **Seat map & waitlist otomatis** (`R-040`) — peta kursi grid terisi/kosong di detail paket,
   **daftar tunggu berperingkat** + **auto-tawaran WA** saat slot dibebaskan (klaim atomik anti ganda)
 - **PostgreSQL dual-ready** (`R-056`) — audit terotomatisasi `scripts/check-postgres-ready.ts`:
-  **67 model tipe standar**, nol raw SQL khusus SQLite di aplikasi, panduan migrasi terdokumentasi
+  **69 model tipe standar**, nol raw SQL khusus SQLite di aplikasi, panduan migrasi terdokumentasi
 
 ### 🏆 v12.6 «AUDIT 2026» — Kesiapan Go-Live
 
@@ -407,6 +420,7 @@ bun prisma/seed-fitur-v7.ts          # pindai izin 360°
 bun scripts/seed-membership.ts       # KTA + poin + akademi + slot + benefit
 bun scripts/seed-compliance.ts       # riwayat audit & tren kepatuhan izin (v12.1)
 bun scripts/seed-roadmap99.ts        # 99 item roadmap upgrade 6 pilar (v12.2)
+bun scripts/seed-duty-officer.ts     # roster Duty Officer 24/7 (v13.1, idempoten)
 bun scripts/seed-kontak-resmi.ts     # WA resmi + kantor Jakarta/Tasikmalaya
 bun scripts/seed-resource-lengkap.mjs
 
@@ -455,7 +469,7 @@ Template `.env.example` menyertakan contoh nilai.
 
 ## 🗄️ Strategi Database
 
-Satu skema **67 model** (union dua garis + compliance checker + roadmap item + checkout/payment/
+Satu skema **69 model** (union dua garis + compliance checker + roadmap item + checkout/payment/
 invoice + privacy/broadcast/itinerary/waitlist), dua mode jalankan:
 
 | Mode | Provider | Cara |
@@ -670,15 +684,19 @@ worklog.md                  # 27+ task tercatat lengkap (jejak pengembangan)
 | `scripts/setup-db.mjs` | ⭐ First-run bootstrap (`bun run setup`): db push + seed inti hanya bila DB kosong — idempoten |
 | `scripts/post-build.mjs` | Salin `.next/static` + `public` ke `.next/standalone` (otomatis di `bun run build`) |
 | `scripts/dev-keep.sh` | Nyalakan/jaga dev server :3000 |
-| `prisma/seed.ts` | Seed inti (idempoten, hapus-isi-ulang) + 1.392 anggota registri bersitasi |
+| `prisma/seed.ts` | Seed inti (idempoten, hapus-isi-ulang) + anggota registri bersitasi |
 | `prisma/seed-fitur-v5/v6/v7.ts` | Seed marketplace/forum/kartu, bisnis/SOS, pindai izin |
 | `scripts/seed-membership.ts` | KTA + poin + akademi + slot + benefit |
 | `scripts/seed-compliance.ts` | Riwayat audit + tren kepatuhan izin (ComplianceAudit/Score/Finding) |
-| `scripts/seed-roadmap99.ts` | 99 item upgrade 6 pilar (RoadmapItem — status jujur: 45 DONE per v12.5) |
+| `scripts/seed-roadmap99.ts` | 99 item upgrade 6 pilar (RoadmapItem — status jujur: 61 DONE per v13.1) |
+| `scripts/panen-gabung-28.mts` | Import gabungan 7 sumber resmi → Member: dedupe nama + pengayaan kontak (2.507 anggota, idempoten) |
+| `scripts/seed-duty-officer.ts` | Roster piket Duty Officer 24/7 (`bun run seed:duty`) |
+| `scripts/test-role-matrix.mts` | R-079: uji matriks peran — pindai 156 route, guard valid, mutasi ter-guard (`bun run test:roles`) |
+| `scripts/audit-deps.sh` | R-083: audit dependensi produksi — gagal bila ada critical (`bun run audit:deps`) |
 | `scripts/backfill-seo.ts` / `seed-seo-content.ts` / `seed-itinerary.ts` | backfill meta SEO + 3 artikel pilar + itinerary 5 paket (semuanya idempoten) |
 | `scripts/optimize-images.mjs` | konversi WebP `sharp` (13 aset, hemat 23%) |
 | `scripts/broadcast-worker.ts` | eksekutor broadcast WA terjadwal (crontab, klaim atomik idempoten) |
-| `scripts/check-postgres-ready.ts` | audit dual-ready PostgreSQL (67 model, nol raw SQL SQLite) |
+| `scripts/check-postgres-ready.ts` | audit dual-ready PostgreSQL (69 model, nol raw SQL SQLite) |
 | `scripts/backup-db.ts` | Snapshot + drill pemulihan + retensi 14 terakhir (`bun run backup`) |
 | `scripts/seed-kontak-resmi.ts` | WA resmi 0812 2234 5856 + kantor resmi |
 | `scripts/migrate-sqlite-to-postgres.mjs` | Migrasi 42+ tabel → Postgres (topologis, batch) |
@@ -848,6 +866,8 @@ ganti 1 baris.
 | **v12.4 «LUNAS»** | **Sprint transaksi P0: checkout lengkap, payment gateway adapter (SANDBOX + webhook HMAC idempoten), invoice PDF ber-QR, CMS Pesanan & Invoice — 30/99 roadmap selesai** |
 | **v12.5 «SINERGI»** | **Sprint tuntas 15 item: SEO penuh (sitemap+landing SSR+OG dinamis), WebP lazy, impor CSV, Help Center, UU PDP (consent+hak subjek), rate-limit adaptif, anti-spam forum, observability, broadcast WA, skor vendor, poin KTA lintas layanan, itinerary, seat map+waitlist, dual-ready Postgres — 45/99 roadmap selesai** |
 | **v12.6 «AUDIT 2026»** | **Seluruh 10 tuntutan audit go-live terimplementasi: 4 halaman baru (kemitraan/pembayaran/keamanan/biaya), 6 halaman ditingkatkan, 52 klaim absolut dibersihkan, ARMINA 12 langkah, Nusuk 6 simpul, Permenhaji 2025, 8 KPI + roadmap operasional; hardening teknis: 58 error TS dibersihkan + typecheck ketat, webhook fail-closed, `bun run setup`, SmartImage bebas cascading render, ESLint 0 — QA gates lengkap hijau** |
+| **v13.0 «GERBANG»** | **CI/CD GitHub Actions (verify·e2e) + suite E2E Playwright + Dashboard Omzet + Sesi & Device Management + Landing Kampanye Musiman SSR — 52/99 roadmap selesai** |
+| **v13.1 «PANEN & PANTAU»** | **Direktori 2.507 anggota × 37 wilayah (7 sumber + Direktori Nasional 2.087, dedupe+pengayaan), Papan Status publik #/status, Duty Officer 24/7 #/darurat, NPS di Dashboard Omzet, role-matrix test 156 route di CI, audit dependensi otomatis, DR runbook — 61/99 roadmap selesai** |
 
 ---
 

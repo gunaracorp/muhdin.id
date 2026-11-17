@@ -79,7 +79,7 @@ export default async function KampanyeLanding({ params }: Props) {
       <div className="mx-auto grid max-w-5xl gap-8 lg:grid-cols-[1.4fr_1fr] lg:items-start">
         <article className="overflow-hidden rounded-3xl bg-white shadow-2xl">
           {c.heroImage ? (
-            // eslint-disable-next-line @next/next/no-img-element
+             
             <img src={c.heroImage} alt={c.title} className="aspect-[16/7] w-full object-cover" />
           ) : (
             <div className="aspect-[16/6] w-full bg-gradient-to-br from-forest via-emerald-800 to-primary" />
