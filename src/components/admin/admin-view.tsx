@@ -44,6 +44,10 @@ import { AdminObservability } from "@/components/admin/admin-observability";
 import { AdminGrowth } from "@/components/admin/admin-growth";
 // v13.0 «GERBANG» — Dashboard Omzet (R-051) + Kampanye Musiman (R-089)
 import { AdminOmzet } from "@/components/admin/admin-omzet";
+// v13.2 — R-093 Analitik Funnel Pendaftaran
+import { AdminFunnel } from "@/components/admin/admin-funnel";
+// v13.2 — R-011 Web Push Pengumuman Keberangkatan
+import { AdminPush } from "@/components/admin/admin-push";
 import { AdminCampaigns } from "@/components/admin/admin-campaigns";
 // v12.4 «LUNAS» — Pesanan & Invoice (checkout + payment gateway)
 import { AdminOrders } from "@/components/admin/admin-orders";
@@ -74,6 +78,10 @@ const MENU = [
   { id: "orders", label: "Pesanan & Invoice", icon: "wallet" },
   // v13.0 «GERBANG» — Dashboard Omzet Manajemen (R-051)
   { id: "omzet", label: "Dashboard Omzet", icon: "bar-chart-3" },
+  // v13.2 — Analitik Funnel Pendaftaran (R-093)
+  { id: "funnel", label: "Funnel Pendaftaran", icon: "filter" },
+  // v13.2 — Web Push Pengumuman Keberangkatan (R-011)
+  { id: "push", label: "Push Keberangkatan", icon: "bell-ring" },
   // v13.0 «GERBANG» — Kampanye Musiman (R-089)
   { id: "kampanye", label: "Kampanye Musiman", icon: "megaphone" },
   { id: "tutorials", label: "Tutorial", icon: "graduation-cap" },
@@ -289,6 +297,8 @@ export function AdminView() {
           {section === "sistem" && <AdminObservability />}
           {section === "growth" && <AdminGrowth />}
           {section === "omzet" && <AdminOmzet />}
+          {section === "funnel" && <AdminFunnel />}
+          {section === "push" && <AdminPush />}
           {section === "kampanye" && <AdminCampaigns />}
           {section === "audit" && <AdminAudit />}
           {section === "users" && <AdminUsers meId={user.id} />}

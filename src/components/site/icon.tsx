@@ -30,9 +30,17 @@ import {
   Zap,
   PlayCircle,
   Check,
+  // Task 29 (v13.2) — ikon organisasi master & komunitas WA
+  Medal, Microscope, BedDouble, Coins, ShieldPlus, HandHeart,
 } from "lucide-react";
 
 export const ICONS: Record<string, React.ComponentType<{ className?: string; strokeWidth?: number }>> = {
+  medal: Medal,
+  microscope: Microscope,
+  bed: BedDouble,
+  coins: Coins,
+  "shield-heart": ShieldPlus,
+  "hand-heart": HandHeart,
   passport: ContactRound,
   syringe: Syringe,
   "plane-takeoff": PlaneTakeoff,

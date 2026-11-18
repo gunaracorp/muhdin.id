@@ -2,6 +2,7 @@ import { NextRequest } from "next/server";
 import { db } from "@/lib/db";
 import { guardRole, ok, fail } from "@/lib/api-helpers";
 import { logAudit } from "@/lib/audit";
+import { recordFunnel } from "@/lib/funnel"; // R-093 — funnel pendaftaran
 
 /**
  * v5.0 — Kartu Jamaah Digital.
@@ -96,6 +97,8 @@ export async function POST(req: NextRequest) {
     });
 
     void logAudit(req, { action: "CREATE", entity: "PilgrimCard", entityId: card.id, detail: `${cardNo} — ${fullName}` });
+    // R-093 — funnel: KTA diterbitkan (gagal-aman).
+    recordFunnel("KTA_ISSUED", cardNo);
     return ok(card, 201);
   } catch {
     return fail("Gagal menerbitkan kartu.", 500);

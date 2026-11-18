@@ -43,6 +43,8 @@ const NAV_LINKS: [path: string, key: string][] = [
   ["tutorial", "tutorial"],
   ["berita", "berita"],
   ["pengurus", "pengurus"],
+  // Task 29 (v13.2) — 18 Kanal WhatsApp resmi
+  ["komunitas", "komunitas"],
   ["gabung", "gabung"],
 ];
 

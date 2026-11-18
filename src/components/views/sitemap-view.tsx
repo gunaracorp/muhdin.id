@@ -28,6 +28,7 @@ const STATIC_PAGES: { path: string; icon: string; labelKey?: string; labelId: st
   { path: "/beranda", icon: "home", labelKey: "navbar.items.beranda", labelId: "Beranda" },
   { path: "/tentang", icon: "info", labelKey: "navbar.items.tentang", labelId: "Tentang Kami" },
   { path: "/pengurus", icon: "users", labelKey: "navbar.items.pengurus", labelId: "Pengurus" },
+  { path: "/komunitas", icon: "message-circle", labelId: "18 Kanal WhatsApp" },
   { path: "/ekosistem", icon: "boxes", labelKey: "navbar.items.bisnis13", labelId: "13 Layanan Bisnis" },
   { path: "/alur", icon: "workflow", labelKey: "navbar.items.alur", labelId: "Alur Perjalanan" },
   { path: "/anggota", icon: "grid-3x3", labelKey: "navbar.items.anggota", labelId: "Direktori Anggota" },

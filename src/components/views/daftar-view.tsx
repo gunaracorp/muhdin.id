@@ -15,6 +15,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { apiSend } from "@/lib/client-api";
+import { trackFunnel } from "@/lib/funnel-client"; // R-093 — funnel pendaftaran
 import { navigate } from "@/hooks/use-hash-route";
 import { Icon } from "@/components/site/icon";
 import { Reveal } from "@/components/site/reveal";
@@ -179,6 +180,10 @@ function ReviewSection({
 export function DaftarView() {
   const { t } = useT();
   const { toast } = useToast();
+  // R-093 — track funnel "buka formulir pendaftaran" (anonim, sekali per sesi).
+  useEffect(() => {
+    trackFunnel("VIEW_DAFTAR");
+  }, []);
 
   // Langkah: 0 = pilih peran, 1..5 = Profil..Kirim, 6 = sukses.
   const [step, setStep] = useState(0);

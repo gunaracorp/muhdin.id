@@ -1,22 +1,28 @@
 "use client";
 
 /**
- * Task 37 — SUSUNAN PENGURUS MUHDIN (#/pengurus)
+ * Task 29 (v13.2) — SUSUNAN PENGURUS MUHDIN: MASTER FINAL 2026–2031 (#/pengurus)
  *
- * Halaman struktur organisasi bergaya asosiasi internasional (IEEE/IATA-style):
- *  1. Hero banner + statistik jaringan (5 tokoh, 38 Bakorwil, 514 Bakorcab).
- *  2. "Dua Pilar Kepemimpinan" — kartu SPESIAL Ketua Umum & Sekretaris Jenderal
- *     (bingkai emas gradien, foto besar ber-ring emas, lencana peran).
- *  3. Dewan Pengayom — Pembina & Penasehat.
- *  4. Pengurus Pusat — BEMDUM + 6 bidang fungsional.
- *  5. Jaringan berjenjang: Pengurus Pusat → (Penunjukan) → Bakorwil Provinsi →
- *     Bakorcab Kab/Kota — mengikuti struktur resmi dari owner.
- *  6. CTA finale yang menyambung kampanye DAFTAR & IURAN GRATIS (Task 36).
+ * Keputusan super final owner (dokumen master diupload 2026-11-18). Struktur:
+ *  1. Hero + statistik organisasi.
+ *  2. Dua Pilar Kepemimpinan — Ketua Umum & Sekjen (kartu emas spesial;
+ *     Sekjen memuat 7 titel profesional resmi).
+ *  3. Empat Dewan — Penasihat / Kehormatan / Pakar / Pengawas (badge status
+ *     personalia apa adanya dari dokumen).
+ *  4. Pimpinan Inti DPP — Waketum I–VII, Sekjen+Wasekjen, Bendahara.
+ *  5. 15 Bidang Strategis (detail subbidang expandable).
+ *  6. 3 Bidang Khusus (ketua + subbidang + keluaran wajib).
+ *  7. Personalia Tambahan (kandidat konsolidasi).
+ *  8. Register 38 DPW + tingkat organisasi DPP→DPW→DPD→DPC.
+ *  9. Standar Kerja — 5 unsur jabatan, siklus kerja, 11 KPI.
+ * 10. CTA finale (+ tautan ke 18 Kanal WhatsApp).
  *
- * RTL aman (logical properties + text-center), dark mode via token, foto
- * opsional — monogram emas menjadi fallback elegan bila foto belum diunggah.
+ * RTL aman (logical properties), dark mode via token, foto opsional — monogram
+ * emas fallback. Nama tetap Latin di semua locale. Status personalia ditampilkan
+ * jujur sesuai dokumen resmi (Usulan / Perlu konfirmasi / Belum ditetapkan).
  */
 
+import { useState } from "react";
 import { navigate } from "@/hooks/use-hash-route";
 import { Icon } from "@/components/site/icon";
 import { Reveal, SectionHeading } from "@/components/site/reveal";
@@ -24,17 +30,34 @@ import { Button } from "@/components/ui/button";
 import { useT } from "@/lib/i18n";
 import {
   PENGURUS_PERSON,
-  PENGURUS_BIDANG,
   NET_COUNTS,
-  type PengurusId,
   type PengurusPerson,
 } from "@/lib/pengurus-data";
+import {
+  KETUA_UMUM,
+  SEKJEN,
+  SEKJEN_TITLES,
+  COUNCILS,
+  WAKETUM,
+  WASEKJEN,
+  BENDAHARA,
+  BIDANG_STRATEGIS,
+  BIDANG_KHUSUS,
+  PERSONALIA_TAMBAHAN,
+  DPW_38,
+  DPW_STRUKTUR,
+  ORG_STATS,
+  STATUS_KEYS,
+  type OrgPerson,
+  type PersonStatus,
+  type LeaderRow,
+} from "@/lib/org-master";
 import { cn } from "@/lib/utils";
 
 /** Buang gelar ber-titik lalu ambil inisial dua kata (nama pertama + terakhir). */
 function monogram(name: string): string {
   const tokens = name
-    .replace(/^(Hj?\.|Drs\.|Prof\.|Dr\.|Ir\.|KH\.|Tn\.|Ny\.)*\s*/gi, "")
+    .replace(/^(Hj?\.|Drs\.|Prof\.|Dr\.|Ir\.|KH\.|Tn\.|Ny\.|Mayor Art\. \(Purn\.\))*\s*/gi, "")
     .split(/\s+/)
     .filter((t) => t.length > 0 && !t.includes("."))
     .map((t) => t.replace(/[^\p{L}]/gu, ""))
@@ -44,37 +67,33 @@ function monogram(name: string): string {
   return (first + last).toUpperCase();
 }
 
-/** Foto bulat ber-ring emas + lencana ikon; fallback monogram bila foto kosong. */
-function PersonPhoto({
-  person,
-  size = "md",
-}: {
-  person: PengurusPerson;
-  size?: "sm" | "md" | "lg";
-}) {
-  const dim = {
-    sm: "h-16 w-16",
-    md: "h-24 w-24",
-    lg: "h-36 w-36 text-3xl sm:h-44 sm:w-44 sm:text-4xl",
-  }[size];
-  const badge = { sm: "h-6 w-6", md: "h-8 w-8", lg: "h-10 w-10" }[size];
-  const badgeIcon = { sm: "h-3 w-3", md: "h-4 w-4", lg: "h-5 w-5" }[size];
-
+/** Badge status personalia — warna netral elegan sesuai tingkat penetapan. */
+function StatusBadge({ status }: { status: PersonStatus }) {
+  const { t } = useT();
+  const cls = {
+    USULAN: "border-sky-500/40 bg-sky-500/10 text-sky-700 dark:text-sky-300",
+    PERLU_KONFIRMASI: "border-amber-500/40 bg-amber-500/10 text-amber-700 dark:text-amber-300",
+    BELUM_DITETAPKAN: "border-border bg-muted text-muted-foreground",
+    TERPASANG: "border-emerald-500/40 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300",
+  }[status];
   return (
-    <div className={cn("relative mx-auto shrink-0", dim)} data-testid={`photo-${person.id}`}>
+    <span className={cn("inline-flex items-center rounded-full border px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide", cls)}>
+      {t(`orgMaster.status.${STATUS_KEYS[status]}`)}
+    </span>
+  );
+}
+
+/** Avatar bulat monogram/foto dengan ring emas. */
+function Avatar({ name, icon, size = "md" }: { name: string; icon: string; size?: "sm" | "md" | "lg" }) {
+  const dim = { sm: "h-12 w-12", md: "h-20 w-20", lg: "h-36 w-36 text-3xl sm:h-44 sm:w-44 sm:text-4xl" }[size];
+  const badge = { sm: "h-5 w-5", md: "h-7 w-7", lg: "h-10 w-10" }[size];
+  const badgeIcon = { sm: "h-3 w-3", md: "h-3.5 w-3.5", lg: "h-5 w-5" }[size];
+  return (
+    <div className={cn("relative mx-auto shrink-0", dim)}>
       <div className="grid h-full w-full place-items-center overflow-hidden rounded-full bg-gradient-to-br from-primary to-forest ring-4 ring-gold/45 shadow-[0_16px_44px_-14px_rgba(212,175,55,0.55)]">
-        {person.photo ? (
-          <img
-            src={person.photo}
-            alt={`Foto ${person.name}`}
-            loading="lazy"
-            className="h-full w-full object-cover"
-          />
-        ) : (
-          <span aria-hidden className="font-extrabold tracking-wider text-white">
-            {monogram(person.name)}
-          </span>
-        )}
+        <span aria-hidden className="font-extrabold tracking-wider text-white">
+          {monogram(name)}
+        </span>
       </div>
       <span
         aria-hidden
@@ -83,194 +102,272 @@ function PersonPhoto({
           badge
         )}
       >
-        <Icon name={person.icon} className={badgeIcon} />
+        <Icon name={icon} className={badgeIcon} />
       </span>
     </div>
   );
 }
 
-/** Konektor vertikal antar-tier bagan — garis emas + chip "Penunjukan" opsional. */
-function Connector({ label }: { label?: string }) {
-  return (
-    <div className="flex flex-col items-center" aria-hidden={label ? undefined : true}>
-      <span className="h-5 w-px bg-gradient-to-b from-gold/70 to-border" />
-      {label ? (
-        <span className="inline-flex items-center gap-1.5 rounded-full border border-gold/40 bg-gold/10 px-3 py-1 text-[11px] font-bold text-gold-deep dark:text-gold">
-          <Icon name="user-plus" className="h-3.5 w-3.5" />
-          {label}
-        </span>
-      ) : null}
-      <span className="h-5 w-px bg-gradient-to-b from-border to-gold/70" />
-    </div>
-  );
-}
+/* ============ 2 — Dua Pilar Kepemimpinan (SPESIAL) ============ */
 
-/* ============ 2 — Dua Pilar Kepemimpinan (KETUM & SEKJEN — SPESIAL) ============ */
-
-function FeaturedLeader({ pid, delay }: { pid: "ketum" | "sekjen"; delay: number }) {
+function PillarCard({ pid, delay }: { pid: "ketum" | "sekjen"; delay: number }) {
   const { t } = useT();
-  const person = PENGURUS_PERSON[pid];
+  const person: PengurusPerson = PENGURUS_PERSON[pid];
+  const isSekjen = pid === "sekjen";
+  const titles = SEKJEN_TITLES;
   return (
     <Reveal delay={delay} className="h-full">
       <article
-        role="link"
-        tabIndex={0}
-        aria-label={`${person.name} — ${t("pengurus.title")}`}
-        onClick={() => navigate(`/pengurus/${pid}`)}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" || e.key === " ") {
-            e.preventDefault();
-            navigate(`/pengurus/${pid}`);
-          }
-        }}
-        className="relative h-full cursor-pointer rounded-[28px] bg-gradient-to-br from-gold via-gold/55 to-gold/20 p-[2px] shadow-[0_30px_80px_-32px_rgba(212,175,55,0.6)] transition-transform duration-300 hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
+        role={isSekjen ? "link" : undefined}
+        tabIndex={isSekjen ? 0 : undefined}
+        aria-label={person.name}
+        onClick={isSekjen ? () => navigate("/pengurus/sekjen") : undefined}
+        onKeyDown={
+          isSekjen
+            ? (e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  navigate("/pengurus/sekjen");
+                }
+              }
+            : undefined
+        }
+        className={cn(
+          "relative h-full rounded-[28px] bg-gradient-to-br from-gold via-gold/55 to-gold/20 p-[2px] shadow-[0_30px_80px_-32px_rgba(212,175,55,0.6)]",
+          isSekjen && "cursor-pointer transition-transform duration-300 hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
+        )}
+        data-testid={`pillar-${pid}`}
       >
         <div className="relative flex h-full flex-col items-center overflow-hidden rounded-[26px] bg-card px-6 py-9 text-center sm:px-10">
           <div aria-hidden className="pointer-events-none absolute inset-0 bg-islamic-pattern-gold opacity-25" />
           <div aria-hidden className="pointer-events-none absolute -top-24 end-1/4 h-44 w-44 rounded-full bg-gold/15 blur-3xl" />
-          <PersonPhoto person={person} size="lg" />
+          <div className="relative">
+            <Avatar name={person.name} icon={person.icon} size="lg" />
+          </div>
           <span className="relative mt-5 inline-flex items-center gap-1.5 rounded-full border border-gold/50 bg-gold/15 px-4 py-1.5 text-[11px] font-extrabold uppercase tracking-[0.18em] text-gold-deep dark:text-gold">
             <Icon name={person.icon} className="h-3.5 w-3.5" aria-hidden />
-            {t(`pengurus.role.${pid}`)}
+            {isSekjen ? t("pengurus.role.sekjen") : t("pengurus.role.ketum")}
           </span>
           <h3 className="relative mt-3.5 text-2xl font-extrabold tracking-tight sm:text-3xl">
             {person.name}
           </h3>
           <span aria-hidden className="relative mt-3 h-px w-14 bg-gradient-to-r from-transparent via-gold to-transparent" />
           <p className="relative mt-3 max-w-sm text-sm leading-relaxed text-muted-foreground">
-            {t(`pengurus.mandate.${pid}`)}
+            {isSekjen ? SEKJEN.bio : t("orgMaster.pillars.desc")}
           </p>
-          {/* v4.1 — menuju halaman detail tokoh */}
-          <span className="relative mt-5 inline-flex items-center gap-1.5 rounded-full border border-gold/50 bg-gold/15 px-4 py-1.5 text-[11px] font-bold text-gold-deep dark:text-gold transition group-hover:bg-gold/25">
-            {t("detail.common.viewProfile")}
-            <Icon name="chevron-right" className="h-3.5 w-3.5 rtl:rotate-180" aria-hidden />
-          </span>
+          {isSekjen && (
+            <ul className="relative mt-4 flex flex-wrap justify-center gap-1.5" data-testid="sekjen-titles">
+              {titles.map((tl) => (
+                <li
+                  key={tl}
+                  className="rounded-full border border-gold/40 bg-gold/10 px-3 py-1 text-[10.5px] font-bold uppercase tracking-wide text-gold-deep dark:text-gold"
+                >
+                  {tl}
+                </li>
+              ))}
+            </ul>
+          )}
+          {isSekjen && (
+            <span className="relative mt-5 inline-flex items-center gap-1.5 rounded-full border border-gold/50 bg-gold/15 px-4 py-1.5 text-[11px] font-bold text-gold-deep dark:text-gold transition">
+              {t("orgMaster.pillars.viewProfile")}
+              <Icon name="chevron-right" className="h-3.5 w-3.5 rtl:rotate-180" aria-hidden />
+            </span>
+          )}
         </div>
       </article>
     </Reveal>
   );
 }
 
-/* ============ 3 — Dewan Pengayom (Pembina & Penasehat) ============ */
+/* ============ 3 — Empat Dewan ============ */
 
-function AdvisoryCard({ pid, delay }: { pid: "pembina" | "penasehat"; delay: number }) {
+function CouncilCard({ council, delay }: { council: (typeof COUNCILS)[number]; delay: number }) {
   const { t } = useT();
-  const person = PENGURUS_PERSON[pid];
+  return (
+    <Reveal delay={delay} className="h-full">
+      <article className="flex h-full flex-col rounded-3xl border border-primary/25 bg-card p-6 shadow-sm transition-shadow hover:shadow-lg hover:border-primary/50 sm:p-7">
+        <div className="flex items-center gap-3">
+          <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-primary/10 text-primary">
+            <Icon name={council.icon} className="h-6 w-6" />
+          </span>
+          <div className="min-w-0">
+            <h3 className="text-base font-extrabold leading-tight">
+              {t(`orgMaster.council.${council.id}.title`)}
+            </h3>
+            <span className="text-[11px] font-bold uppercase tracking-widest text-gold-deep dark:text-gold">
+              {council.code}
+            </span>
+          </div>
+        </div>
+        <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
+          {t(`orgMaster.council.${council.id}.mandat`)}
+        </p>
+        <ul className="mt-4 space-y-3" data-testid={`council-${council.id}`}>
+          {council.people.map((p: OrgPerson) => (
+            <li key={p.name} className="rounded-2xl border bg-muted/30 p-3.5">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <span className="text-sm font-bold leading-snug">{p.name}</span>
+                <StatusBadge status={p.status} />
+              </div>
+              {p.scope && <p className="mt-1 text-xs text-foreground/70">{p.scope}</p>}
+              {p.note && (
+                <p className="mt-1 flex items-start gap-1 text-[11px] text-muted-foreground">
+                  <Icon name="info" className="mt-0.5 h-3 w-3 shrink-0 text-gold-deep" />
+                  {p.note}
+                </p>
+              )}
+            </li>
+          ))}
+        </ul>
+      </article>
+    </Reveal>
+  );
+}
+
+/* ============ 4 — Kartu pimpinan inti ============ */
+
+function LeaderCard({ row, roleLabel, delay }: { row: LeaderRow; roleLabel: string; delay: number }) {
+  const { t } = useT();
+  const empty = row.name === "";
+  return (
+    <Reveal delay={delay} className="h-full">
+      <article className="flex h-full flex-col rounded-3xl border bg-card p-5 text-center shadow-sm transition-all hover:-translate-y-0.5 hover:border-gold/40 hover:shadow-md">
+        {empty ? (
+          <span className="mx-auto grid h-16 w-16 place-items-center rounded-full border-2 border-dashed border-border text-muted-foreground">
+            <Icon name="user-plus" className="h-6 w-6" />
+          </span>
+        ) : (
+          <Avatar name={row.name} icon={row.icon} size="sm" />
+        )}
+        <span className="mt-3 inline-flex items-center gap-1.5 self-center rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-primary">
+          <Icon name={row.icon} className="h-3 w-3" aria-hidden />
+          {roleLabel}
+        </span>
+        <h3 className="mt-2 text-sm font-extrabold leading-snug">
+          {empty ? t("orgMaster.status.belumDitetapkan") : row.name}
+        </h3>
+        <p className="mt-1.5 flex-1 text-xs leading-relaxed text-muted-foreground">{row.portfolio}</p>
+        {row.note && (
+          <p className="mt-2 flex items-start gap-1 text-start text-[10.5px] text-muted-foreground">
+            <Icon name="info" className="mt-0.5 h-3 w-3 shrink-0 text-gold-deep" />
+            {row.note}
+          </p>
+        )}
+        <div className="mt-3">
+          <StatusBadge status={row.status} />
+        </div>
+      </article>
+    </Reveal>
+  );
+}
+
+/* ============ 5 — Kartu bidang strategis (expandable) ============ */
+
+function BidangCard({ b, delay }: { b: (typeof BIDANG_STRATEGIS)[number]; delay: number }) {
+  const { t } = useT();
+  const [open, setOpen] = useState(false);
   return (
     <Reveal delay={delay} className="h-full">
       <article
-        role="link"
-        tabIndex={0}
-        aria-label={`${person.name} — ${t("pengurus.title")}`}
-        onClick={() => navigate(`/pengurus/${pid}`)}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" || e.key === " ") {
-            e.preventDefault();
-            navigate(`/pengurus/${pid}`);
-          }
-        }}
-        className="h-full cursor-pointer rounded-3xl border border-primary/25 bg-card p-7 text-center shadow-sm transition-shadow hover:shadow-lg hover:border-primary/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold sm:p-8"
-      >
-        <PersonPhoto person={person} size="md" />
-        <span className="mt-4 inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-3.5 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-primary">
-          <Icon name={person.icon} className="h-3.5 w-3.5" aria-hidden />
-          {t(`pengurus.role.${pid}`)}
-        </span>
-        <h3 className="mt-3 text-lg font-extrabold leading-snug">{person.name}</h3>
-        <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-          {t(`pengurus.mandate.${pid}`)}
-        </p>
-        {/* v4.1 — menuju halaman detail tokoh */}
-        <span className="mt-4 inline-flex items-center gap-1 text-xs font-bold text-primary">
-          {t("detail.common.viewProfile")}
-          <Icon name="chevron-right" className="h-3.5 w-3.5 rtl:rotate-180" aria-hidden />
-        </span>
-      </article>
-    </Reveal>
-  );
-}
-
-/* ============ 4 — Pengurus Pusat (BEMDUM + Bidang Fungsional) ============ */
-
-function CentralLeaderCard() {
-  const { t } = useT();
-  const person = PENGURUS_PERSON.bemdum;
-  return (
-    <Reveal className="mx-auto max-w-md">
-      <article className="relative overflow-hidden rounded-3xl border border-gold/35 bg-card p-7 text-center shadow-sm transition-shadow hover:shadow-lg sm:p-8">
-        <div aria-hidden className="pointer-events-none absolute inset-0 bg-islamic-pattern-gold opacity-20" />
-        <div className="relative">
-          <PersonPhoto person={person} size="md" />
-          <span className="mt-4 inline-flex items-center gap-1.5 rounded-full border border-gold/45 bg-gold/15 px-3.5 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-gold-deep dark:text-gold">
-            <Icon name={person.icon} className="h-3.5 w-3.5" aria-hidden />
-            {t("pengurus.role.bemdum")}
-          </span>
-          <h3 className="mt-3 text-lg font-extrabold">{person.name}</h3>
-          <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-            {t("pengurus.mandate.bemdum")}
-          </p>
-        </div>
-      </article>
-    </Reveal>
-  );
-}
-
-/* ============ 5 — Kartu tier jaringan (Bakorwil / Bakorcab) ============ */
-
-function TierCard({
-  variant,
-  count,
-  icon,
-  title,
-  full,
-  desc,
-}: {
-  variant: "wil" | "cab";
-  count: number;
-  icon: string;
-  title: string;
-  full: string;
-  desc: string;
-}) {
-  const isWil = variant === "wil";
-  return (
-    <Reveal className="mx-auto w-full max-w-xl">
-      <article
         className={cn(
-          "relative overflow-hidden rounded-3xl border-2 p-6 text-center sm:p-7",
-          isWil
-            ? "border-primary/30 bg-gradient-to-br from-primary/[0.08] to-forest/[0.06] shadow-md"
-            : "border-border bg-muted/40"
+          "flex h-full flex-col rounded-3xl border bg-card p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:border-gold/40 hover:shadow-md",
+          open && "border-gold/50 shadow-md"
         )}
+        data-testid={`bidang-${b.no}`}
       >
-        <div className="flex flex-col items-center gap-4 sm:flex-row sm:text-start">
-          <span
-            className={cn(
-              "grid h-14 w-14 shrink-0 place-items-center rounded-2xl shadow-sm",
-              isWil ? "bg-primary text-white" : "bg-foreground/10 text-foreground/60"
-            )}
-          >
-            <Icon name={icon} className="h-7 w-7" />
+        <div className="flex items-start gap-3">
+          <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
+            <Icon name={b.icon} className="h-5 w-5" />
           </span>
           <div className="min-w-0 flex-1">
-            <div className="flex flex-col items-center gap-1.5 sm:flex-row sm:items-center sm:gap-2.5">
-              <h3 className={cn("text-lg font-extrabold", isWil && "text-primary")}>{title}</h3>
-              <span
-                className={cn(
-                  "rounded-full px-2.5 py-0.5 text-[11px] font-extrabold",
-                  isWil ? "bg-primary text-white" : "bg-foreground/85 text-background"
-                )}
-                data-testid={`count-${variant}`}
-              >
-                {count}
-              </span>
-            </div>
-            <p className="mt-0.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-              {full}
-            </p>
-            <p className="mt-2 text-sm leading-relaxed text-foreground/75">{desc}</p>
+            <span className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-gold-deep dark:text-gold">
+              BIDANG {b.no}
+            </span>
+            <h3 className="mt-0.5 text-sm font-extrabold leading-snug">{b.title}</h3>
           </div>
         </div>
+        <p className="mt-2.5 flex-1 text-xs leading-relaxed text-muted-foreground">{b.tujuan}</p>
+        {open && (
+          <ul className="mt-3 space-y-1.5 border-t pt-3" data-testid={`bidang-${b.no}-sub`}>
+            {b.sub.map((s) => (
+              <li key={s} className="flex items-start gap-1.5 text-xs text-foreground/75">
+                <Icon name="check" className="mt-0.5 h-3 w-3 shrink-0 text-gold-deep" />
+                {s}
+              </li>
+            ))}
+          </ul>
+        )}
+        {b.note && open && (
+          <p className="mt-2 flex items-start gap-1 text-[10.5px] text-muted-foreground">
+            <Icon name="info" className="mt-0.5 h-3 w-3 shrink-0 text-gold-deep" />
+            {b.note}
+          </p>
+        )}
+        <button
+          type="button"
+          onClick={() => setOpen((v) => !v)}
+          aria-expanded={open}
+          className="mt-3 inline-flex items-center gap-1 self-start text-[11px] font-bold text-primary hover:text-primary/80"
+        >
+          {t("orgMaster.bidang.subLabel")} ({b.sub.length})
+          <Icon name="chevron-down" className={cn("h-3.5 w-3.5 transition-transform", open && "rotate-180")} />
+        </button>
+      </article>
+    </Reveal>
+  );
+}
+
+/* ============ 6 — Kartu bidang khusus ============ */
+
+function BidangKhususCard({ k, delay }: { k: (typeof BIDANG_KHUSUS)[number]; delay: number }) {
+  const { t } = useT();
+  return (
+    <Reveal delay={delay} className="h-full">
+      <article className="flex h-full flex-col rounded-3xl border-2 border-gold/30 bg-gradient-to-br from-gold/[0.06] to-card p-6 shadow-sm transition-shadow hover:shadow-lg">
+        <div className="flex items-center gap-3">
+          <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-gold/15 text-gold-deep dark:text-gold">
+            <Icon name={k.icon} className="h-6 w-6" />
+          </span>
+          <div className="min-w-0">
+            <span className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-gold-deep dark:text-gold">
+              BIDANG KHUSUS {k.no}
+            </span>
+            <h3 className="mt-0.5 text-sm font-extrabold leading-snug">{k.title}</h3>
+          </div>
+        </div>
+        <div className="mt-4 rounded-2xl border bg-card/80 p-3.5">
+          <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+            {t("orgMaster.khusus.ketuaLabel")}
+          </span>
+          <p className="mt-1 text-sm font-extrabold">{k.ketua}</p>
+          {k.ketuaNote && (
+            <p className="mt-1 flex items-start gap-1 text-[10.5px] text-muted-foreground">
+              <Icon name="info" className="mt-0.5 h-3 w-3 shrink-0 text-gold-deep" />
+              {k.ketuaNote}
+            </p>
+          )}
+        </div>
+        <p className="mt-4 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+          {t("orgMaster.khusus.subLabel")}
+        </p>
+        <ul className="mt-2 grid gap-1.5 sm:grid-cols-2">
+          {k.sub.map((s) => (
+            <li key={s} className="flex items-start gap-1.5 rounded-xl bg-muted/40 px-2.5 py-1.5 text-[11px] text-foreground/75">
+              <Icon name="check" className="mt-0.5 h-3 w-3 shrink-0 text-gold-deep" />
+              {s}
+            </li>
+          ))}
+        </ul>
+        <p className="mt-4 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+          {t("orgMaster.khusus.outLabel")}
+        </p>
+        <ul className="mt-2 flex flex-wrap gap-1.5">
+          {k.out.map((o) => (
+            <li key={o} className="rounded-full border border-gold/35 bg-gold/10 px-2.5 py-0.5 text-[10.5px] font-semibold text-gold-deep dark:text-gold">
+              {o}
+            </li>
+          ))}
+        </ul>
       </article>
     </Reveal>
   );
@@ -281,9 +378,10 @@ function TierCard({
 export function PengurusView() {
   const { t } = useT();
   const heroStats = [
-    { icon: "users", value: "5", label: t("pengurus.statLeaders") },
-    { icon: "map", value: String(NET_COUNTS.bakorwil), label: t("pengurus.statWil") },
-    { icon: "building-2", value: String(NET_COUNTS.bakorcab), label: t("pengurus.statCab") },
+    { icon: "users", value: String(ORG_STATS.councilPeople), label: t("orgMaster.statPeople") },
+    { icon: "landmark", value: String(ORG_STATS.dewans), label: t("orgMaster.statCouncil") },
+    { icon: "briefcase", value: String(ORG_STATS.bidangStrategis), label: t("orgMaster.statBidang") },
+    { icon: "map", value: String(ORG_STATS.dpw), label: t("orgMaster.statDpw") },
   ];
 
   return (
@@ -291,21 +389,18 @@ export function PengurusView() {
       {/* 1 — Hero banner */}
       <section className="relative overflow-hidden bg-forest-deep text-white">
         <div aria-hidden className="absolute inset-0 bg-islamic-pattern-gold opacity-40" />
-        <div
-          aria-hidden
-          className="pointer-events-none absolute -top-24 -end-16 h-72 w-72 rounded-full bg-gold/15 blur-3xl"
-        />
+        <div aria-hidden className="pointer-events-none absolute -top-24 -end-16 h-72 w-72 rounded-full bg-gold/15 blur-3xl" />
         <div className="relative mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20">
           <Reveal>
             <span className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-gold">
               <span className="h-px w-6 bg-current opacity-60" />
-              {t("pengurus.eyebrow")}
+              {t("orgMaster.eyebrow")}
             </span>
             <h1 className="mt-3 max-w-3xl text-4xl font-extrabold tracking-tight sm:text-5xl">
-              {t("pengurus.title")}
+              {t("orgMaster.title")}
             </h1>
             <p className="mt-4 max-w-3xl text-sm leading-relaxed text-emerald-100/80 sm:text-base">
-              {t("pengurus.subtitle")}
+              {t("orgMaster.subtitle")}
             </p>
           </Reveal>
           <Reveal delay={0.12}>
@@ -325,161 +420,331 @@ export function PengurusView() {
         </div>
       </section>
 
-      {/* 2 — Dua Pilar Kepemimpinan (Ketum & Sekjen — SPESIAL) */}
+      {/* 2 — Dua Pilar Kepemimpinan */}
       <section className="py-16 sm:py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <SectionHeading
-            eyebrow={t("pengurus.featured.eyebrow")}
-            title={t("pengurus.featured.title")}
-            subtitle={t("pengurus.featured.desc")}
+            eyebrow={t("orgMaster.pillars.eyebrow")}
+            title={t("orgMaster.pillars.title")}
+            subtitle={t("orgMaster.pillars.desc")}
           />
           <div className="mt-10 grid gap-6 md:grid-cols-2 md:gap-8">
-            <FeaturedLeader pid="ketum" delay={0.05} />
-            <FeaturedLeader pid="sekjen" delay={0.18} />
+            <PillarCard pid="ketum" delay={0.05} />
+            <PillarCard pid="sekjen" delay={0.18} />
           </div>
         </div>
       </section>
 
-      {/* 3 — Dewan Pengayom */}
+      {/* 3 — Empat Dewan */}
       <section className="bg-mint/30 py-16 dark:bg-muted/30 sm:py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <SectionHeading
-            eyebrow={t("pengurus.advisory.eyebrow")}
-            title={t("pengurus.advisory.title")}
-            subtitle={t("pengurus.advisory.desc")}
+            eyebrow={t("orgMaster.councils.eyebrow")}
+            title={t("orgMaster.councils.title")}
+            subtitle={t("orgMaster.councils.desc")}
           />
-          <div className="mx-auto mt-10 grid max-w-3xl gap-6 sm:grid-cols-2">
-            <AdvisoryCard pid="pembina" delay={0.05} />
-            <AdvisoryCard pid="penasehat" delay={0.15} />
+          <div className="mt-10 grid gap-6 lg:grid-cols-2">
+            {COUNCILS.map((c, i) => (
+              <CouncilCard key={c.id} council={c} delay={0.06 * i} />
+            ))}
           </div>
+          <Reveal delay={0.2} className="mt-6">
+            <p className="mx-auto flex max-w-3xl items-start gap-2 rounded-2xl border border-gold/30 bg-gold/[0.07] px-4 py-3 text-xs leading-relaxed text-foreground/75">
+              <Icon name="info" className="mt-0.5 h-4 w-4 shrink-0 text-gold-deep" />
+              {t("orgMaster.disclaimer")}
+            </p>
+          </Reveal>
         </div>
       </section>
 
-      {/* 4 — Pengurus Pusat */}
+      {/* 4 — Pimpinan Inti DPP */}
       <section className="py-16 sm:py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <SectionHeading
-            eyebrow={t("pengurus.central.eyebrow")}
-            title={t("pengurus.central.title")}
-            subtitle={t("pengurus.central.desc")}
+            eyebrow={t("orgMaster.leadership.eyebrow")}
+            title={t("orgMaster.leadership.title")}
+            subtitle={t("orgMaster.leadership.desc")}
           />
-          <div className="mt-10">
-            <CentralLeaderCard />
-          </div>
+          {/* Bendahara Umum — kartu penuh (berjajar dengan pilar via hierarki) */}
+          <Reveal className="mt-10">
+            <h3 className="text-center text-lg font-extrabold">{t("orgMaster.leadership.waketumTitle")}</h3>
+            <ul className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              {WAKETUM.map((row, i) => (
+                <li key={row.key}>
+                  <LeaderCard row={row} roleLabel={t(`orgMaster.leader.${row.key}`)} delay={0.04 * i} />
+                </li>
+              ))}
+            </ul>
+          </Reveal>
           <Reveal delay={0.1} className="mt-12">
-            <h3 className="text-center text-lg font-extrabold">
-              {t("pengurus.central.bidangTitle")}
-            </h3>
-            <p className="mx-auto mt-1.5 max-w-xl text-center text-sm text-muted-foreground">
-              {t("pengurus.central.bidangDesc")}
-            </p>
-            <ul className="mt-6 grid gap-3.5 sm:grid-cols-2 lg:grid-cols-3">
-              {PENGURUS_BIDANG.map((b, i) => (
-                <Reveal key={b.id} delay={0.06 * i}>
-                  <li className="flex h-full items-center gap-3.5 rounded-2xl border bg-card p-4 shadow-sm transition-all hover:-translate-y-0.5 hover:border-gold/40 hover:shadow-md">
-                    <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
-                      <Icon name={b.icon} className="h-5 w-5" />
-                    </span>
-                    <span className="text-sm font-bold leading-snug">
-                      {t(`pengurus.bidang.${b.id}`)}
-                    </span>
-                  </li>
-                </Reveal>
+            <h3 className="text-center text-lg font-extrabold">{t("orgMaster.leadership.wasekjenTitle")}</h3>
+            <ul className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              {/* Sekjen jadi kartu pertama (kepala sekretariat) */}
+              <li>
+                <LeaderCard
+                  row={{ key: "sekjen", name: SEKJEN.name, portfolio: SEKJEN.bio, icon: SEKJEN.icon, status: "TERPASANG" }}
+                  roleLabel={t("pengurus.role.sekjen")}
+                  delay={0.02}
+                />
+              </li>
+              {WASEKJEN.map((row, i) => (
+                <li key={row.key}>
+                  <LeaderCard row={row} roleLabel={t(`orgMaster.leader.${row.key}`)} delay={0.04 * (i + 1)} />
+                </li>
+              ))}
+            </ul>
+          </Reveal>
+          <Reveal delay={0.1} className="mt-12">
+            <h3 className="text-center text-lg font-extrabold">{t("orgMaster.leadership.bendaharaTitle")}</h3>
+            <ul className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {BENDAHARA.map((row, i) => (
+                <li key={row.key}>
+                  <LeaderCard row={row} roleLabel={t(`orgMaster.leader.${row.key}`)} delay={0.04 * i} />
+                </li>
               ))}
             </ul>
           </Reveal>
         </div>
       </section>
 
-      {/* 5 — Jaringan berjenjang: PP → Penunjukan → Bakorwil → Bakorcab */}
+      {/* 5 — 15 Bidang Strategis */}
       <section className="bg-mint/30 py-16 dark:bg-muted/30 sm:py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <SectionHeading
-            eyebrow={t("pengurus.net.eyebrow")}
-            title={t("pengurus.net.title")}
-            subtitle={t("pengurus.net.desc")}
+            eyebrow={t("orgMaster.bidang.eyebrow")}
+            title={t("orgMaster.bidang.title")}
+            subtitle={t("orgMaster.bidang.desc")}
           />
-          <div className="mt-10 flex flex-col items-center">
-            {/* Pengurus Pusat (ringkas) */}
-            <Reveal className="w-full max-w-xl">
-              <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-forest to-forest-deep p-6 text-center text-white shadow-md sm:p-7">
-                <div aria-hidden className="absolute inset-0 bg-islamic-pattern-gold opacity-40" />
-                <div className="relative">
-                  <Icon name="landmark" className="mx-auto h-6 w-6 text-gold" />
-                  <p className="mt-2 text-lg font-extrabold tracking-wide">
-                    {t("pengurus.central.title")}
-                  </p>
-                  <p className="text-xs text-emerald-50/80">{t("pengurus.net.ppFull")}</p>
-                </div>
-              </div>
-            </Reveal>
-            <Connector label={t("pengurus.central.appoint")} />
-            <TierCard
-              variant="wil"
-              count={NET_COUNTS.bakorwil}
-              icon="network"
-              title={t("pengurus.net.wilTitle")}
-              full={t("pengurus.net.wilFull")}
-              desc={t("pengurus.net.wilDesc")}
-            />
-            <Connector />
-            <TierCard
-              variant="cab"
-              count={NET_COUNTS.bakorcab}
-              icon="building-2"
-              title={t("pengurus.net.cabTitle")}
-              full={t("pengurus.net.cabFull")}
-              desc={t("pengurus.net.cabDesc")}
-            />
-            <Reveal delay={0.1} className="mt-8">
-              <p className="flex max-w-lg items-start justify-center gap-1.5 text-center text-[11px] leading-relaxed text-muted-foreground">
-                <Icon name="info" className="mt-0.5 h-3.5 w-3.5 shrink-0 text-gold-deep" />
-                <span>{t("pengurus.net.note")}</span>
-              </p>
-              <div className="mt-5 text-center">
-                <Button
-                  variant="outline"
-                  onClick={() => navigate("gabung")}
-                  className="border-gold/50 text-gold-deep hover:bg-gold/10 dark:text-gold"
-                >
-                  <Icon name="user-plus" className="me-2 h-4 w-4" />
-                  {t("pengurus.net.joinWil")}
-                </Button>
-              </div>
-            </Reveal>
+          <ul className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {BIDANG_STRATEGIS.map((b, i) => (
+              <li key={b.key}>
+                <BidangCard b={b} delay={0.04 * i} />
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      {/* 6 — 3 Bidang Khusus */}
+      <section className="py-16 sm:py-20">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6">
+          <SectionHeading
+            eyebrow={t("orgMaster.khusus.eyebrow")}
+            title={t("orgMaster.khusus.title")}
+            subtitle={t("orgMaster.khusus.desc")}
+          />
+          <div className="mt-10 grid gap-6 lg:grid-cols-3">
+            {BIDANG_KHUSUS.map((k, i) => (
+              <BidangKhususCard key={k.key} k={k} delay={0.06 * i} />
+            ))}
           </div>
         </div>
       </section>
 
-      {/* 6 — CTA finale (menyambung kampanye DAFTAR & IURAN GRATIS) */}
+      {/* 7 — Personalia Tambahan */}
+      <section className="bg-mint/30 py-16 dark:bg-muted/30 sm:py-20">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6">
+          <SectionHeading
+            eyebrow={t("orgMaster.personalia.eyebrow")}
+            title={t("orgMaster.personalia.title")}
+            subtitle={t("orgMaster.personalia.desc")}
+          />
+          <Reveal className="mt-10 overflow-hidden rounded-3xl border bg-card shadow-sm">
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[640px] text-start text-sm">
+                <thead className="bg-muted/60 text-[11px] uppercase tracking-wider text-muted-foreground">
+                  <tr>
+                    <th className="px-4 py-3 text-start font-bold">{t("orgMaster.personalia.colName")}</th>
+                    <th className="px-4 py-3 text-start font-bold">{t("orgMaster.personalia.colInfo")}</th>
+                    <th className="px-4 py-3 text-start font-bold">{t("orgMaster.personalia.colAction")}</th>
+                  </tr>
+                </thead>
+                <tbody data-testid="personalia-table">
+                  {PERSONALIA_TAMBAHAN.map((p) => (
+                    <tr key={p.name} className="border-t transition-colors hover:bg-gold/[0.05]">
+                      <td className="px-4 py-3 font-bold">{p.name}</td>
+                      <td className="px-4 py-3 text-muted-foreground">{p.info}</td>
+                      <td className="px-4 py-3 text-foreground/75">{p.action}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* 8 — Register 38 DPW + tingkat organisasi */}
+      <section className="py-16 sm:py-20">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6">
+          <SectionHeading
+            eyebrow={t("orgMaster.dpw.eyebrow")}
+            title={t("orgMaster.dpw.title")}
+            subtitle={t("orgMaster.dpw.desc")}
+          />
+          {/* Tingkat organisasi */}
+          <Reveal className="mt-10">
+            <div className="grid gap-3 rounded-3xl border bg-card p-6 shadow-sm sm:grid-cols-2 lg:grid-cols-4">
+              {[
+                { icon: "landmark", label: t("orgMaster.dpw.tierDpp"), hl: true },
+                { icon: "map", label: t("orgMaster.dpw.tierDpw") },
+                { icon: "building-2", label: t("orgMaster.dpw.tierDpd") },
+                { icon: "home", label: t("orgMaster.dpw.tierDpc") },
+              ].map((tier) => (
+                <div
+                  key={tier.label}
+                  className={cn(
+                    "flex items-center gap-3 rounded-2xl border p-4",
+                    tier.hl
+                      ? "border-gold/40 bg-gradient-to-br from-forest to-forest-deep text-white shadow-md"
+                      : "bg-muted/40"
+                  )}
+                >
+                  <Icon name={tier.icon} className={cn("h-5 w-5 shrink-0", tier.hl ? "text-gold" : "text-primary")} />
+                  <span className="text-xs font-bold leading-snug">{tier.label}</span>
+                </div>
+              ))}
+            </div>
+          </Reveal>
+          {/* Grid 38 provinsi */}
+          <ul className="mt-8 grid gap-2.5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" data-testid="dpw-register">
+            {DPW_38.map((w, i) => (
+              <Reveal key={w.provinsi} delay={Math.min(0.03 * i, 0.4)}>
+                <li className="flex items-center gap-3 rounded-2xl border bg-card px-4 py-3 shadow-sm transition-all hover:-translate-y-0.5 hover:border-gold/40 hover:shadow-md">
+                  <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-primary/10 text-[11px] font-extrabold text-primary">
+                    {String(w.no).padStart(2, "0")}
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-bold">{w.provinsi}</p>
+                    <p className="truncate text-[11px] text-muted-foreground">{w.ibuKota}</p>
+                  </div>
+                  <span
+                    className="shrink-0 rounded-full border border-amber-500/40 bg-amber-500/10 px-2 py-0.5 text-[9px] font-bold uppercase text-amber-700 dark:text-amber-300"
+                    title={t("orgMaster.dpw.ketuaPending")}
+                  >
+                    DPW
+                  </span>
+                </li>
+              </Reveal>
+            ))}
+          </ul>
+          {/* Struktur standar DPW */}
+          <Reveal delay={0.15} className="mt-10">
+            <div className="rounded-3xl border bg-card p-6 shadow-sm sm:p-8">
+              <h3 className="text-lg font-extrabold">{t("orgMaster.dpw.strukturTitle")}</h3>
+              <p className="mt-1 text-sm text-muted-foreground">{t("orgMaster.dpw.strukturDesc")}</p>
+              <ul className="mt-5 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                {DPW_STRUKTUR.map((s, i) => (
+                  <li key={s} className="flex items-center gap-2.5 rounded-xl bg-muted/40 px-3.5 py-2.5 text-xs font-semibold text-foreground/80">
+                    <span className="grid h-6 w-6 shrink-0 place-items-center rounded-md bg-primary/10 text-[10px] font-extrabold text-primary">
+                      {i + 1}
+                    </span>
+                    {s}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* 9 — Standar Kerja */}
+      <section className="bg-mint/30 py-16 dark:bg-muted/30 sm:py-20">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6">
+          <SectionHeading
+            eyebrow={t("orgMaster.standards.eyebrow")}
+            title={t("orgMaster.standards.title")}
+            subtitle={t("orgMaster.standards.desc")}
+          />
+          {/* 5 unsur */}
+          <Reveal className="mt-10">
+            <h3 className="text-center text-lg font-extrabold">{t("orgMaster.standards.unsurTitle")}</h3>
+            <ul className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+              {(["mandat", "wewenang", "keluaran", "indikator", "akuntabilitas"] as const).map((u, i) => (
+                <li key={u} className="rounded-2xl border bg-card p-4 text-center shadow-sm">
+                  <span className="mx-auto grid h-10 w-10 place-items-center rounded-xl bg-gold/15 text-gold-deep dark:text-gold">
+                    <Icon name="badge-check" className="h-5 w-5" />
+                  </span>
+                  <p className="mt-2.5 text-xs font-bold leading-snug">
+                    {t(`orgMaster.standards.unsur.${u}`)}
+                  </p>
+                  <span className="sr-only">{i + 1}</span>
+                </li>
+              ))}
+            </ul>
+          </Reveal>
+          {/* Siklus kerja */}
+          <Reveal delay={0.1} className="mt-12">
+            <h3 className="text-center text-lg font-extrabold">{t("orgMaster.standards.siklusTitle")}</h3>
+            <ul className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+              {(["mingguan", "bulanan", "triwulan", "semester", "tahunan"] as const).map((s) => (
+                <li key={s} className="rounded-2xl border bg-card p-4 shadow-sm">
+                  <span className="inline-flex rounded-full bg-primary px-3 py-0.5 text-[10px] font-extrabold uppercase tracking-wider text-white">
+                    {t(`orgMaster.standards.siklus.${s}.freq`)}
+                  </span>
+                  <p className="mt-2.5 text-xs font-bold leading-snug">{t(`orgMaster.standards.siklus.${s}.kegiatan`)}</p>
+                  <p className="mt-1.5 text-[11px] text-muted-foreground">
+                    → {t(`orgMaster.standards.siklus.${s}.out`)}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          </Reveal>
+          {/* KPI */}
+          <Reveal delay={0.15} className="mt-12">
+            <h3 className="text-center text-lg font-extrabold">{t("orgMaster.standards.kpiTitle")}</h3>
+            <ul className="mx-auto mt-6 grid max-w-4xl gap-2 sm:grid-cols-2">
+              {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map((n) => (
+                <li key={n} className="flex items-start gap-2.5 rounded-xl border bg-card px-4 py-2.5 text-xs leading-relaxed text-foreground/80">
+                  <span className="grid h-5 w-5 shrink-0 place-items-center rounded-md bg-gold/15 text-[10px] font-extrabold text-gold-deep dark:text-gold">
+                    {n}
+                  </span>
+                  {t(`orgMaster.standards.kpi.k${n}`)}
+                </li>
+              ))}
+            </ul>
+            <p className="mx-auto mt-5 flex max-w-3xl items-start gap-2 rounded-2xl border border-gold/30 bg-gold/[0.07] px-4 py-3 text-xs leading-relaxed text-foreground/75">
+              <Icon name="info" className="mt-0.5 h-4 w-4 shrink-0 text-gold-deep" />
+              {t("orgMaster.standards.kpiNote")}
+            </p>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* 10 — CTA finale */}
       <section className="py-16 sm:py-20">
         <div className="mx-auto max-w-4xl px-4 sm:px-6">
           <Reveal>
             <div className="relative overflow-hidden rounded-3xl bg-forest-deep p-8 text-center text-white sm:p-12">
               <div aria-hidden className="absolute inset-0 bg-islamic-pattern-gold opacity-40" />
-              <div
-                aria-hidden
-                className="pointer-events-none absolute -bottom-24 -start-16 h-64 w-64 rounded-full bg-gold/15 blur-3xl"
-              />
+              <div aria-hidden className="pointer-events-none absolute -bottom-24 -start-16 h-64 w-64 rounded-full bg-gold/15 blur-3xl" />
               <div className="relative">
                 <Icon name="handshake" className="mx-auto h-8 w-8 text-gold" />
                 <h2 className="mt-4 text-2xl font-extrabold tracking-tight sm:text-3xl">
-                  {t("pengurus.cta.title")}
+                  {t("orgMaster.cta.title")}
                 </h2>
                 <p className="mx-auto mt-3 max-w-2xl text-sm leading-relaxed text-emerald-100/80 sm:text-base">
-                  {t("pengurus.cta.desc")}
+                  {t("orgMaster.cta.desc")}
                 </p>
                 <p className="mt-5 inline-flex flex-wrap items-center justify-center gap-2 rounded-full border border-gold/40 bg-gold/10 px-4 py-2 text-xs font-extrabold uppercase tracking-widest text-gold sm:text-sm">
                   <Icon name="check-circle-2" className="h-4 w-4 shrink-0" aria-hidden />
-                  {t("pengurus.cta.free")}
+                  SATU EKOSISTEM · SATU KOLABORASI · SATU KOMITMEN
                 </p>
                 <div className="mt-7 flex flex-col items-center justify-center gap-3 sm:flex-row">
                   <Button
                     onClick={() => navigate("daftar")}
                     className="w-full bg-gold text-forest-deep font-bold shadow-md hover:bg-gold/90 sm:w-auto"
                   >
-                    {t("pengurus.cta.btn")}
+                    {t("orgMaster.cta.btn")}
                     <Icon name="arrow-right" className="ms-1.5 h-4 w-4 icon-flip" />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => navigate("komunitas")}
+                    className="w-full border-gold/50 bg-transparent text-gold hover:bg-gold/10 sm:w-auto"
+                  >
+                    <Icon name="message-circle" className="me-2 h-4 w-4" />
+                    {t("orgMaster.cta.wa")}
                   </Button>
                   <Button
                     variant="outline"
@@ -487,7 +752,7 @@ export function PengurusView() {
                     className="w-full border-white/30 bg-transparent text-white hover:bg-white/10 hover:text-white sm:w-auto"
                   >
                     <Icon name="mail" className="me-2 h-4 w-4" />
-                    {t("pengurus.cta.contact")}
+                    {t("orgMaster.cta.contact")}
                   </Button>
                 </div>
               </div>

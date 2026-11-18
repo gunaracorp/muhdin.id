@@ -45,6 +45,9 @@ export const MENU_NODES: MenuNode[] = [
       { slug: "bakornas", icon: "landmark" },
       { slug: "bakorwil", icon: "map" },
       { slug: "bakorda", icon: "map-pin" },
+      // Task 29 (v13.2) — Master Final 2026–2031 & 18 Kanal WhatsApp
+      { slug: "struktur-dpp", icon: "network", route: "pengurus" },
+      { slug: "komunitas-wa", icon: "message-circle", route: "komunitas" },
     ],
   },
   {

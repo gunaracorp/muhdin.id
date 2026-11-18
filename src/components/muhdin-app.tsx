@@ -71,6 +71,8 @@ import { BenefitView } from "@/components/views/benefit-view";
 import { KtaVerifyView } from "@/components/views/kta-verify-view";
 import { CertificateVerifyView } from "@/components/views/certificate-verify-view";
 import { PengurusDetail } from "@/components/views/pengurus-detail";
+// Task 29 (v13.2) — Master WhatsApp Community Architecture (18 kanal)
+import { KomunitasView } from "@/components/views/komunitas-view";
 // v5.0 — Marketplace paket, forum jamaah, kartu jamaah digital
 import { PaketView } from "@/components/views/paket-view";
 import { PaketDetail } from "@/components/views/paket-detail";
@@ -232,6 +234,10 @@ export function MuhdinApp({ initialLocale = "id" }: { initialLocale?: "id" | "en
     case "pengurus":
       // v4.1 — #/pengurus/<id> → HALAMAN DETAIL TOKOH.
       content = route[1] ? <PengurusDetail id={route[1]} /> : <PengurusView />;
+      break;
+    // Task 29 (v13.2) — 18 Kanal WhatsApp Resmi (17 grup + 1 pengumuman)
+    case "komunitas":
+      content = <KomunitasView />;
       break;
     // Task 50 — Pusat Layanan, Perizinan & Sertifikasi (menu baru)
     case "layanan":

@@ -1,22 +1,31 @@
 /**
- * Task 37 — SUSUNAN PENGURUS MUHDIN (data resmi dari owner).
+ * pengurus-data.ts — SUSUNAN PENGURUS MUHDIN (MASTER FINAL 2026–2031).
  *
- * Sumber: susunan resmi yang diberikan owner (Ketua Umum, Sekjen, BEMDUM,
- * Pembina, Penasehat). Nama & gelar dinormalisasi tanda baca saja (Prof. Dr. /
- * KH. / Drs. / Lc. / M.Si. / M.Pd.) — isi tidak diubah.
+ * Keputusan super final owner (dokumen "MASTER FINAL — RANCANGAN ORGANISASI
+ * DPP MUHDIN 2026–2031", diupload 2026-11-18). Data inti kini hidup di
+ * src/lib/org-master.ts; file ini lapisan ekspor untuk kompatibilitas view.
  *
  * FOTO: taruh file foto resmi di /public/images/pengurus/ lalu isi field
- * `photo` (mis. "/images/pengurus/ketum.jpg"). Bila kosong, UI merender
- * monogram emas elegan sebagai fallback — halaman tetap rapi kapan pun.
+ * `photo`. Bila kosong, UI merender monogram emas elegan sebagai fallback.
  *
- * Peran i18n & mandat ada di src/lib/i18n/locales/pengurus.ts (id/en/ar).
+ * Peran i18n & mandat ada di src/lib/i18n/locales/pengurus.ts + org-master.ts
+ * (id/en/ar). Nama tetap Latin di semua locale — pola asosiasi internasional.
  */
 
-export type PengurusId = "pembina" | "penasehat" | "ketum" | "sekjen" | "bemdum";
+import {
+  KETUA_UMUM,
+  SEKJEN,
+  BIDANG_STRATEGIS,
+  DPW_38,
+} from "@/lib/org-master";
+
+/* ---------- Dua pilar kepemimpinan (halaman detail tetap tersedia) ---------- */
+
+export type PengurusId = "ketum" | "sekjen";
 
 export interface PengurusPerson {
   id: PengurusId;
-  /** Nama lengkap + gelar (ditulis apa adanya, hanya dirapikan tanda bacanya). */
+  /** Nama lengkap + gelar (ditulis apa adanya). */
   name: string;
   /** Path foto di /public — opsional; monogram dipakai bila kosong. */
   photo?: string;
@@ -25,22 +34,24 @@ export interface PengurusPerson {
 }
 
 export const PENGURUS_PERSON: Record<PengurusId, PengurusPerson> = {
-  pembina: { id: "pembina", name: "Prof. Dr. Anwar Sanusi", icon: "landmark" },
-  penasehat: { id: "penasehat", name: "KH. Qosim Saleh, Lc., M.Si.", icon: "compass" },
-  ketum: { id: "ketum", name: "Drs. Arif Racman Hakim", icon: "star" },
-  sekjen: { id: "sekjen", name: "Gugun Gunara", icon: "scroll-text" },
-  bemdum: { id: "bemdum", name: "Jonaedi, M.Pd.", icon: "badge-check" },
+  ketum: { id: "ketum", name: KETUA_UMUM.name, icon: KETUA_UMUM.icon },
+  sekjen: { id: "sekjen", name: SEKJEN.name, icon: SEKJEN.icon },
 };
 
-/** Bidang fungsional Pengurus Pusat — pola asosiasi internasional (IEEE/IATA-style). */
-export const PENGURUS_BIDANG: { id: string; icon: string }[] = [
-  { id: "b1", icon: "users" }, // Organisasi & Kaderisasi
-  { id: "b2", icon: "scale" }, // Advokasi & Regulasi
-  { id: "b3", icon: "brain-circuit" }, // Digital & Teknologi
-  { id: "b4", icon: "graduation-cap" }, // Pendidikan & Sertifikasi
-  { id: "b5", icon: "megaphone" }, // Humas & Publikasi
-  { id: "b6", icon: "handshake" }, // Kemitraan & Ekonomi Syariah
+/** Person tambahan yang ditautkan dari sitemap (dua pilar). */
+export const SITEMAP_PEOPLE: PengurusPerson[] = [
+  PENGURUS_PERSON.ketum,
+  PENGURUS_PERSON.sekjen,
 ];
 
-/** Jumlah provinsi & kab/kota Indonesia untuk kartu jaringan (data BPS). */
-export const NET_COUNTS = { bakorwil: 38, bakorcab: 514 } as const;
+/* ---------- 15 bidang strategis (ikon per bidang) ---------- */
+
+export const PENGURUS_BIDANG: { id: string; icon: string; no: string }[] =
+  BIDANG_STRATEGIS.map((b) => ({ id: b.key, icon: b.icon, no: b.no }));
+
+/* ---------- Jaringan kewilayahan ---------- */
+
+export const NET_COUNTS = {
+  bakorwil: DPW_38.length, // 38 provinsi
+  bakorcab: 514, // target kab/kota (BPS)
+} as const;

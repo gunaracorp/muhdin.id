@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useT, formatDateL10n } from "@/lib/i18n";
+import { PushEnableCard } from "@/components/site/push-enable-card"; // R-011 — Web Push
 import type { TrackResult } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
@@ -203,6 +204,8 @@ export function TrackView() {
           {/* HASIL */}
           {result && (
             <Reveal className="mt-6">
+              {/* R-011 — Web Push: nyalakan notifikasi keberangkatan (terikat tiket) */}
+              <PushEnableCard cardNo={result.ticketCode} />
               <div className="rounded-3xl border bg-card shadow-sm overflow-hidden" role="status">
                 <div className="bg-gradient-to-r from-primary to-forest text-white p-6 sm:p-7">
                   <div className="flex flex-wrap items-start justify-between gap-3">

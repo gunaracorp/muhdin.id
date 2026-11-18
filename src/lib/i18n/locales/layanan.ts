@@ -57,6 +57,21 @@ export const layananDict = {
           p2: "Perekrutan dan pendampingan anggota baru",
           p3: "Edukasi manasik di tingkat kab/kota",
         },
+        // Task 29 (v13.2) — Master Final 2026–2031 & 18 Kanal WhatsApp
+        "struktur-dpp": {
+          title: "STRUKTUR DPP 2026–2031",
+          desc: "Master Final organisasi DPP MUHDIN masa bakti 2026–2031 — empat dewan, dua pilar kepemimpinan, 15 bidang strategis, 3 bidang khusus, dan register 38 DPW.",
+          p1: "Empat dewan & dua pilar kepemimpinan",
+          p2: "15 bidang strategis + 3 bidang khusus",
+          p3: "Register 38 DPW seluruh Indonesia",
+        },
+        "komunitas-wa": {
+          title: "18 KANAL WHATSAPP",
+          desc: "Master WhatsApp Community Architecture Final Edition — 17 grup spesialis + 1 kanal pengumuman resmi dalam 6 ekosistem utama, lengkap dengan naskah deskripsi siap copas.",
+          p1: "17 grup spesialis + 1 kanal pengumuman",
+          p2: "Naskah deskripsi resmi siap copas",
+          p3: "Aturan Primary Membership + Functional Access",
+        },
         "iata": {
           title: "IATA",
           desc: "Perizinan & akreditasi IATA untuk layanan ticketing penerbangan grup dan consolidator.",
@@ -346,6 +361,21 @@ export const layananDict = {
           p2: "Recruitment & guidance of new members",
           p3: "Manasik education at regency/city level",
         },
+        // Task 29 (v13.2) — Master Final 2026–2031 & 18 WhatsApp channels
+        "struktur-dpp": {
+          title: "BOARD STRUCTURE 2026–2031",
+          desc: "Master Final blueprint of the MUHDIN Central Board for 2026–2031 — four councils, two leadership pillars, 15 strategic divisions, 3 special divisions, and the register of 38 provincial boards.",
+          p1: "Four councils & two leadership pillars",
+          p2: "15 strategic + 3 special divisions",
+          p3: "Register of 38 provincial boards",
+        },
+        "komunitas-wa": {
+          title: "18 WHATSAPP CHANNELS",
+          desc: "Master WhatsApp Community Architecture, Final Edition — 17 specialist groups + 1 official announcement channel across 6 core ecosystems, complete with copy-paste-ready descriptions.",
+          p1: "17 specialist groups + 1 announcement channel",
+          p2: "Official copy-paste-ready descriptions",
+          p3: "Primary Membership + Functional Access rule",
+        },
         "iata": {
           title: "IATA",
           desc: "IATA licensing & accreditation for group-flight ticketing and consolidator services.",
@@ -634,6 +664,21 @@ export const layananDict = {
           p1: "خدمة وتوجيه الأعضاء على المستوى المناطقي",
           p2: "استقطاب الأعضاء الجدد ومرافقتهم",
           p3: "تعليم المناسك على مستوى المناطق",
+        },
+        // Task 29 (v13.2) — Master Final 2026–2031 & 18 قناة واتساب
+        "struktur-dpp": {
+          title: "هيكل المجلس 2026–2031",
+          desc: "المخطط الرئيسي النهائي لمجلس إدارة موهدين للفترة 2026–2031 — أربع مجالس، ركيزتا قيادة، 15 قسماً استراتيجياً، 3 أقسام خاصة، وسجل 38 مجلساً إقليمياً.",
+          p1: "أربع مجالس وركيزتا قيادة",
+          p2: "15 قسماً استراتيجياً + 3 أقسام خاصة",
+          p3: "سجل 38 مجلساً إقليمياً",
+        },
+        "komunitas-wa": {
+          title: "18 قناة واتساب",
+          desc: "معمارية مجتمع واتساب الرئيسية، النسخة النهائية — 17 مجموعة متخصصة + قناة إعلانات رسمية عبر 6 منظومات رئيسية، مع نصوص وصف جاهزة للنسخ.",
+          p1: "17 مجموعة متخصصة + قناة إعلانات",
+          p2: "نصوص وصف رسمية جاهزة للنسخ",
+          p3: "قاعدة العضوية الأساسية والوصول الوظيفي",
         },
         "iata": {
           title: "IATA",

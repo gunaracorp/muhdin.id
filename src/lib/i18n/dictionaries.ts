@@ -26,6 +26,11 @@ import { nusHomeDict } from "@/lib/i18n/locales/indonesia-home";
 import { nusTrustDict } from "@/lib/i18n/locales/indonesia-trust";
 import { nusJoinDict } from "@/lib/i18n/locales/indonesia-join";
 import { pengurusDict } from "@/lib/i18n/locales/pengurus";
+// Task 29 (v13.2) — Master Final Organisasi + Komunitas WA
+import { orgMasterDict } from "@/lib/i18n/locales/org-master";
+import { waKomunitasDict } from "@/lib/i18n/locales/komunitas";
+// R-011 — Web Push Pengumuman Keberangkatan
+import { pushDict } from "@/lib/i18n/locales/push";
 // Task 50 — Pusat Layanan, Perizinan & Sertifikasi (menu baru)
 import { layananDict } from "@/lib/i18n/locales/layanan";
 // Task 48 — Super Dashboard Trio (jamaah / mitra / admin hub)
@@ -142,6 +147,11 @@ const dicts = [
   roadmap99Dict,
   // v13.1 — status + duty + nps
   v131Dict,
+  // Task 29 (v13.2) — Master Final Organisasi DPP 2026–2031 + 18 Kanal WA
+  orgMasterDict,
+  waKomunitasDict,
+  // R-011 — Web Push
+  pushDict,
   // v12.4 «LUNAS» — Checkout & Lacak Pesanan
   checkoutDict,
   // v12.5 — Help Center (R-095)

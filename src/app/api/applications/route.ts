@@ -5,6 +5,7 @@ import { notifyMembershipApplication } from "@/lib/whatsapp";
 import { notifyEmailApplication } from "@/lib/email"; // Task 60 — notifikasi email sekretariat
 import { rateLimit } from "@/lib/ratelimit";
 import { broadcastRegistration } from "@/lib/live-gateway"; // Task 53 — push realtime
+import { recordFunnel } from "@/lib/funnel"; // R-093 — funnel pendaftaran
 
 /**
  * Task 53 — Penugasan nomor urut ATOMIK.
@@ -107,6 +108,8 @@ export async function POST(req: NextRequest) {
       pdpConsentAt: new Date(),
       ticketCode, // Task 18 — kode pelacakan publik
     });
+    // R-093 — funnel: pendaftaran terkirim (gagal-aman).
+    recordFunnel("DAFTAR_SUBMIT", ticketCode);
     // Task 15-d/18 — notifikasi WhatsApp (fire-and-forget, gagal-aman).
     void notifyMembershipApplication({
       orgName: app.orgName,

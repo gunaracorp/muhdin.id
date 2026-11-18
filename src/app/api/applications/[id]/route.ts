@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth";
 import { guardRole, ok, fail } from "@/lib/api-helpers";
 import { logAudit } from "@/lib/audit"; // Task 18
+import { recordFunnel } from "@/lib/funnel"; // R-093 — funnel pendaftaran
 
 /**
  * Task 17 — Verifikasi keanggotaan.
@@ -50,6 +51,8 @@ export async function PUT(req: NextRequest, ctx: { params: Promise<{ id: string 
       }
       // Task 18 — jejak audit persetujuan.
       void logAudit(req, { action: "APPROVE", entity: "Application", entityId: id, detail: `Setujui ${app.orgName}` });
+      // R-093 — funnel: pendaftaran disetujui (gagal-aman).
+      recordFunnel("APP_APPROVED", app.ticketCode);
       return ok(app);
     }
 

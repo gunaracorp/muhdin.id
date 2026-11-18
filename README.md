@@ -3,7 +3,7 @@
 
 ![MUHDIN.ID — Portal Digital Ekosistem Umrah dan Haji Indonesia](docs/assets/banner.svg)
 
-# 🕋 MUHDIN.ID — v13.1.0 «PANEN & PANTAU»
+# 🕋 MUHDIN.ID — v13.2.0 «SATU PINTU ORGANISASI»
 
 ### **MU**asyarakat **U**mroh **H**aji **D**igital **I**ndonesia
 
@@ -11,14 +11,14 @@
 *The Digital Home for Indonesia's Umrah & Hajj Ecosystem — From Indonesia to the Holy Land*
 *المنصة الرقمية لمنظومة العمرة والحج الإندونيسية — من إندونيسيا إلى الأرض المقدسة*
 
-*Terakhir diperbarui: 15 November 2026*
+*Terakhir diperbarui: 18 November 2026*
 
 [![Next.js 16](https://img.shields.io/badge/Next.js-16-black?logo=nextdotjs)](https://nextjs.org)
 [![React 19](https://img.shields.io/badge/React-19-61DAFB?logo=react)](https://react.dev)
 [![TypeScript 5](https://img.shields.io/badge/TypeScript_5-tsc_0_error-3178C6?logo=typescript)](https://typescriptlang.org)
 [![Tailwind CSS 4](https://img.shields.io/badge/Tailwind_CSS_4-06B6D4?logo=tailwindcss)](https://tailwindcss.com)
-[![Prisma 6](https://img.shields.io/badge/Prisma_6-67_model-2D3748?logo=prisma)](https://prisma.io)
-[![API](https://img.shields.io/badge/API-148_route_handler-black)](#-peta-api)
+[![Prisma 6](https://img.shields.io/badge/Prisma_6-74_model-2D3748?logo=prisma)](https://prisma.io)
+[![API](https://img.shields.io/badge/API-159_route_handler-black)](#-peta-api)
 [![SQLite](https://img.shields.io/badge/DB-SQLite_↔_Postgres_ready-003B57?logo=sqlite)](#-strategi-database)
 [![i18n](https://img.shields.io/badge/i18n-ID_·_EN_·_AR_RTL-16a34a)](#-internasionalisasi)
 [![RBAC](https://img.shields.io/badge/RBAC-4_peran_·_32_modul_CMS-d97706)](#-keamanan-dan-rbac)
@@ -27,7 +27,7 @@
 [![Audit](https://img.shields.io/badge/Audit_Go_Live-10/10_terimplementasi-b8860b)](#-v126-audit-2026--kesiapan-go-live)
 [![CI](https://img.shields.io/badge/CI-verify_·_e2e_·_security-2088FF?logo=githubactions)](.github/workflows/ci.yml)
 [![E2E](https://img.shields.io/badge/E2E-Playwright_jalur_kritis-2EAD33?logo=playwright)](tests/e2e)
-[![Roles](https://img.shields.io/badge/Role_Matrix-tested_156_route-4B32C3)](scripts/test-role-matrix.mts)
+[![Roles](https://img.shields.io/badge/Role_Matrix-tested_159_route-4B32C3)](scripts/test-role-matrix.mts)
 [![Lint](https://img.shields.io/badge/ESLint-0_problem-4B32C3?logo=eslint)](#-jaminan-kualitas-qa-gates)
 
 > 🕌 **MUHDIN tanpa biaya pendaftaran di fase awal** — struktur biaya & sumber pembiayaan
@@ -58,9 +58,22 @@ penuh dari 7 sumber (SAPUHI, PIHK Kemenag, SATU HAJI Jateng, HIMPUH, AMPHURI + *
 2.087 entri** ekstraksi PDF 124 halaman) dengan dedupe nama + pengayaan kontak — **2.507 anggota
 terverifikasi di 37 wilayah**, tiap entri bersitasi sumber. *Pantau*: **Papan Status Layanan Publik**
 (`#/status`, R-097), **Duty Officer 24/7** (`#/darurat`, R-096), **Survei NPS** di Dashboard Omzet
-(R-092), **Role Matrix test 156 route** di CI (R-079), **audit dependensi otomatis** (R-083),
+(R-092), **Role Matrix test 159 route** di CI (R-079), **audit dependensi otomatis** (R-083),
 **Runbook Pemulihan Bencana** (R-084), ulasan terverifikasi ber-agregat (R-014) — **61/99 item
 roadmap selesai**. Semua fitur hidup, satu database, satu CMS, tiga bahasa.
+
+Lalu **v13.2 «SATU PINTU ORGANISASI»** menata ulang wajah kelembagaan sesuai keputusan super final
+owner (Master Final DPP 2026–2031): halaman **Struktur Organisasi DPP** (`#/pengurus`) dibangun ulang
+penuh — dua pilar kepemimpinan (Ketua Umum & Sekjen ber-7 titel profesional), **empat dewan**
+(Penasihat · Kehormatan · Pakar · Pengawas) dengan badge status personalia yang jujur, **15 bidang
+strategis + 3 bidang khusus** dengan subbidang lengkap, register **38 DPW**, standar kerja 5 unsur +
+siklus + 11 KPI; plus halaman baru **Master WhatsApp Community Architecture** (`#/komunitas`) —
+**18 kanal resmi (17 grup spesialis + 1 kanal pengumuman)** dalam 6 ekosistem, naskah deskripsi
+siap-copas per grup, pemetaan 15 departemen DPP, aturan *Primary Membership + Functional Access*,
+peta koordinator, dan rencana implementasi 3 tahap. *Empat item roadmap tuntas*: **Web Push
+Pengumuman Keberangkatan** (R-011 — VAPID, service worker, subscribe + broadcast CMS), **Analitik
+Funnel Pendaftaran** (R-093 — 5 stage + konversi + titik bocor), **Pencarian Fuzzy** (R-064 —
+Levenshtein + subsekuens), **KTA Tier berjenjang** (R-028) — **65/99 item roadmap selesai**.
 ---
 
 ## 📑 Isi
@@ -102,7 +115,7 @@ terpercaya: satu data, satu standar, satu pengalaman.
 | Angka | Artinya |
 | --- | --- |
 | **69 model** Prisma | Skema terpadu: dua garis + compliance + roadmap + checkout + PDP + broadcast + itinerary/waitlist + duty officer + NPS + status check |
-| **156 route handler** `/api/*` | Semua ter-guard RBAC/rate-limit + audit — diuji matriks peran otomatis (lihat [Peta API](#-peta-api)) |
+| **159 route handler** `/api/*` | Semua ter-guard RBAC/rate-limit + audit — diuji matriks peran otomatis (lihat [Peta API](#-peta-api)) |
 | **60+ rute halaman publik** | Beranda → ekosistem → layanan digital → trust center → kemitraan (lihat [Peta Halaman](#-peta-halaman-publik-60-rute)) |
 | **32 modul CMS** | Semua konten & transaksi dikelola tanpa sentuh kode |
 | **13 kejadian notifikasi × 2 kanal** | Email sekretariat + WhatsApp admin, otomatis (termasuk ORDER, BROADCAST, WAITLIST) |
@@ -118,12 +131,12 @@ terpercaya: satu data, satu standar, satu pengalaman.
 Semua angka di README ini bisa Anda hitung ulang sendiri di root repo:
 
 ```bash
-grep -c '^model ' prisma/schema.prisma          # 69 model
-find src/app/api -name route.ts | wc -l          # 156 route handler
-ls src/components/views/*.tsx | wc -l            # 76 komponen view
-ls src/components/admin/*.tsx | wc -l            # 32 modul CMS
-ls src/lib/i18n/locales/*.ts | wc -l             # 52 file kamus locale
-ls src/lib/*.ts | wc -l                          # 34 modul lib
+grep -c '^model ' prisma/schema.prisma          # 74 model
+find src/app/api -name route.ts | wc -l          # 159 route handler
+ls src/components/views/*.tsx | wc -l            # 78 komponen view
+ls src/components/admin/*.tsx | wc -l            # 37 modul CMS
+ls src/lib/i18n/locales/*.ts | wc -l             # 56 file kamus locale
+ls src/lib/*.ts | wc -l                          # 41 modul lib
 ```
 
 Prinsip proyek: **angka yang tidak bisa dibuktikan tidak boleh ditulis**. Prinsip yang sama
@@ -346,7 +359,7 @@ SPA hash-router (`#/…`) — satu shell, semua halaman; daftar nyata diambil da
 | --- | --- |
 | **Utama** | `#/beranda` · `#/ekosistem` · `#/layanan` · `#/tentang` · `#/dashboard` · `#/peta-situs` |
 | **Kepercayaan (Trust Center)** | `#/transparansi` · `#/regulasi` · `#/etik` · `#/privasi` (UU PDP + hak subjek data) · `#/kalkulator` (DAM) · `#/widget` · `#/darurat` (posko SOS) · `#/sehat` · `#/kemitraan` 🆕 |
-| **Anggota & Pendaftaran** | `#/anggota` · `#/daftar` · `#/gabung` (lookup izin otomatis) · `#/syarat` · `#/dpd` · `#/pengurus` · `#/mitra` |
+| **Anggota & Pendaftaran** | `#/anggota` · `#/daftar` · `#/gabung` (lookup izin otomatis) · `#/syarat` · `#/dpd` · `#/pengurus` (Struktur DPP 2026–2031) · `#/komunitas` (18 Kanal WhatsApp) 🆕 · `#/mitra` |
 | **Layanan Digital** | `#/paket` · `#/pindai` (Izin 360°) · `#/lookup` · `#/forum` · `#/kartu` · `#/bisnis` · `#/vault` · `#/compliance` · `#/nusuk` · `#/ppiu-pihk` |
 | **Keanggotaan v11** | `#/kartu-anggota` (KTA) · `#/academy` · `#/booking` · `#/benefit` · `#/paspor` · `#/tracking` · `#/tur-virtual` · `#/whatsapp-ai` |
 | **Verifikasi Publik** | `#/verifikasi` · `#/verifikasi-kta/KTA-…` · `#/verifikasi-paspor/PH-…` · `#/verifikasi-sertifikat/SERT-…` |
@@ -458,6 +471,7 @@ Prinsip: **sesedikit mungkin di env, sisanya via CMS**. Yang wajib:
 | --- | --- | --- |
 | `DATABASE_URL` | ✅ | Koneksi DB. Dev: `file:./db/custom.db` · Produksi: `postgres://…` |
 | `PAYMENT_WEBHOOK_SECRET` | ⚠️ **Produksi wajib** | Kunci HMAC-SHA256 webhook `/api/payments/callback`. **Fail-closed**: tanpa variabel ini di produksi, SEMUA callback ditolak HTTP 401 (terverifikasi). Sandbox/dev otomatis pakai kunci lokal |
+| `VAPID_PUBLIC_KEY` / `VAPID_PRIVATE_KEY` | — (R-011) | Kunci Web Push (generate sekali: `web-push generate-vapid-keys`). Tanpa ini kartu notifikasi disembunyikan secara anggun & broadcast mengembalikan `sent:0` |
 | `BUILD_STATIC` | — | `1` saat build untuk shared hosting (export statis, locale awal `id`) |
 | `NODE_OPTIONS` | — | sudah dibungkus di skrip (`--max-old-space-size=1300`) |
 
@@ -504,7 +518,7 @@ AiChatLog, Broadcast).
 └──────────────────────────────┬───────────────────────────────────┘
                                │ /api/* (Next.js Route Handlers)
 ┌──────────────────────────────▼───────────────────────────────────┐
-│  NEXT.JS 16 — src/app/api (148 route) · guardRole RBAC ·         │
+│  NEXT.JS 16 — src/app/api (159 route) · guardRole RBAC ·         │
 │  rateLimit adaptif (blocklist backoff) · logAudit · logger JSON  │
 │  ┌────────────┬─────────────┬──────────────┬─────────────────┐   │
 │  │ Publik     │ Transaksi   │ Layanan      │ Trust & B2B     │   │
@@ -569,7 +583,7 @@ Papan publik #/compliance membaca snapshot terakhir — transparan real-time
 
 ## 🔌 Peta API
 
-**148 route handler** — semua respons konsisten `ok()` / `fail()`, audit via `logAudit`,
+**159 route handler** — semua respons konsisten `ok()` / `fail()`, audit via `logAudit`,
 dilindungi `guardRole` + `rateLimit` adaptif.
 
 | Grup | Endpoint |
@@ -641,7 +655,7 @@ drill backup/restore (integrity_check + hitung baris), audit `check-postgres-rea
 ```
 src/
 ├── app/
-│   ├── api/                # 148 route handler (lihat Peta API)
+│   ├── api/                # 159 route handler (lihat Peta API)
 │   ├── page.tsx            # shell SPA (locale dari cookie, SSR konsisten)
 │   ├── paket/[slug]/       # landing SSR + JSON-LD Product
 │   └── artikel/[slug]/     # landing SSR + JSON-LD Article
@@ -688,10 +702,10 @@ worklog.md                  # 27+ task tercatat lengkap (jejak pengembangan)
 | `prisma/seed-fitur-v5/v6/v7.ts` | Seed marketplace/forum/kartu, bisnis/SOS, pindai izin |
 | `scripts/seed-membership.ts` | KTA + poin + akademi + slot + benefit |
 | `scripts/seed-compliance.ts` | Riwayat audit + tren kepatuhan izin (ComplianceAudit/Score/Finding) |
-| `scripts/seed-roadmap99.ts` | 99 item upgrade 6 pilar (RoadmapItem — status jujur: 61 DONE per v13.1) |
+| `scripts/seed-roadmap99.ts` | 99 item upgrade 6 pilar (RoadmapItem — status jujur: 65 DONE per v13.2) |
 | `scripts/panen-gabung-28.mts` | Import gabungan 7 sumber resmi → Member: dedupe nama + pengayaan kontak (2.507 anggota, idempoten) |
 | `scripts/seed-duty-officer.ts` | Roster piket Duty Officer 24/7 (`bun run seed:duty`) |
-| `scripts/test-role-matrix.mts` | R-079: uji matriks peran — pindai 156 route, guard valid, mutasi ter-guard (`bun run test:roles`) |
+| `scripts/test-role-matrix.mts` | R-079: uji matriks peran — pindai 159 route, guard valid, mutasi ter-guard (`bun run test:roles`) |
 | `scripts/audit-deps.sh` | R-083: audit dependensi produksi — gagal bila ada critical (`bun run audit:deps`) |
 | `scripts/backfill-seo.ts` / `seed-seo-content.ts` / `seed-itinerary.ts` | backfill meta SEO + 3 artikel pilar + itinerary 5 paket (semuanya idempoten) |
 | `scripts/optimize-images.mjs` | konversi WebP `sharp` (13 aset, hemat 23%) |
@@ -867,7 +881,8 @@ ganti 1 baris.
 | **v12.5 «SINERGI»** | **Sprint tuntas 15 item: SEO penuh (sitemap+landing SSR+OG dinamis), WebP lazy, impor CSV, Help Center, UU PDP (consent+hak subjek), rate-limit adaptif, anti-spam forum, observability, broadcast WA, skor vendor, poin KTA lintas layanan, itinerary, seat map+waitlist, dual-ready Postgres — 45/99 roadmap selesai** |
 | **v12.6 «AUDIT 2026»** | **Seluruh 10 tuntutan audit go-live terimplementasi: 4 halaman baru (kemitraan/pembayaran/keamanan/biaya), 6 halaman ditingkatkan, 52 klaim absolut dibersihkan, ARMINA 12 langkah, Nusuk 6 simpul, Permenhaji 2025, 8 KPI + roadmap operasional; hardening teknis: 58 error TS dibersihkan + typecheck ketat, webhook fail-closed, `bun run setup`, SmartImage bebas cascading render, ESLint 0 — QA gates lengkap hijau** |
 | **v13.0 «GERBANG»** | **CI/CD GitHub Actions (verify·e2e) + suite E2E Playwright + Dashboard Omzet + Sesi & Device Management + Landing Kampanye Musiman SSR — 52/99 roadmap selesai** |
-| **v13.1 «PANEN & PANTAU»** | **Direktori 2.507 anggota × 37 wilayah (7 sumber + Direktori Nasional 2.087, dedupe+pengayaan), Papan Status publik #/status, Duty Officer 24/7 #/darurat, NPS di Dashboard Omzet, role-matrix test 156 route di CI, audit dependensi otomatis, DR runbook — 61/99 roadmap selesai** |
+| **v13.1 «PANEN & PANTAU»** | **Direktori 2.507 anggota × 37 wilayah (7 sumber + Direktori Nasional 2.087, dedupe+pengayaan), Papan Status publik #/status, Duty Officer 24/7 #/darurat, NPS di Dashboard Omzet, role-matrix test 159 route di CI, audit dependensi otomatis, DR runbook — 61/99 roadmap selesai** |
+| **v13.2 «SATU PINTU ORGANISASI»** | **Master Final DPP 2026–2031 di #/pengurus (4 dewan + 2 pilar + 15 bidang + 3 bidang khusus + 38 DPW + standar kerja), 18 Kanal WhatsApp resmi di #/komunitas (17+1, naskah siap-copas, pemetaan departemen, aturan Primary Membership), Web Push keberangkatan (R-011), Funnel analitik pendaftaran (R-093), pencarian fuzzy typo-tolerant (R-064), KTA tier berjenjang (R-028) — 65/99 roadmap selesai** |
 
 ---
 

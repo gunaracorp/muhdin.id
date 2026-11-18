@@ -1,41 +1,73 @@
 "use client";
 
 /**
- * PengurusDetail (v4.1) — HALAMAN SENDIRI untuk setiap tokoh pengurus.
- * Route: #/pengurus/<id>  (pembina | penasehat | ketum | sekjen | bemdum)
+ * PengurusDetail (Task 29, v13.2) — HALAMAN SENDIRI untuk tokoh pilar kepemimpinan.
+ * Route: #/pengurus/<id>  (ketum | sekjen)
  *
- * Profil tokoh nasional: foto/monogram, jabatan (i18n), mandat lengkap
- * (i18n pengurus.mandate.<id>), posisi dalam struktur, bidang fungsional
- * di bawahnya (untuk BEMDUM), CTA kontak, dan navigasi antar tokoh.
- * Data statis dari src/lib/pengurus-data.ts (sumber kebenaran tunggal).
+ * Ketua Umum: Bunda Hj. Inna Hadianala, S.E. (Master Final 2026–2031).
+ * Sekretaris Jenderal: H. Gugun Gunara, S.E. — dengan 7 titel profesional
+ * resmi (Master Polymath, Universal Sage, The Ultimate Problem Solver,
+ * Senior Investigative Researcher, National Institutional Architect,
+ * Political & Government Relations Analyst, Global Hajj & Umrah Industry
+ * Strategist) + mandat Sekjen dari dokumen master.
+ * Data statis dari src/lib/org-master.ts (sumber kebenaran tunggal).
  */
 
 import { Icon } from "@/components/site/icon";
 import { Badge } from "@/components/ui/badge";
 import { useT } from "@/lib/i18n";
-import { PENGURUS_PERSON, PENGURUS_BIDANG, type PengurusId } from "@/lib/pengurus-data";
+import { PENGURUS_PERSON, type PengurusId } from "@/lib/pengurus-data";
+import { SEKJEN_TITLES, SEKJEN, KETUA_UMUM, BIDANG_STRATEGIS } from "@/lib/org-master";
 import { navigate } from "@/hooks/use-hash-route";
 import {
-  DetailHero, DetailNotFound, DetailSectionHead, RelatedLinkCard, WaCtaButton,
+  DetailHero, DetailNotFound, DetailSectionHead,
 } from "@/components/views/detail-shell";
+import { Reveal } from "@/components/site/reveal";
 import { cn } from "@/lib/utils";
 
-/** Ikhtisar peran (paragraf pembuka halaman) — i18n per tokoh. */
-const ROLE_SUMMARY: Record<PengurusId, string> = {
-  pembina: "pengurus.role.pembina",
-  penasehat: "pengurus.role.penasehat",
-  ketum: "pengurus.role.ketum",
-  sekjen: "pengurus.role.sekjen",
-  bemdum: "pengurus.role.bemdum",
+const ALL_IDS: PengurusId[] = ["ketum", "sekjen"];
+
+/** Mandat resmi dari dokumen master (Indonesia — proper noun organisasi). */
+const MANDAT: Record<PengurusId, string[]> = {
+  ketum: [
+    "Memimpin organisasi dan bertanggung jawab atas arah strategis.",
+    "Menetapkan prioritas program nasional sesuai AD/ART.",
+    "Mengkoordinasikan DPP dan mengesahkan penugasan sesuai kewenangan.",
+    "Mewakili MUHDIN dalam hubungan kelembagaan.",
+    "Memastikan pembentukan DPW, DPD, dan DPC berjalan tertib.",
+    "Menjaga integritas, reputasi, dan kesinambungan organisasi.",
+  ],
+  sekjen: [
+    "Menjadi koordinator utama administrasi dan sekretariat DPP.",
+    "Mengelola surat-menyurat, keputusan, notulensi, dan arsip.",
+    "Menyusun kalender kerja organisasi.",
+    "Mengkoordinasikan pelaporan seluruh bidang.",
+    "Menyiapkan rapat pimpinan dan rapat koordinasi.",
+    "Menjaga konsistensi dokumen dan data kepengurusan.",
+    "Mengawal tindak lanjut keputusan Ketua Umum.",
+    "Mengembangkan sistem informasi organisasi bersama bidang terkait.",
+  ],
 };
 
-const ALL_IDS: PengurusId[] = ["pembina", "penasehat", "ketum", "sekjen", "bemdum"];
+const FOKUS: Record<PengurusId, string[]> = {
+  ketum: ["Arah strategis", "Program nasional", "Koordinasi DPP", "Hubungan kelembagaan", "Kesinambungan organisasi"],
+  sekjen: [
+    "Arsitektur organisasi dan kelembagaan",
+    "Strategi bisnis dan pengembangan ekosistem",
+    "Transformasi digital dan integrasi sistem",
+    "Pengembangan tata kelola, SOP, dan standar kerja",
+    "Konsolidasi organisasi nasional",
+    "Pengembangan model kolaborasi dan kemitraan",
+    "Pengendalian pelaksanaan program strategis DPP",
+  ],
+};
 
 export function PengurusDetail({ id }: { id: string }) {
   const { t } = useT();
-  const person = PENGURUS_PERSON[id as PengurusId];
+  const pid = id as PengurusId;
+  const person = PENGURUS_PERSON[pid];
 
-  if (!person) {
+  if (!person || (pid !== "ketum" && pid !== "sekjen")) {
     return (
       <DetailNotFound
         message="Tokoh pengurus tidak ditemukan. Lihat susunan lengkap di halaman Pengurus."
@@ -45,12 +77,11 @@ export function PengurusDetail({ id }: { id: string }) {
     );
   }
 
-  const idx = ALL_IDS.indexOf(person.id);
+  const idx = ALL_IDS.indexOf(pid);
   const prev = idx > 0 ? PENGURUS_PERSON[ALL_IDS[idx - 1]] : undefined;
   const next = idx < ALL_IDS.length - 1 ? PENGURUS_PERSON[ALL_IDS[idx + 1]] : undefined;
-  const others = ALL_IDS.filter((p) => p !== person.id).map((p) => PENGURUS_PERSON[p]);
-  const roleLabel = t(`pengurus.role.${person.id}`);
-  const mandate = t(`pengurus.mandate.${person.id}`);
+  const isSekjen = pid === "sekjen";
+  const roleLabel = t(`pengurus.role.${pid}`);
 
   return (
     <div className="flex flex-col">
@@ -64,26 +95,18 @@ export function PengurusDetail({ id }: { id: string }) {
         badge={
           <Badge variant="outline" className="border-white/30 bg-white/10 text-white">
             <Icon name="star" className="h-3.5 w-3.5 fill-gold text-gold" aria-hidden />
-            {t("pengurus.statLeaders")}
+            {isSekjen ? "MASTER FINAL 2026–2031" : t("orgMaster.eyebrow")}
           </Badge>
         }
       >
-        {/* Foto / monogram */}
+        {/* Monogram */}
         <div className="mt-6">
-          {person.photo ? (
-            <img
-              src={person.photo}
-              alt={person.name}
-              className="h-28 w-28 rounded-3xl object-cover shadow-lg ring-2 ring-white/20"
-            />
-          ) : (
-            <span
-              aria-hidden
-              className="grid h-28 w-28 place-items-center rounded-3xl bg-gradient-to-br from-gold-deep to-primary text-4xl font-black text-white shadow-lg ring-2 ring-white/20"
-            >
-              {person.name.replace(/^(Prof\.|Dr\.|Drs\.|KH\.|H\.|Hj\.)\s*/gi, "").charAt(0)}
-            </span>
-          )}
+          <span
+            aria-hidden
+            className="grid h-28 w-28 place-items-center rounded-3xl bg-gradient-to-br from-gold-deep to-primary text-4xl font-black text-white shadow-lg ring-2 ring-white/20"
+          >
+            {person.name.replace(/^(Bunda\s+)?(Prof\.|Dr\.|Drs\.|KH\.|H\.|Hj\.)\s*/gi, "").charAt(0)}
+          </span>
         </div>
 
         {/* Navigasi antar tokoh */}
@@ -111,90 +134,78 @@ export function PengurusDetail({ id }: { id: string }) {
         </div>
       </DetailHero>
 
-      {/* ===== KONTEN ===== */}
-      <section className="py-12">
-        <div className="mx-auto grid max-w-6xl gap-8 px-4 sm:px-6 lg:grid-cols-[1fr_340px]">
-          <div className="min-w-0 space-y-8">
-            {/* Mandat */}
-            <div>
-              <DetailSectionHead icon="scroll-text" title={t("pengurus.central.appoint") || "Mandat"} />
-              <div className="rounded-2xl border bg-card p-6 shadow-sm">
-                <p className="text-xs font-bold uppercase tracking-wider text-primary">{roleLabel}</p>
-                <p className="mt-2 text-base leading-relaxed text-foreground/90">{mandate}</p>
-                <p className="mt-4 border-t pt-4 text-sm leading-relaxed text-muted-foreground">
-                  {person.id === "ketum" || person.id === "sekjen"
-                    ? t("pengurus.featured.desc")
-                    : t("pengurus.advisory.desc")}
+      {/* ===== TITEL PROFESIONAL (Sekjen) ===== */}
+      {isSekjen && (
+        <section className="py-14 sm:py-16">
+          <div className="mx-auto max-w-5xl px-4 sm:px-6">
+            <DetailSectionHead
+              icon="sparkles"
+              title={t("orgMaster.pillars.titlesLabel")}
+            />
+            <ul className="mt-8 grid gap-3 sm:grid-cols-2" data-testid="sekjen-detail-titles">
+              {SEKJEN_TITLES.map((tl, i) => (
+                <Reveal
+                  key={tl}
+                  delay={0.05 * i}
+                >
+                  <li className="flex items-center gap-3 rounded-2xl border border-gold/35 bg-gold/[0.07] px-5 py-4 shadow-sm">
+                    <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-gold text-forest-deep">
+                      <Icon name="award" className="h-5 w-5" />
+                    </span>
+                    <span className="text-sm font-extrabold tracking-wide">{tl}</span>
+                  </li>
+                </Reveal>
+              ))}
+            </ul>
+            <p className="mt-6 rounded-2xl border bg-card p-5 text-sm leading-relaxed text-muted-foreground">
+              {SEKJEN.bio}
+            </p>
+          </div>
+        </section>
+      )}
+
+      {/* ===== MANDAT ===== */}
+      <section className={cn("py-14 sm:py-16", !isSekjen && "pt-0")}>
+        <div className="mx-auto max-w-5xl px-4 sm:px-6">
+          <DetailSectionHead icon="scroll-text" title={roleLabel} />
+          <div className="mt-8 grid gap-6 lg:grid-cols-2">
+            <div className="rounded-3xl border bg-card p-6 shadow-sm" data-testid="mandat-list">
+              <h3 className="text-sm font-extrabold uppercase tracking-widest text-gold-deep dark:text-gold">
+                {t("orgMaster.standards.unsur.mandat")}
+              </h3>
+              <ul className="mt-4 space-y-2.5">
+                {MANDAT[pid].map((m) => (
+                  <li key={m} className="flex items-start gap-2 text-sm leading-relaxed text-foreground/80">
+                    <Icon name="check-circle-2" className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                    {m}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="rounded-3xl border border-gold/30 bg-gradient-to-br from-gold/[0.06] to-card p-6 shadow-sm">
+              <h3 className="text-sm font-extrabold uppercase tracking-widest text-gold-deep dark:text-gold">
+                {t("orgMaster.pillars.titlesLabel")}
+              </h3>
+              <ul className="mt-4 flex flex-wrap gap-2">
+                {FOKUS[pid].map((f) => (
+                  <li key={f} className="rounded-full border border-gold/40 bg-gold/10 px-3.5 py-1.5 text-xs font-bold text-gold-deep dark:text-gold">
+                    {f}
+                  </li>
+                ))}
+              </ul>
+              {/* Konteks struktur */}
+              <div className="mt-6 rounded-2xl border bg-card/70 p-4 text-xs leading-relaxed text-muted-foreground">
+                <p className="font-bold text-foreground/80">
+                  {isSekjen ? KETUA_UMUM.name : SEKJEN.name}
+                </p>
+                <p className="mt-1">
+                  {isSekjen
+                    ? `${BIDANG_STRATEGIS.length} bidang strategis + 3 bidang khusus bekerja di bawah koordinasi DPP 2026–2031.`
+                    : t("orgMaster.pillars.desc")}
                 </p>
               </div>
             </div>
-
-            {/* Bidang fungsional (khusus BEMDUM) — relevan juga untuk semua: struktur pelaksana */}
-            {person.id === "bemdum" && (
-              <div>
-                <DetailSectionHead icon="layout-dashboard" title={t("pengurus.central.title")} />
-                <div className="grid gap-3 sm:grid-cols-2">
-                  {PENGURUS_BIDANG.map((b, i) => (
-                    <div key={b.id} className="flex items-center gap-3 rounded-2xl border bg-card p-4 shadow-sm">
-                      <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
-                        <Icon name={b.icon} className="h-5 w-5" aria-hidden />
-                      </span>
-                      <span className="text-sm font-bold">{t(`pengurus.bidang.b${i + 1}`)}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Tokoh lain */}
-            <div>
-              <DetailSectionHead icon="users" title={t("pengurus.title")} />
-              <div className="grid gap-3 sm:grid-cols-2">
-                {others.map((p) => (
-                  <RelatedLinkCard
-                    key={p.id}
-                    href={`/pengurus/${p.id}`}
-                    icon={p.icon}
-                    title={p.name}
-                    meta={t(`pengurus.role.${p.id}`)}
-                  />
-                ))}
-              </div>
-            </div>
           </div>
-
-          {/* Sidebar */}
-          <aside className="space-y-4 lg:sticky lg:top-24 lg:self-start">
-            <div className="rounded-2xl border bg-card p-5 shadow-sm">
-              <h2 className="flex items-center gap-2 text-sm font-extrabold uppercase tracking-wider text-muted-foreground">
-                <Icon name="phone" className="h-4 w-4 text-primary" aria-hidden />
-                {t("detail.common.contactTitle")}
-              </h2>
-              <div className="mt-4 space-y-2.5">
-                <WaCtaButton
-                  className="w-full justify-center"
-                  message={`Assalamu'alaikum, saya ingin menghubungi Pengurus MUHDIN terkait ${roleLabel} (${person.name}).`}
-                  label={t("pengurus.cta.contact")}
-                />
-                <button
-                  type="button"
-                  onClick={() => navigate("/tentang")}
-                  className="flex w-full items-center justify-center gap-2 rounded-full border border-primary/30 bg-primary/5 px-5 py-2.5 text-sm font-bold text-primary transition hover:bg-primary/15"
-                >
-                  <Icon name="info" className="h-4 w-4" aria-hidden />
-                  {t("navbar.items.tentang")}
-                </button>
-              </div>
-            </div>
-
-            <div className={cn("rounded-2xl border border-primary/25 bg-primary/5 p-5")}>
-              <h2 className="flex items-center gap-2 text-sm font-extrabold text-primary">
-                <Icon name="shield-check" className="h-4 w-4" aria-hidden />
-                {t("pengurus.advisory.eyebrow")}
-              </h2>
-              <p className="mt-2 text-xs leading-relaxed text-muted-foreground">{t("pengurus.advisory.desc")}</p>
-            </div>
-          </aside>
         </div>
       </section>
     </div>

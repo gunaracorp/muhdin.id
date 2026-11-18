@@ -22,6 +22,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { BRAND } from "@/lib/constants";
 import { NpsWidget } from "@/components/site/nps-widget";
+import { PushEnableCard } from "@/components/site/push-enable-card"; // R-011 — Web Push
 import { DetailHero } from "@/components/views/detail-shell";
 import { cn } from "@/lib/utils";
 
@@ -167,6 +168,8 @@ export function PesananView() {
 
       <section className="py-12">
         <div className="mx-auto max-w-3xl px-4 sm:px-6">
+          {/* R-011 — Web Push: nyalakan notifikasi keberangkatan */}
+          <PushEnableCard />
           {/* Form lacak */}
           <div className="rounded-2xl border bg-card p-6 shadow-sm">
             <form

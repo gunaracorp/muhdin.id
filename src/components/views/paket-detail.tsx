@@ -10,6 +10,7 @@
  */
 
 import { useEffect, useMemo, useState } from "react";
+import { trackFunnel } from "@/lib/funnel-client"; // R-093
 import { apiGet, apiSend, formatDate } from "@/lib/client-api";
 import { navigate } from "@/hooks/use-hash-route";
 import { useT } from "@/lib/i18n";
@@ -39,6 +40,10 @@ export function PaketDetail({ id }: { id: string }) {
   const { t } = useT();
   const [pkg, setPkg] = useState<TourPackageItem | null>(null);
   const [failed, setFailed] = useState(false);
+  // R-093 — track funnel "lihat paket" (anonim, sekali per sesi).
+  useEffect(() => {
+    trackFunnel("VIEW_PAKET", id);
+  }, [id]);
 
   // form
   const [name, setName] = useState("");

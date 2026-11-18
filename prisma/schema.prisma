@@ -1282,6 +1282,40 @@ model NpsResponse {
   @@index([createdAt])
 }
 
+/// R-093 Analitik Funnel Pendaftaran — jejak langkah calon anggota/jamaah
+/// dari lihat paket → buka form → kirim → disetujui → KTA terbit.
+/// Event client di-track publik (rate-limited); event server dicatat otomatis
+/// di route terkait. Tanpa data pribadi — hanya stage + referensi anonim.
+model FunnelEvent {
+  id        String   @id @default(cuid())
+  stage     String // VIEW_PAKET | VIEW_DAFTAR | DAFTAR_SUBMIT | APP_APPROVED | KTA_ISSUED
+  refId     String? // referensi anonim (slug paket / ticketCode / cardNo)
+  source    String   @default("WEB") // WEB | API
+  createdAt DateTime @default(now())
+
+  @@index([stage, createdAt])
+  @@index([createdAt])
+}
+
+/// R-011 Web Push — langganan notifikasi keberangkatan jamaah (PWA push).
+/// Endpoint unik per perangkat; opsional dikaitkan ke kartu jamaah agar
+/// pengumuman keberangkatan H-3 bisa terarah. Tanpa isi pesan pribadi.
+model PushSubscription {
+  id        String   @id @default(cuid())
+  endpoint  String   @unique // URL endpoint push service (FCM/Mozilla autopush)
+  p256dh    String // kunci publik enkripsi pesan (keys.p256dh)
+  auth      String // rahasia enkripsi pesan (keys.auth)
+  cardNo    String? // nomor kartu jamaah (opsional, terverifikasi lewat kartu)
+  userAgent String?
+  createdAt DateTime @default(now())
+  lastSentAt DateTime?
+
+  @@index([cardNo])
+  @@index([createdAt])
+}
+
+
+
 /// R-097 Papan Status Layanan Publik — riwayat sampel kesehatan (dibatasi 200 terakhir).
 model StatusCheck {
   id          String   @id @default(cuid())
