@@ -9,7 +9,7 @@ export const branchesDict = {
       eyebrow: "Jaringan Daerah",
       title: "Kepengurusan Daerah & Branch Office",
       subtitle:
-        "Dewan Pimpinan Daerah (DPD) dan kantor cabang MUHDIN — dekat dengan jamaah di seluruh wilayah Indonesia.",
+        "Badan Koordinasi Daerah (BKD) dan kantor cabang MUHDIN — dekat dengan jamaah di seluruh wilayah Indonesia.",
       countLabel: "{n} wilayah",
       picLabel: "Penanggung Jawab (PIC)",
       phoneLabel: "Kontak",
@@ -28,7 +28,7 @@ export const branchesDict = {
       eyebrow: "Regional Network",
       title: "Regional Leadership & Branch Offices",
       subtitle:
-        "Regional Leadership Councils (DPD) and MUHDIN branch offices — close to pilgrims across Indonesia.",
+        "Regional Coordination Boards (BKD) and MUHDIN branch offices — close to pilgrims across Indonesia.",
       countLabel: "{n} regions",
       picLabel: "Person in Charge (PIC)",
       phoneLabel: "Contact",
@@ -47,7 +47,7 @@ export const branchesDict = {
       eyebrow: "الشبكة الإقليمية",
       title: "القيادة الإقليمية والمكاتب الفرعية",
       subtitle:
-        "مجالس القيادة الإقليمية (DPD) والمكاتب الفرعية لمؤمن — قريبة من الحجاج في جميع أنحاء إندونيسيا.",
+        "هيئات التنسيق الإقليمية (BKD) والمكاتب الفرعية لمؤمن — قريبة من الحجاج في جميع أنحاء إندونيسيا.",
       countLabel: "{n} منطقة",
       picLabel: "الشخص المسؤول",
       phoneLabel: "جهة الاتصال",

@@ -5,15 +5,15 @@
  *
  * Keputusan super final owner (dokumen master diupload 2026-11-18). Struktur:
  *  1. Hero + statistik organisasi.
- *  2. Dua Pilar Kepemimpinan — Ketua Umum & Sekjen (kartu emas spesial;
- *     Sekjen memuat 7 titel profesional resmi).
+ *  2. Pimpinan & Sekretariat — Ketua Umum & Sekjen (kartu setara profesional;
+ *     titel profesional Sekjen tampil di halaman profil detail).
  *  3. Empat Dewan — Penasihat / Kehormatan / Pakar / Pengawas (badge status
  *     personalia apa adanya dari dokumen).
- *  4. Pimpinan Inti DPP — Waketum I–VII, Sekjen+Wasekjen, Bendahara.
+ *  4. Pimpinan Inti BKN — Waketum I–VII, Sekjen+Wasekjen, Bendahara.
  *  5. 15 Bidang Strategis (detail subbidang expandable).
  *  6. 3 Bidang Khusus (ketua + subbidang + keluaran wajib).
  *  7. Personalia Tambahan (kandidat konsolidasi).
- *  8. Register 38 DPW + tingkat organisasi DPP→DPW→DPD→DPC.
+ *  8. Register 38 Bakorwil + tingkat organisasi BKN→Bakorwil→BKD→BKC.
  *  9. Standar Kerja — 5 unsur jabatan, siklus kerja, 11 KPI.
  * 10. CTA finale (+ tautan ke 18 Kanal WhatsApp).
  *
@@ -34,9 +34,7 @@ import {
   type PengurusPerson,
 } from "@/lib/pengurus-data";
 import {
-  KETUA_UMUM,
   SEKJEN,
-  SEKJEN_TITLES,
   COUNCILS,
   WAKETUM,
   WASEKJEN,
@@ -84,12 +82,12 @@ function StatusBadge({ status }: { status: PersonStatus }) {
 }
 
 /** Avatar bulat monogram/foto dengan ring emas. */
-function Avatar({ name, icon, size = "md" }: { name: string; icon: string; size?: "sm" | "md" | "lg" }) {
+function Avatar({ name, icon, size = "md", centered = true }: { name: string; icon: string; size?: "sm" | "md" | "lg"; centered?: boolean }) {
   const dim = { sm: "h-12 w-12", md: "h-20 w-20", lg: "h-36 w-36 text-3xl sm:h-44 sm:w-44 sm:text-4xl" }[size];
   const badge = { sm: "h-5 w-5", md: "h-7 w-7", lg: "h-10 w-10" }[size];
   const badgeIcon = { sm: "h-3 w-3", md: "h-3.5 w-3.5", lg: "h-5 w-5" }[size];
   return (
-    <div className={cn("relative mx-auto shrink-0", dim)}>
+    <div className={cn("relative shrink-0", centered && "mx-auto", dim)}>
       <div className="grid h-full w-full place-items-center overflow-hidden rounded-full bg-gradient-to-br from-primary to-forest ring-4 ring-gold/45 shadow-[0_16px_44px_-14px_rgba(212,175,55,0.55)]">
         <span aria-hidden className="font-extrabold tracking-wider text-white">
           {monogram(name)}
@@ -108,72 +106,46 @@ function Avatar({ name, icon, size = "md" }: { name: string; icon: string; size?
   );
 }
 
-/* ============ 2 — Dua Pilar Kepemimpinan (SPESIAL) ============ */
+/* ============ 2 — Pimpinan & Sekretariat (kartu setara, tanpa kesan monopoli) ============ */
 
 function PillarCard({ pid, delay }: { pid: "ketum" | "sekjen"; delay: number }) {
   const { t } = useT();
   const person: PengurusPerson = PENGURUS_PERSON[pid];
-  const isSekjen = pid === "sekjen";
-  const titles = SEKJEN_TITLES;
   return (
     <Reveal delay={delay} className="h-full">
       <article
-        role={isSekjen ? "link" : undefined}
-        tabIndex={isSekjen ? 0 : undefined}
-        aria-label={person.name}
-        onClick={isSekjen ? () => navigate("/pengurus/sekjen") : undefined}
-        onKeyDown={
-          isSekjen
-            ? (e) => {
-                if (e.key === "Enter" || e.key === " ") {
-                  e.preventDefault();
-                  navigate("/pengurus/sekjen");
-                }
-              }
-            : undefined
-        }
-        className={cn(
-          "relative h-full rounded-[28px] bg-gradient-to-br from-gold via-gold/55 to-gold/20 p-[2px] shadow-[0_30px_80px_-32px_rgba(212,175,55,0.6)]",
-          isSekjen && "cursor-pointer transition-transform duration-300 hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
-        )}
+        role="link"
+        tabIndex={0}
+        aria-label={`${t(`pengurus.role.${pid}`)}: ${person.name}`}
+        onClick={() => navigate(`/pengurus/${pid}`)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            navigate(`/pengurus/${pid}`);
+          }
+        }}
+        className="relative h-full cursor-pointer rounded-3xl border border-primary/25 bg-card p-6 shadow-sm transition-all hover:-translate-y-0.5 hover:border-gold/40 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold sm:p-7"
         data-testid={`pillar-${pid}`}
       >
-        <div className="relative flex h-full flex-col items-center overflow-hidden rounded-[26px] bg-card px-6 py-9 text-center sm:px-10">
-          <div aria-hidden className="pointer-events-none absolute inset-0 bg-islamic-pattern-gold opacity-25" />
-          <div aria-hidden className="pointer-events-none absolute -top-24 end-1/4 h-44 w-44 rounded-full bg-gold/15 blur-3xl" />
-          <div className="relative">
-            <Avatar name={person.name} icon={person.icon} size="lg" />
-          </div>
-          <span className="relative mt-5 inline-flex items-center gap-1.5 rounded-full border border-gold/50 bg-gold/15 px-4 py-1.5 text-[11px] font-extrabold uppercase tracking-[0.18em] text-gold-deep dark:text-gold">
-            <Icon name={person.icon} className="h-3.5 w-3.5" aria-hidden />
-            {isSekjen ? t("pengurus.role.sekjen") : t("pengurus.role.ketum")}
-          </span>
-          <h3 className="relative mt-3.5 text-2xl font-extrabold tracking-tight sm:text-3xl">
-            {person.name}
-          </h3>
-          <span aria-hidden className="relative mt-3 h-px w-14 bg-gradient-to-r from-transparent via-gold to-transparent" />
-          <p className="relative mt-3 max-w-sm text-sm leading-relaxed text-muted-foreground">
-            {isSekjen ? SEKJEN.bio : t("orgMaster.pillars.desc")}
-          </p>
-          {isSekjen && (
-            <ul className="relative mt-4 flex flex-wrap justify-center gap-1.5" data-testid="sekjen-titles">
-              {titles.map((tl) => (
-                <li
-                  key={tl}
-                  className="rounded-full border border-gold/40 bg-gold/10 px-3 py-1 text-[10.5px] font-bold uppercase tracking-wide text-gold-deep dark:text-gold"
-                >
-                  {tl}
-                </li>
-              ))}
-            </ul>
-          )}
-          {isSekjen && (
-            <span className="relative mt-5 inline-flex items-center gap-1.5 rounded-full border border-gold/50 bg-gold/15 px-4 py-1.5 text-[11px] font-bold text-gold-deep dark:text-gold transition">
-              {t("orgMaster.pillars.viewProfile")}
-              <Icon name="chevron-right" className="h-3.5 w-3.5 rtl:rotate-180" aria-hidden />
+        <div className="flex items-center gap-4">
+          <Avatar name={person.name} icon={person.icon} size="md" centered={false} />
+          <div className="min-w-0">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-primary">
+              <Icon name={person.icon} className="h-3 w-3" aria-hidden />
+              {t(`pengurus.role.${pid}`)}
             </span>
-          )}
+            <h3 className="mt-2 text-base font-extrabold leading-snug sm:text-lg">
+              {person.name}
+            </h3>
+          </div>
         </div>
+        <p className="mt-4 flex-1 text-sm leading-relaxed text-muted-foreground">
+          {t(`pengurus.mandate.${pid}`)}
+        </p>
+        <span className="mt-4 inline-flex items-center gap-1.5 rounded-full border border-gold/40 bg-gold/10 px-3.5 py-1.5 text-[11px] font-bold text-gold-deep dark:text-gold transition">
+          {t("orgMaster.pillars.viewProfile")}
+          <Icon name="chevron-right" className="h-3.5 w-3.5 rtl:rotate-180" aria-hidden />
+        </span>
       </article>
     </Reveal>
   );
@@ -457,7 +429,7 @@ export function PengurusView() {
         </div>
       </section>
 
-      {/* 4 — Pimpinan Inti DPP */}
+      {/* 4 — Pimpinan Inti BKN */}
       <section className="py-16 sm:py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <SectionHeading
@@ -574,7 +546,7 @@ export function PengurusView() {
         </div>
       </section>
 
-      {/* 8 — Register 38 DPW + tingkat organisasi */}
+      {/* 8 — Register 38 Bakorwil + tingkat organisasi */}
       <section className="py-16 sm:py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <SectionHeading
@@ -622,7 +594,7 @@ export function PengurusView() {
                     className="shrink-0 rounded-full border border-amber-500/40 bg-amber-500/10 px-2 py-0.5 text-[9px] font-bold uppercase text-amber-700 dark:text-amber-300"
                     title={t("orgMaster.dpw.ketuaPending")}
                   >
-                    DPW
+                    BKW
                   </span>
                 </li>
               </Reveal>

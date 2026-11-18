@@ -144,7 +144,7 @@ export const dashDict = {
       quickTrack: "Lacak Pendaftaran Mitra",
       quickTrackDesc: "Pantau status pendaftaran penyelenggara Anda.",
       quickKontak: "Hubungi Kami",
-      quickKontakDesc: "Kantor pusat, DPD, dan kanal resmi MUHDIN.",
+      quickKontakDesc: "Kantor pusat, BKD, dan kanal resmi MUHDIN.",
       jFooterNote: "Portal personal — seluruh data Anda hanya tersimpan di perangkat ini.",
 
       /* ---------- MITRA — LOGIN ---------- */

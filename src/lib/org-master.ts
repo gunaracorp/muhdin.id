@@ -1,5 +1,5 @@
 /**
- * org-master.ts — MASTER FINAL RANCANGAN ORGANISASI DPP MUHDIN 2026–2031
+ * org-master.ts — MASTER FINAL RANCANGAN ORGANISASI MUHDIN 2026–2031
  * (Keputusan super final owner — hanya penyempurnaan nama & edit gelar yang menyusul.)
  *
  * Sumber: dokumen resmi owner "MASTER FINAL — RANCANGAN ORGANISASI DPP MUHDIN
@@ -7,6 +7,12 @@
  * baca gelar yang dirapikan. Status personalia dipertahankan apa adanya sesuai
  * dokumen (Usulan / Menunggu persetujuan / Belum ditetapkan) demi integritas —
  * MUHDIN tidak mengklaim seseorang telah menerima jabatan sebelum ada SK.
+ *
+ * Nomenklatur resmi (keputusan owner 2026-11-18):
+ *   DPP → Badan Koordinasi Nasional (BKN)
+ *   DPW → Badan Koordinasi Wilayah — Bakorwil (BKW)
+ *   DPD → Badan Koordinasi Daerah (BKD)
+ *   DPC → Badan Koordinasi Cabang (BKC)
  *
  * Dipakai oleh: pengurus-view.tsx, pengurus-detail.tsx, komunitas-view.tsx,
  * sitemap-view.tsx.
@@ -29,7 +35,7 @@ export const SEKJEN_TITLES = [
 
 export const KETUA_UMUM = {
   id: "ketum",
-  name: "Bunda Hj. Inna Hadianala, S.E.",
+  name: "Hj. Inna Hadianala, S.E.",
   icon: "star",
   roleKey: "ketum",
 } as const;
@@ -41,7 +47,7 @@ export const SEKJEN = {
   roleKey: "sekjen",
   titles: SEKJEN_TITLES,
   /** Deskripsi profesional resmi (dari dokumen master, siap kutip). */
-  bio: "Arsitektur organisasi & kelembagaan · Strategi bisnis & pengembangan ekosistem · Transformasi digital & integrasi sistem · Tata kelola, SOP & standar kerja · Konsolidasi organisasi nasional · Model kolaborasi & kemitraan · Pengendalian program strategis DPP.",
+  bio: "Arsitektur organisasi & kelembagaan · Strategi bisnis & pengembangan ekosistem · Transformasi digital & integrasi sistem · Tata kelola, SOP & standar kerja · Konsolidasi organisasi nasional · Model kolaborasi & kemitraan · Pengendalian program strategis Badan Koordinasi Nasional.",
 } as const;
 
 /* ============================================================ *
@@ -133,7 +139,7 @@ export const COUNCILS: Council[] = [
 ];
 
 /* ============================================================ *
- * 3 — PIMPINAN INTI DPP
+ * 3 — PIMPINAN INTI BADAN KOORDINASI NASIONAL (BKN)
  * ============================================================ */
 
 export interface LeaderRow {
@@ -160,7 +166,7 @@ export const WAKETUM: LeaderRow[] = [
 ];
 
 export const WASEKJEN: LeaderRow[] = [
-  { key: "wasekjen1", name: "Ibu Atik", portfolio: "Administrasi organisasi, koordinasi anggota & sekretariat", icon: "clipboard-list", status: "PERLU_KONFIRMASI", note: "Owner Mumtazmu — ejaan nama lengkap disahkan sebelum SK" },
+  { key: "wasekjen1", name: "Atik", portfolio: "Administrasi organisasi, koordinasi anggota & sekretariat", icon: "clipboard-list", status: "PERLU_KONFIRMASI", note: "Owner Mumtazmu — ejaan nama lengkap disahkan sebelum SK" },
   { key: "wasekjen2", name: "Gemilang", portfolio: "Koordinasi program, dokumentasi & pelaporan", icon: "file-check", status: "PERLU_KONFIRMASI", note: "Nama lengkap & profil dilengkapi" },
   { key: "wasekjen3", name: "", portfolio: "Data organisasi, digitalisasi administrasi & pengembangan wilayah", icon: "database", status: "BELUM_DITETAPKAN" },
 ];
@@ -172,7 +178,7 @@ export const BENDAHARA: LeaderRow[] = [
 ];
 
 /* ============================================================ *
- * 4 — 15 BIDANG STRATEGIS DPP
+ * 4 — 15 BIDANG STRATEGIS BADAN KOORDINASI NASIONAL (BKN)
  * ============================================================ */
 
 export interface BidangStrategis {
@@ -192,7 +198,7 @@ export interface BidangStrategis {
 }
 
 export const BIDANG_STRATEGIS: BidangStrategis[] = [
-  { no: "01", key: "b01", icon: "users", title: "Organisasi, Keanggotaan & Kelembagaan", tujuan: "Membangun organisasi nasional yang tertib, terukur, dan memiliki keanggotaan yang valid.", sub: ["Organisasi", "Keanggotaan & Registrasi Anggota", "Kelembagaan & Pengembangan Wilayah (DPW/DPD)", "Pembentukan & Pengembangan DPC", "Administrasi & Tata Kelola Organisasi"] },
+  { no: "01", key: "b01", icon: "users", title: "Organisasi, Keanggotaan & Kelembagaan", tujuan: "Membangun organisasi nasional yang tertib, terukur, dan memiliki keanggotaan yang valid.", sub: ["Organisasi", "Keanggotaan & Registrasi Anggota", "Kelembagaan & Pengembangan Wilayah (Bakorwil/BKD)", "Pembentukan & Pengembangan BKC", "Administrasi & Tata Kelola Organisasi"] },
   { no: "02", key: "b02", icon: "building", title: "Pembinaan PPIU & Ekosistem Umrah", tujuan: "Pembinaan anggota PPIU, penguatan operasional, kolaborasi antarpenyelenggara, dan kualitas pengalaman jamaah.", sub: ["Pembinaan PPIU", "Pengembangan Ekosistem Umrah", "Pengembangan Usaha Penyelenggara Umrah", "Operasional & Manajemen Perjalanan Umrah", "Pelayanan & Kepuasan Jamaah Umrah"] },
   { no: "03", key: "b03", icon: "landmark", title: "Pembinaan PIHK & Ekosistem Haji Khusus", tujuan: "Pembinaan anggota PIHK, koordinasi ekosistem haji khusus, peningkatan kualitas layanan & kemitraan.", sub: ["Pembinaan PIHK", "Pengembangan Ekosistem Haji Khusus", "Operasional & Manajemen Haji Khusus", "Pelayanan & Kepuasan Jamaah Haji Khusus", "Pengembangan Kemitraan Penyelenggara Haji"] },
   { no: "04", key: "b04", icon: "moon-star", title: "KBIHU, Manasik & Pembinaan Jamaah", tujuan: "Pengembangan kompetensi pembimbing ibadah dan edukasi jamaah.", sub: ["KBIHU", "Manasik & Bimbingan Ibadah", "Pembinaan & Pendampingan Jamaah", "Pengembangan Kompetensi Pembimbing Ibadah", "Edukasi & Literasi Haji Umrah"], note: "Koordinasi strategis: Wakil Ketua Umum I (KH. Qasim Saleh, Lc., M.A.)" },
@@ -265,8 +271,8 @@ export const PERSONALIA_TAMBAHAN: { name: string; info: string; action: string }
   { name: "Mirza", info: "Mantan Panin", action: "Lengkapi identitas & riwayat jabatan" },
   { name: "Cecep Sumarno", info: "Ketua Bidang Hukum (usulan)", action: "Verifikasi nama, gelar, profesi & persetujuan" },
   { name: "Abdul Manan", info: "Waketum VI (usulan)", action: "Lengkapi nama & rekam jejak" },
-  { name: "Pak Wawan", info: "Nama muncul dalam pembahasan", action: "Belum ditempatkan" },
-  { name: "Pak Dian", info: "Konsolidasi Jawa Barat", action: "Konfirmasi nama lengkap & jabatan" },
+  { name: "Wawan", info: "Nama muncul dalam pembahasan", action: "Belum ditempatkan" },
+  { name: "Dian", info: "Konsolidasi Jawa Barat", action: "Konfirmasi nama lengkap & jabatan" },
   { name: "Perwakilan Milenial Jawa Barat", info: "Usulan representasi generasi muda", action: "Menunggu nama" },
   { name: "Ahmad", info: "Nama disebut tanpa identitas lengkap", action: "Perlu identifikasi" },
   { name: "Jonaidi, M.Pd.", info: "Wakil Bendahara Umum I", action: "Lengkapi profil profesional" },
@@ -274,7 +280,7 @@ export const PERSONALIA_TAMBAHAN: { name: string; info: string; action: string }
 ];
 
 /* ============================================================ *
- * 7 — REGISTER 38 DPW (38 provinsi Indonesia)
+ * 7 — REGISTER 38 BAKORWIL (38 provinsi Indonesia)
  * ============================================================ */
 
 export interface DpwRow { no: number; provinsi: string; ibuKota: string }
@@ -320,9 +326,9 @@ export const DPW_38: DpwRow[] = [
   { no: 38, provinsi: "Papua Pegunungan", ibuKota: "Wamena" },
 ];
 
-/** Struktur standar setiap DPW (13 fungsi). */
+/** Struktur standar setiap Bakorwil (13 fungsi). */
 export const DPW_STRUKTUR = [
-  "Ketua DPW", "Wakil Ketua DPW I", "Wakil Ketua DPW II", "Sekretaris DPW", "Bendahara DPW",
+  "Ketua Bakorwil", "Wakil Ketua Bakorwil I", "Wakil Ketua Bakorwil II", "Sekretaris Bakorwil", "Bendahara Bakorwil",
   "Bidang Organisasi & Keanggotaan", "Bidang PPIU & PIHK", "Bidang KBIHU, Manasik & Pembinaan Jamaah",
   "Bidang Hubungan Pemerintah & Kelembagaan", "Bidang Kemitraan & Pengembangan Usaha",
   "Bidang Digitalisasi & Komunikasi", "Bidang Hukum, Advokasi & Perlindungan Jamaah",
@@ -358,5 +364,5 @@ export const ORG_STATS = {
   bidangStrategis: BIDANG_STRATEGIS.length,
   bidangKhusus: BIDANG_KHUSUS.length,
   dpw: DPW_38.length,
-  dppDept: 15, // departemen strategis DPP yang dipetakan ke grup WA
+  dppDept: 15, // departemen strategis BKN yang dipetakan ke grup WA
 } as const;

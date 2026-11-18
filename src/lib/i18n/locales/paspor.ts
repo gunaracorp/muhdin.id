@@ -9,7 +9,7 @@ export const pasporDict = {
         eyebrow: "v5 Fase 3 — Fitur Futuristik",
         title: "Paspor Haji Digital",
         subtitle:
-          "Identitas ibadah digital dengan QR unik yang dapat diverifikasi siapa pun dalam hitungan detik — di bandara, hotel, hingga kantor DPD.",
+          "Identitas ibadah digital dengan QR unik yang dapat diverifikasi siapa pun dalam hitungan detik — di bandara, hotel, hingga kantor BKD.",
         badge: "Terverifikasi QR",
       },
       stats: {

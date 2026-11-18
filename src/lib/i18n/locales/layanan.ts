@@ -59,11 +59,11 @@ export const layananDict = {
         },
         // Task 29 (v13.2) — Master Final 2026–2031 & 18 Kanal WhatsApp
         "struktur-dpp": {
-          title: "STRUKTUR DPP 2026–2031",
-          desc: "Master Final organisasi DPP MUHDIN masa bakti 2026–2031 — empat dewan, dua pilar kepemimpinan, 15 bidang strategis, 3 bidang khusus, dan register 38 DPW.",
-          p1: "Empat dewan & dua pilar kepemimpinan",
+          title: "STRUKTUR BKN 2026–2031",
+          desc: "Master Final organisasi Badan Koordinasi Nasional MUHDIN masa bakti 2026–2031 — empat dewan, kepengurusan pusat, 15 bidang strategis, 3 bidang khusus, dan register 38 Bakorwil.",
+          p1: "Empat dewan & kepengurusan pusat",
           p2: "15 bidang strategis + 3 bidang khusus",
-          p3: "Register 38 DPW seluruh Indonesia",
+          p3: "Register 38 Bakorwil seluruh Indonesia",
         },
         "komunitas-wa": {
           title: "18 KANAL WHATSAPP",

@@ -493,7 +493,7 @@ export function DaruratView() {
           <div>
             <SectionHeading
               align="left"
-              eyebrow="DPD / DPC"
+              eyebrow="BKD / BKC"
               title={t("darurat.network.title")}
               subtitle={t("darurat.network.desc")}
             />

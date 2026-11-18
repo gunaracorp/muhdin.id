@@ -45,7 +45,7 @@ export const WA_CHANNELS: WaChannel[] = [
     no: "00", name: "MUHDIN | OFFICIAL ANNOUNCEMENT", key: "c00",
     fn: "Pengumuman seluruh komunitas",
     members: "Seluruh komunitas MUHDIN.",
-    desc: "Kanal pengumuman resmi Masyarakat Umroh Haji Digital Indonesia. Menyampaikan keputusan DPP, agenda nasional, undangan, kegiatan organisasi, kebijakan, informasi keanggotaan dan pemberitahuan resmi kepada seluruh dewan, pengurus, anggota serta mitra MUHDIN. Dikelola secara terpusat oleh administrator resmi.",
+    desc: "Kanal pengumuman resmi Masyarakat Umroh Haji Digital Indonesia. Menyampaikan keputusan BKN, agenda nasional, undangan, kegiatan organisasi, kebijakan, informasi keanggotaan dan pemberitahuan resmi kepada seluruh dewan, pengurus, anggota serta mitra MUHDIN. Dikelola secara terpusat oleh administrator resmi.",
     icon: "megaphone", eco: 1, announce: true,
   },
   {
@@ -56,10 +56,10 @@ export const WA_CHANNELS: WaChannel[] = [
     icon: "landmark", eco: 1,
   },
   {
-    no: "02", name: "MUHDIN | DPP MANAGEMENT", key: "c02",
-    fn: "Pengurus dan departemen DPP",
-    members: "Seluruh pengurus DPP, Sekretariat Jenderal, Bendahara, Ketua Departemen, Ketua Bidang dan jajaran pelaksana.",
-    desc: "Pusat koordinasi dan pelaksanaan program kerja DPP MUHDIN. Mengintegrasikan urusan organisasi, administrasi, hukum, hubungan kelembagaan, pengembangan anggota, keuangan organisasi, pengawasan internal, kegiatan, komunikasi dan pelaporan seluruh departemen serta bidang untuk memastikan tata kelola organisasi berjalan terpadu, profesional dan akuntabel.",
+    no: "02", name: "MUHDIN | BKN MANAGEMENT", key: "c02",
+    fn: "Pengurus dan departemen BKN",
+    members: "Seluruh pengurus BKN, Sekretariat Jenderal, Bendahara, Ketua Departemen, Ketua Bidang dan jajaran pelaksana.",
+    desc: "Pusat koordinasi dan pelaksanaan program kerja BKN MUHDIN. Mengintegrasikan urusan organisasi, administrasi, hukum, hubungan kelembagaan, pengembangan anggota, keuangan organisasi, pengawasan internal, kegiatan, komunikasi dan pelaporan seluruh departemen serta bidang untuk memastikan tata kelola organisasi berjalan terpadu, profesional dan akuntabel.",
     icon: "network", eco: 1,
   },
   {
@@ -162,15 +162,15 @@ export const WA_CHANNELS: WaChannel[] = [
   },
   {
     no: "17", name: "MUHDIN | REGIONAL NETWORK", key: "c17",
-    fn: "DPW, DPD dan DPC",
-    members: "Ketua dan pengurus DPW, DPD, DPC serta koordinator wilayah resmi MUHDIN.",
+    fn: "Bakorwil, BKD dan BKC",
+    members: "Ketua dan pengurus Bakorwil, BKD, BKC serta koordinator wilayah resmi MUHDIN.",
     desc: "Forum koordinasi jaringan kewilayahan MUHDIN seluruh Indonesia. Menjadi pusat komunikasi, konsolidasi organisasi, pengembangan keanggotaan, pelaksanaan program nasional di daerah, pengembangan kemitraan lokal, pelaporan, evaluasi dan pemerataan pertumbuhan organisasi dari pusat hingga daerah.",
     icon: "map", eco: 6,
   },
 ];
 
 /* ============================================================ *
- * Pemetaan 15 departemen DPP ke grup (dari keputusan final)
+ * Pemetaan 15 departemen BKN ke grup (dari keputusan final)
  * ============================================================ */
 
 export const DEPT_MAPPING: { dept: string; groups: string }[] = [
@@ -197,7 +197,7 @@ export const DEPT_MAPPING: { dept: string; groups: string }[] = [
 
 export const MEMBERSHIP_RULES: { profile: string; main: string }[] = [
   { profile: "Dewan dan pimpinan", main: "01" },
-  { profile: "Pengurus operasional DPP", main: "02" },
+  { profile: "Pengurus operasional BKN", main: "02" },
   { profile: "Anggota umum", main: "03" },
   { profile: "Pemilik/pimpinan PPIU dan PIHK", main: "04" },
   { profile: "BPW dan KBIHU", main: "05" },

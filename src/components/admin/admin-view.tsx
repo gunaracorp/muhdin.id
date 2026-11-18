@@ -140,7 +140,7 @@ const MENU = [
   { id: "faqs", label: "FAQ", icon: "help-circle" },
   { id: "testimonials", label: "Testimoni", icon: "quote" },
   { id: "management", label: "Struktur Organisasi", icon: "users" },
-  { id: "branches", label: "Jaringan Daerah (DPD)", icon: "landmark" },
+  { id: "branches", label: "Jaringan Daerah (BKD)", icon: "landmark" },
   { id: "settings", label: "Pengaturan Situs", icon: "settings" },
   { id: "translator", label: "Penerjemah Cerdas", icon: "languages" },
   { id: "gallery", label: "Galeri Kegiatan", icon: "instagram" },

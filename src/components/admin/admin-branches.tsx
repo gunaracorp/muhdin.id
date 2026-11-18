@@ -14,9 +14,9 @@ import type { RegionalBranchItem } from "@/lib/types";
 
 export function AdminBranches() {
   const config = {
-    title: "Jaringan Daerah (DPD)",
+    title: "Jaringan Daerah (BKD)",
     description:
-      "Kelola Dewan Pimpinan Daerah & Branch Office yang tampil di halaman Tentang dan Kontak.",
+      "Kelola Badan Koordinasi Daerah & Branch Office yang tampil di halaman Tentang dan Kontak.",
     endpoint: "/api/branches",
     itemName: "Kepengurusan Daerah",
     searchKeys: ["name", "code", "province", "city", "picName", "officeName"],
@@ -42,7 +42,7 @@ export function AdminBranches() {
         type: "text",
         required: true,
         full: true,
-        placeholder: "Dewan Pimpinan Daerah Jawa Barat",
+        placeholder: "Badan Koordinasi Daerah Jawa Barat",
       },
       { key: "code", label: "Kode", type: "text", placeholder: "DPD-JABAR" },
       { key: "province", label: "Provinsi", type: "text", placeholder: "Jawa Barat" },

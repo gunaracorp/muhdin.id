@@ -298,14 +298,15 @@ export function Navbar() {
         </div>
 
         {/* Baris 2 — menu utama 11 item (desktop).
-            Pembungkus w-max + max-w-full: pas → rata tengah; sempit → scroll dari kiri
-            (item paling kiri tidak pernah terpotong, berbeda dari justify-center + overflow). */}
+            flex-wrap + w-full: menu yang tidak muat PINDAH BARIS di dalam navbar —
+            halaman tidak pernah ikut tergeser horizontal, tidak ada item terpotong,
+            dan dropdown tetap tampil normal (tanpa overflow clip pada nav). */}
         <div className="hidden xl:flex justify-center pb-2.5">
           <nav
             ref={navRef}
             onMouseLeave={() => setOpenMenu(null)}
             className={cn(
-              "flex w-max max-w-full items-center gap-0.5 rounded-xl px-1 py-0.5",
+              "flex w-full max-w-full flex-wrap items-center justify-center gap-0.5 rounded-xl px-1 py-0.5",
               scrolled && "border-t border-border/40"
             )}
             aria-label={t("navbar.aria.nav")}

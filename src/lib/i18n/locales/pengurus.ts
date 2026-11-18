@@ -9,14 +9,14 @@ export const pengurusDict = {
       eyebrow: "Tata Kelola & Kepemimpinan",
       title: "Susunan Pengurus MUHDIN",
       subtitle:
-        "Struktur kepemimpinan Masyarakat Umroh Haji Digital Indonesia — dari dewan pembina dan penasehat, dua pilar pimpinan tertinggi, hingga kepengurusan pusat dan jaringan koordinasi wilayah di seluruh Indonesia.",
+        "Struktur kepemimpinan Masyarakat Umroh Haji Digital Indonesia — dari dewan pembina dan penasehat, kepengurusan pusat, hingga jaringan koordinasi wilayah di seluruh Indonesia.",
       statLeaders: "Tokoh Pimpinan Nasional",
       statWil: "Bakorwil Provinsi",
       statCab: "Bakorcab Kab/Kota",
       featured: {
-        eyebrow: "Pimpinan Tertinggi",
-        title: "Dua Pilar Kepemimpinan",
-        desc: "Ketua Umum dan Sekretaris Jenderal — dua sentral kepemimpinan yang mengawal arah strategis dan operasional ekosistem umroh-haji digital termurah bergaransi.",
+        eyebrow: "Kepengurusan Pusat",
+        title: "Pimpinan & Sekretariat",
+        desc: "Ketua Umum dan Sekretaris Jenderal menjalankan mandat kepengurusan bersama seluruh jajaran — wakil-wakil pimpinan, bendahara, dewan, dan bidang strategis — dalam satu kerja tim yang saling mengawal.",
       },
       advisory: {
         eyebrow: "Dewan Pengayom",
@@ -57,7 +57,7 @@ export const pengurusDict = {
         joinWil: "Jadi Koordinator Wilayah",
       },
       cta: {
-        title: "Berkumpul di Bawah Satu Kepemimpinan",
+        title: "Berkumpul di Bawah Satu Kepengurusan",
         desc: "Bersama Ketua Umum, Sekretaris Jenderal, dan seluruh jaringan kepengurusan — jadilah bagian dari generasi penyelenggara ibadah yang bersatu, terstandar, dan terdigitalisasi.",
         free: "Pendaftaran tanpa biaya di fase pendirian — model biaya transparan & berkelanjutan",
         btn: "DAFTAR GRATIS SEKARANG",
@@ -76,9 +76,9 @@ export const pengurusDict = {
         penasehat:
           "Rujukan syariah dan etika organisasi — memastikan seluruh layanan berlandaskan prinsip ibadah.",
         ketum:
-          "Penanggung jawab tertinggi arah strategis, tata kelola, dan citra MUHDIN di tingkat nasional & internasional.",
+          "Mengawal arah strategis, tata kelola, dan citra MUHDIN bersama seluruh pengurus pusat di tingkat nasional & internasional.",
         sekjen:
-          "Komandan operasional harian — sekretariat, kaderisasi, dan pelaksanaan program ekosistem digital.",
+          "Koordinator operasional harian — sekretariat, administrasi, dan pelaksanaan program ekosistem digital.",
         bemdum: "Anggota pimpinan pusat yang mengawal keuangan, aset, dan tata kelola organisasi.",
       },
     },
@@ -88,14 +88,14 @@ export const pengurusDict = {
       eyebrow: "Governance & Leadership",
       title: "MUHDIN Leadership Structure",
       subtitle:
-        "The leadership structure of Masyarakat Umroh Haji Digital Indonesia — from the patron and advisor board, the two supreme leadership pillars, to the central board and a regional coordinating network across Indonesia.",
+        "The leadership structure of Masyarakat Umroh Haji Digital Indonesia — from the patron and advisor board, to central governance and a regional coordinating network across Indonesia.",
       statLeaders: "National Leaders",
       statWil: "Provincial Bakorwil",
       statCab: "Regency/City Bakorcab",
       featured: {
-        eyebrow: "Supreme Leadership",
-        title: "The Two Pillars of Leadership",
-        desc: "The President and Secretary General — the twin centers of leadership steering the strategy and operations of the cheapest-guaranteed digital umrah-hajj ecosystem.",
+        eyebrow: "Central Governance",
+        title: "Leadership & Secretariat",
+        desc: "The President and Secretary-General exercise their mandate collectively with the entire board — vice presidents, treasurer, councils and strategic divisions — as one team with shared accountability.",
       },
       advisory: {
         eyebrow: "Advisory Council",
@@ -136,7 +136,7 @@ export const pengurusDict = {
         joinWil: "Become a Regional Coordinator",
       },
       cta: {
-        title: "Gathered Under One Leadership",
+        title: "Gathered Under One Governance",
         desc: "Together with the President, Secretary General, and the entire governing network — join the generation of unified, standardized, digitally-empowered pilgrimage service providers.",
         free: "Free registration in the founding phase — a transparent & sustainable fee model",
         btn: "Register Free Now",
@@ -155,9 +155,9 @@ export const pengurusDict = {
         penasehat:
           "The reference for sharia and organizational ethics — ensuring every service rests on the principles of ibadah.",
         ketum:
-          "Highest steward of strategic direction, governance, and MUHDIN's standing at national and international level.",
+          "Steward of strategic direction, governance, and MUHDIN's standing — together with the entire central board, at national and international level.",
         sekjen:
-          "Commander of daily operations — the secretariat, cadre development, and execution of digital ecosystem programs.",
+          "Coordinator of daily operations — the secretariat, administration, and execution of digital ecosystem programmes.",
         bemdum: "Member of the central leadership safeguarding finance, assets, and organizational governance.",
       },
     },
@@ -167,14 +167,14 @@ export const pengurusDict = {
       eyebrow: "الحوكمة والقيادة",
       title: "الهيكل التنظيمي لمُهدين",
       subtitle:
-        "هيكل قيادة الجمعية الرقمية للعمرة والحج إندونيسيا — من مجلس الرعاية والمستشار، عبر ركنا القيادة العليا، إلى المجلس المركزي وشبكة التنسيق الإقليمية في كامل إندونيسيا.",
+        "هيكل قيادة الجمعية الرقمية للعمرة والحج إندونيسيا — من مجلس الرعاية والمستشار، إلى الحوكمة المركزية وشبكة التنسيق الإقليمية في كامل إندونيسيا.",
       statLeaders: "القادة الوطنيون",
       statWil: "مجلس تنسيق المقاطعات",
       statCab: "مجلس تنسيق المناطق/المدن",
       featured: {
-        eyebrow: "القيادة العليا",
-        title: "ركنا القيادة",
-        desc: "الرئيس العام والأمين العام — مركزا القيادة اللذان يقودان التوجه الاستراتيجي والتشغيلي لمنظومة العمرة والحج الرقمية الأكثر اقتصاداً وبضمان.",
+        eyebrow: "الحوكمة المركزية",
+        title: "القيادة والأمانة",
+        desc: "الرئيسة والأمين العام يمارسان ولاية الجمعية بشكل جماعي مع كامل صفوف الحوكمة — نواب الرئيسة ونواب الأمين العام والحارس العام والمجالس والأقسام الاستراتيجية — بروح فريق واحد متكامل.",
       },
       advisory: {
         eyebrow: "مجلس الرعاية",
@@ -214,7 +214,7 @@ export const pengurusDict = {
         joinWil: "كن منسقاً إقليمياً",
       },
       cta: {
-        title: "متحدون تحت قيادة واحدة",
+        title: "متحدون تحت حوكمة واحدة",
         desc: "مع الرئيس العام والأمين العام وكامل شبكة التنظيم — كن جزءاً من جيل مقدمي خدمات العبادة الموحد المعياري الرقمي.",
         free: "تسجيل مجاني في مرحلة التأسيس — نموذج رسوم شفاف ومستدام",
         btn: "سجّل مجاناً — احجز العرض",
@@ -231,8 +231,8 @@ export const pengurusDict = {
         pembina:
           "الحامي والموجّه لاتجاه الجمعية العظيم بخبرته الوطنية في الاقتصاد الإسلامي وشؤون تنظيم العبادة.",
         penasehat: "المرجع للشريعة وأخلاقيات الجمعية — لضمان أن كل خدمة تقوم على مبادئ العبادة.",
-        ketum: "المسؤول الأعلى عن التوجه الاستراتيجي والحوكمة وصورة مُهدين وطنياً ودولياً.",
-        sekjen: "قائد العمليات اليومية — الأمانة وإعداد الكوادر وتنفيذ برامج المنظومة الرقمية.",
+        ketum: "يساهم في حماية التوجه الاستراتيجي والحوكمة وصورة مُهدين وطنياً ودولياً مع كامل المجلس المركزي.",
+        sekjen: "منسق العمليات اليومية — الأمانة والإدارة وتنفيذ برامج المنظومة الرقمية.",
         bemdum: "عضو القيادة المركزية المشرف على المالية والأصول وحوكمة الجمعية.",
       },
     },

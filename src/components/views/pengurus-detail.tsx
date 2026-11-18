@@ -1,10 +1,10 @@
 "use client";
 
 /**
- * PengurusDetail (Task 29, v13.2) — HALAMAN SENDIRI untuk tokoh pilar kepemimpinan.
+ * PengurusDetail (Task 29, v13.2) — HALAMAN SENDIRI untuk tokoh pimpinan & sekretariat.
  * Route: #/pengurus/<id>  (ketum | sekjen)
  *
- * Ketua Umum: Bunda Hj. Inna Hadianala, S.E. (Master Final 2026–2031).
+ * Ketua Umum: Hj. Inna Hadianala, S.E. (Master Final 2026–2031).
  * Sekretaris Jenderal: H. Gugun Gunara, S.E. — dengan 7 titel profesional
  * resmi (Master Polymath, Universal Sage, The Ultimate Problem Solver,
  * Senior Investigative Researcher, National Institutional Architect,
@@ -32,13 +32,13 @@ const MANDAT: Record<PengurusId, string[]> = {
   ketum: [
     "Memimpin organisasi dan bertanggung jawab atas arah strategis.",
     "Menetapkan prioritas program nasional sesuai AD/ART.",
-    "Mengkoordinasikan DPP dan mengesahkan penugasan sesuai kewenangan.",
+    "Mengkoordinasikan Badan Koordinasi Nasional dan mengesahkan penugasan sesuai kewenangan.",
     "Mewakili MUHDIN dalam hubungan kelembagaan.",
-    "Memastikan pembentukan DPW, DPD, dan DPC berjalan tertib.",
+    "Memastikan pembentukan Bakorwil, BKD, dan BKC berjalan tertib.",
     "Menjaga integritas, reputasi, dan kesinambungan organisasi.",
   ],
   sekjen: [
-    "Menjadi koordinator utama administrasi dan sekretariat DPP.",
+    "Menjadi koordinator utama administrasi dan sekretariat Badan Koordinasi Nasional.",
     "Mengelola surat-menyurat, keputusan, notulensi, dan arsip.",
     "Menyusun kalender kerja organisasi.",
     "Mengkoordinasikan pelaporan seluruh bidang.",
@@ -50,7 +50,7 @@ const MANDAT: Record<PengurusId, string[]> = {
 };
 
 const FOKUS: Record<PengurusId, string[]> = {
-  ketum: ["Arah strategis", "Program nasional", "Koordinasi DPP", "Hubungan kelembagaan", "Kesinambungan organisasi"],
+  ketum: ["Arah strategis", "Program nasional", "Koordinasi BKN", "Hubungan kelembagaan", "Kesinambungan organisasi"],
   sekjen: [
     "Arsitektur organisasi dan kelembagaan",
     "Strategi bisnis dan pengembangan ekosistem",
@@ -58,7 +58,7 @@ const FOKUS: Record<PengurusId, string[]> = {
     "Pengembangan tata kelola, SOP, dan standar kerja",
     "Konsolidasi organisasi nasional",
     "Pengembangan model kolaborasi dan kemitraan",
-    "Pengendalian pelaksanaan program strategis DPP",
+    "Pengendalian pelaksanaan program strategis Badan Koordinasi Nasional",
   ],
 };
 
@@ -105,7 +105,7 @@ export function PengurusDetail({ id }: { id: string }) {
             aria-hidden
             className="grid h-28 w-28 place-items-center rounded-3xl bg-gradient-to-br from-gold-deep to-primary text-4xl font-black text-white shadow-lg ring-2 ring-white/20"
           >
-            {person.name.replace(/^(Bunda\s+)?(Prof\.|Dr\.|Drs\.|KH\.|H\.|Hj\.)\s*/gi, "").charAt(0)}
+            {person.name.replace(/^(Prof\.|Dr\.|Drs\.|KH\.|H\.|Hj\.)\s*/gi, "").charAt(0)}
           </span>
         </div>
 
@@ -200,7 +200,7 @@ export function PengurusDetail({ id }: { id: string }) {
                 </p>
                 <p className="mt-1">
                   {isSekjen
-                    ? `${BIDANG_STRATEGIS.length} bidang strategis + 3 bidang khusus bekerja di bawah koordinasi DPP 2026–2031.`
+                    ? `${BIDANG_STRATEGIS.length} bidang strategis + 3 bidang khusus bekerja di bawah koordinasi Badan Koordinasi Nasional 2026–2031.`
                     : t("orgMaster.pillars.desc")}
                 </p>
               </div>

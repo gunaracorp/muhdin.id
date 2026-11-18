@@ -36,9 +36,9 @@ export const waKomunitasDict = {
       },
       dept: {
         eyebrow: "Integrasi Kepengurusan",
-        title: "Pemetaan 15 Departemen DPP ke Grup",
+        title: "Pemetaan 15 Departemen BKN ke Grup",
         desc: "Seluruh departemen tetap memiliki rumah koordinasi tanpa menduplikasi fungsi.",
-        colDept: "Departemen strategis DPP",
+        colDept: "Departemen strategis BKN",
         colGroup: "Grup",
       },
       rules: {
@@ -85,7 +85,7 @@ export const waKomunitasDict = {
         title: "Bersama Membangun Ekosistem Haji dan Umrah Indonesia",
         desc: "Masuk ke grup sesuai profil keanggotaan Anda — satu anggota, satu grup utama, kolaborasi sesuai kebutuhan pekerjaan.",
         btn: "Daftar Anggota Sekarang",
-        struktur: "Lihat Struktur DPP 2026–2031",
+        struktur: "Lihat Struktur BKN 2026–2031",
         tagline: "ONE ECOSYSTEM · ONE DATA · ONE STANDARD · ONE TRUST",
       },
     },
@@ -123,7 +123,7 @@ export const waKomunitasDict = {
         eyebrow: "Organisational Integration",
         title: "Mapping the 15 Central Board Departments to Groups",
         desc: "Every department keeps one coordination home without duplicating functions.",
-        colDept: "Strategic DPP department",
+        colDept: "Strategic BKN department",
         colGroup: "Group",
       },
       rules: {

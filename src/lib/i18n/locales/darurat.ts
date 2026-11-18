@@ -67,7 +67,7 @@ export const daruratDict = {
           "Tombol WhatsApp melayang (FAB) tersedia di semua halaman. Sertakan kode rombongan/PPIU Anda saat melapor agar kami dapat merespons lebih cepat.",
       },
       network: {
-        title: "Jaringan Posko Wilayah (DPD/DPC)",
+        title: "Jaringan Posko Wilayah (BKD/BKC)",
         desc: "Kontak posko kepengurusan daerah MUHDIN terdekat.",
         picLabel: "Penanggung jawab",
         telCta: "Telepon",
@@ -195,7 +195,7 @@ export const daruratDict = {
           "The floating WhatsApp button (FAB) is available on every page. Include your group/PPIU code when reporting so we can respond faster.",
       },
       network: {
-        title: "Regional Post Network (DPD/DPC)",
+        title: "Regional Post Network (BKD/BKC)",
         desc: "Contacts of the nearest MUHDIN regional posts.",
         picLabel: "Person in charge",
         telCta: "Call",

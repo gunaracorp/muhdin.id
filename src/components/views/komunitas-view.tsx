@@ -11,7 +11,7 @@
  *  1. Hero 17+1 + statistik ekosistem.
  *  2. Direktori master 18 grup — kartu per kanal dengan tombol SALIN deskripsi
  *     resmi siap-copas WhatsApp (clipboard API + fallback execCommand).
- *  3. Pemetaan 15 departemen DPP → grup.
+ *  3. Pemetaan 15 departemen BKN → grup.
  *  4. Aturan keanggotaan Primary Membership + Functional Access.
  *  5. Koordinator setiap grup.
  *  6. Identitas visual + rencana implementasi 3 tahap.
@@ -250,7 +250,7 @@ export function KomunitasView() {
         </div>
       </section>
 
-      {/* 3 — Pemetaan departemen DPP */}
+      {/* 3 — Pemetaan departemen BKN */}
       <section className="bg-mint/30 py-16 dark:bg-muted/30 sm:py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <SectionHeading

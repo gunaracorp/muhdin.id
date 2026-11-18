@@ -154,6 +154,14 @@
        (menghilangkan dev-warning "container has a non-static position") */
     position: relative;
   }
+  /* Task 39 — halaman tidak boleh bisa digeser horizontal: elemen dekoratif
+     yang keluar viewport (blur orb, badge absolut, marquee) di-clip di root.
+     `clip` (bukan `hidden`) karena tidak membuat scroll container —
+     position: sticky pada Navbar/Footer tetap bekerja normal. */
+  html,
+  body {
+    overflow-x: clip;
+  }
 }
 
 @layer utilities {
