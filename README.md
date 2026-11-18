@@ -3,7 +3,7 @@
 
 ![MUHDIN.ID — Portal Digital Ekosistem Umrah dan Haji Indonesia](docs/assets/banner.svg)
 
-# 🕋 MUHDIN.ID — v14.1.0 «AKADEMI & MITRA»
+# 🕋 MUHDIN.ID — v15.0.0 «GOD MODE»
 
 ### **MU**asyarakat **U**mroh **H**aji **D**igital **I**ndonesia
 
@@ -17,8 +17,8 @@
 [![React 19](https://img.shields.io/badge/React-19-61DAFB?logo=react)](https://react.dev)
 [![TypeScript 5](https://img.shields.io/badge/TypeScript_5-tsc_0_error-3178C6?logo=typescript)](https://typescriptlang.org)
 [![Tailwind CSS 4](https://img.shields.io/badge/Tailwind_CSS_4-06B6D4?logo=tailwindcss)](https://tailwindcss.com)
-[![Prisma 6](https://img.shields.io/badge/Prisma_6-92_model-2D3748?logo=prisma)](https://prisma.io)
-[![API](https://img.shields.io/badge/API-194_route_handler-black)](#-peta-api)
+[![Prisma 6](https://img.shields.io/badge/Prisma_6-101_model-2D3748?logo=prisma)](https://prisma.io)
+[![API](https://img.shields.io/badge/API-206_route_handler-black)](#-peta-api)
 [![SQLite](https://img.shields.io/badge/DB-SQLite_↔_Postgres_ready-003B57?logo=sqlite)](#-strategi-database)
 [![i18n](https://img.shields.io/badge/i18n-ID_·_EN_·_AR_RTL-16a34a)](#-internasionalisasi)
 [![RBAC](https://img.shields.io/badge/RBAC-4_peran_·_57_modul_CMS-d97706)](#-keamanan-dan-rbac)
@@ -122,7 +122,17 @@ tagihan MHD-B2B), **API Publik v1 untuk Mitra** (R-065 — `/api/public/v1/*` de
 kuota harian, webhook HMAC-SHA256, rotasi kunci dari CMS), **Portal Kemitraan Masjid & Komunitas**
 (R-090 — `#/masjid` 3 program, dashboard relasi via kode MHD-MP), dan **Validasi Zod Menyeluruh**
 (R-081 — 14 skema berbahasa Indonesia memagari seluruh endpoint mutasi publik) — **86/99 item roadmap
-selesai (87%)**, seluruh target v14 tuntas; tersisa 13 item bertarget v15–v20.
+selesai (87%)**, seluruh target v14 tuntas.
+
+**v15.0.0 «GOD MODE»** menuntaskan **13 item roadmap terakhir (R-018 s.d. R-099) dalam satu sprint**:
+Akun Pengampu Keluarga (R-018), Gamifikasi Lencana Capaian (R-032), Jaringan Alumni (R-033), Evaluasi
+Instruktur Berkala (R-034), Onboarding Merchant Marketplace «Lapak Mitra» (R-046), Asuransi Perjalanan
+Add-on dihitung ulang server di checkout (R-048), Kas Rombongan & Laporan Grup (R-049), Escrow Pembayaran
+Aman HELD→RELEASED/REFUNDED ber-audit (R-050), Mobile App Wrapper Capacitor (R-067), Cache Layer & CDN
+Aset (R-068), Audit Aksesibilitas WCAG AA dengan skrip gerbang `audit:a11y` — **0 temuan** (R-069),
+Kesiapan ISO 27001 dengan register kendali Annex A di CMS + Compliance Hub (R-098), dan MUHDIN Open Core
+— ekstraksi modul RBAC/QR/compliance/ledger sebagai pustaka sumber-terbuka MIT (R-099) — **99/99 item
+roadmap selesai (100%)**.
 
 ---
 
@@ -164,7 +174,7 @@ terpercaya: satu data, satu standar, satu pengalaman.
 
 | Angka | Artinya |
 | --- | --- |
-| **92 model** Prisma | Skema terpadu: dua garis + compliance + roadmap + checkout + PDP + broadcast + itinerary/waitlist + duty officer + NPS + status check + grup perjalanan + sertifikasi muthawwif + bank soal + kupon kampanye + **v14.1 (LiveClass+Registration, PriceRule, RefundRequest, GroupOrder, MerchantPartner+Redemption, ApiPartner, MosquePartner+Activity)** |
+| **92 model** Prisma | Skema terpadu: dua garis + compliance + roadmap + checkout + PDP + broadcast + itinerary/waitlist + duty officer + NPS + status check + grup perjalanan + sertifikasi muthawwif + bank soal + kupon kampanye + **v14.1 (LiveClass+Registration, PriceRule, RefundRequest, GroupOrder, MerchantPartner+Redemption, ApiPartner, MosquePartner+Activity)** + **v15.0.0 (FamilyMember, UserBadge, InstructorReview, MerchantStore+Product, InsurancePlan, GroupLedgerEntry, EscrowEvent, ISMSControl)** |
 | **194 route handler** `/api/*` | Semua ter-guard RBAC/rate-limit + audit — diuji matriks peran otomatis (lihat [Peta API](#-peta-api)) |
 | **60+ rute halaman publik** | Beranda → ekosistem → layanan digital → trust center → kemitraan (lihat [Peta Halaman](#-peta-halaman-publik-60-rute)) |
 | **57 modul CMS** | Semua konten & transaksi dikelola tanpa sentuh kode |

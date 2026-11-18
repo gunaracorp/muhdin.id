@@ -66,6 +66,7 @@ export function LeadForm({ slug, cta }: { slug: string; cta: string }) {
 
       <div className="mt-4 space-y-3">
         <input
+          aria-label="Nama lengkap"
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="Nama lengkap"
@@ -74,6 +75,7 @@ export function LeadForm({ slug, cta }: { slug: string; cta: string }) {
           className="h-11 w-full rounded-xl border border-stone-200 px-3.5 text-sm outline-none focus:border-emerald-500"
         />
         <input
+          aria-label="Nomor WhatsApp"
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
           placeholder="Nomor WhatsApp (0812…)"
@@ -83,6 +85,7 @@ export function LeadForm({ slug, cta }: { slug: string; cta: string }) {
           className="h-11 w-full rounded-xl border border-stone-200 px-3.5 text-sm outline-none focus:border-emerald-500"
         />
         <input
+          aria-label="Email (opsional)"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="Email (opsional)"

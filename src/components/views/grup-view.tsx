@@ -60,6 +60,181 @@ function fmtJam(iso: string) {
   }
 }
 
+/* ============ R-049 v15.0.0 — Kas Rombongan & Laporan Grup ============ */
+
+interface LedgerEntry {
+  id: string;
+  kind: "INCOME" | "EXPENSE";
+  amount: number;
+  note: string;
+  byName: string;
+  createdAt: string;
+}
+
+interface KasData {
+  group: { code: string; name: string; marshalName: string };
+  summary: { income: number; expense: number; saldo: number; count: number };
+  entries: LedgerEntry[];
+}
+
+function rupiah(n: number): string {
+  return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(n);
+}
+
+/** Kartu kas rombongan — laporan transparan yang dilihat seluruh anggota. */
+function KasGrupCard({ code, defaultName }: { code: string; defaultName: string }) {
+  const { t } = useT();
+  const [kas, setKas] = useState<KasData | null>(null);
+  const [kind, setKind] = useState<"INCOME" | "EXPENSE">("INCOME");
+  const [amount, setAmount] = useState("");
+  const [note, setNote] = useState("");
+  const [byName, setByName] = useState(defaultName);
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState("");
+
+  const muat = useCallback(async () => {
+    try {
+      setKas(await apiGet<KasData>(`/api/travel-groups/ledger?code=${encodeURIComponent(code)}`));
+    } catch {
+      setKas(null);
+    }
+  }, [code]);
+
+  useEffect(() => {
+    void muat();
+  }, [muat]);
+
+  useEffect(() => {
+    if (defaultName && !byName) setByName(defaultName);
+  }, [defaultName]);
+
+  const simpan = async () => {
+    setErr("");
+    const nominal = parseInt(amount, 10);
+    if (!Number.isFinite(nominal) || nominal < 1) return setErr(t("kas.errAmount"));
+    if (note.trim().length < 3) return setErr(t("kas.errNote"));
+    if (byName.trim().length < 2) return setErr(t("kas.errName"));
+    setBusy(true);
+    try {
+      const res = await apiSend<{ entry: LedgerEntry; summary: KasData["summary"] }>(
+        "/api/travel-groups/ledger",
+        "POST",
+        { code, kind, amount: nominal, note: note.trim(), byName: byName.trim() },
+      );
+      setKas((prev) =>
+        prev
+          ? { ...prev, entries: [res.entry, ...prev.entries], summary: res.summary }
+          : prev,
+      );
+      setAmount("");
+      setNote("");
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : t("kas.errSave"));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <Reveal>
+      <div className="rounded-3xl border bg-card p-6 shadow-sm" data-testid="kas-grup">
+        <div className="flex items-center justify-between gap-3">
+          <h3 className="flex items-center gap-2 text-lg font-extrabold">
+            <Icon name="coins" className="h-5 w-5 text-gold-deep" aria-hidden />
+            {t("kas.title")}
+          </h3>
+          {kas && (
+            <span className="rounded-full bg-muted px-3 py-1 text-xs font-bold tabular-nums">
+              {kas.summary.count} {t("kas.entries")}
+            </span>
+          )}
+        </div>
+        {kas && (
+          <div className="mt-4 grid grid-cols-3 gap-2 sm:gap-3">
+            <div className="rounded-2xl bg-emerald-500/10 p-3 text-center">
+              <p className="text-[10px] font-extrabold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">{t("kas.income")}</p>
+              <p className="mt-1 text-sm font-extrabold tabular-nums text-emerald-700 dark:text-emerald-300 sm:text-base">{rupiah(kas.summary.income)}</p>
+            </div>
+            <div className="rounded-2xl bg-rose-500/10 p-3 text-center">
+              <p className="text-[10px] font-extrabold uppercase tracking-wider text-rose-600 dark:text-rose-400">{t("kas.expense")}</p>
+              <p className="mt-1 text-sm font-extrabold tabular-nums text-rose-700 dark:text-rose-300 sm:text-base">{rupiah(kas.summary.expense)}</p>
+            </div>
+            <div className="rounded-2xl bg-gold/15 p-3 text-center">
+              <p className="text-[10px] font-extrabold uppercase tracking-wider text-gold-deep dark:text-gold">{t("kas.saldo")}</p>
+              <p className="mt-1 text-sm font-extrabold tabular-nums text-gold-deep dark:text-gold sm:text-base">{rupiah(kas.summary.saldo)}</p>
+            </div>
+          </div>
+        )}
+
+        {/* Form catat */}
+        <div className="mt-4 grid gap-2 sm:grid-cols-[auto_1fr_1fr_auto]">
+          <select
+            aria-label={t("kas.kind")}
+            value={kind}
+            onChange={(e) => setKind(e.target.value as "INCOME" | "EXPENSE")}
+            className="h-10 rounded-lg border bg-background px-2 text-xs font-bold"
+          >
+            <option value="INCOME">{t("kas.income")}</option>
+            <option value="EXPENSE">{t("kas.expense")}</option>
+          </select>
+          <input
+            aria-label={t("kas.amount")}
+            value={amount}
+            onChange={(e) => setAmount(e.target.value.replace(/[^0-9]/g, ""))}
+            inputMode="numeric"
+            placeholder={t("kas.amountPh")}
+            className="h-10 rounded-lg border bg-background px-3 text-sm tabular-nums"
+          />
+          <input
+            aria-label={t("kas.note")}
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            placeholder={t("kas.notePh")}
+            className="h-10 rounded-lg border bg-background px-3 text-sm"
+          />
+          <Button onClick={simpan} disabled={busy} size="sm" className="h-10 bg-gradient-to-r from-primary to-forest text-white">
+            {busy ? <Icon name="loader-2" className="h-4 w-4 animate-spin" aria-hidden /> : <Icon name="plus" className="h-4 w-4" aria-hidden />}
+            <span className="ms-1.5">{t("kas.save")}</span>
+          </Button>
+        </div>
+        <div className="mt-2 grid gap-2 sm:grid-cols-[1fr_auto]">
+          <input
+            aria-label={t("kas.byName")}
+            value={byName}
+            onChange={(e) => setByName(e.target.value)}
+            placeholder={t("kas.byNamePh")}
+            className="h-9 rounded-lg border bg-background px-3 text-xs"
+          />
+          <p className="self-center text-[11px] text-muted-foreground">{t("kas.hint")}</p>
+        </div>
+        {err && <p className="mt-2 text-xs font-bold text-destructive">{err}</p>}
+
+        {/* Riwayat */}
+        {kas && kas.entries.length > 0 && (
+          <ul className="mt-4 max-h-64 space-y-2 overflow-y-auto pe-1">
+            {kas.entries.map((e) => (
+              <li key={e.id} className="flex items-center justify-between gap-3 rounded-xl border bg-background px-3 py-2">
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-bold">{e.note}</p>
+                  <p className="text-[11px] text-muted-foreground">
+                    {e.byName} · {fmtTanggal(e.createdAt)} {fmtJam(e.createdAt)}
+                  </p>
+                </div>
+                <span className={cn("shrink-0 text-sm font-extrabold tabular-nums", e.kind === "INCOME" ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400")}>
+                  {e.kind === "INCOME" ? "+" : "−"}{rupiah(e.amount)}
+                </span>
+              </li>
+            ))}
+          </ul>
+        )}
+        {(!kas || kas.entries.length === 0) && (
+          <p className="mt-4 rounded-xl bg-muted/40 p-3 text-center text-xs text-muted-foreground">{t("kas.empty")}</p>
+        )}
+      </div>
+    </Reveal>
+  );
+}
+
 export function GrupView() {
   const { t } = useT();
   const [kode, setKode] = useState("");
@@ -269,7 +444,12 @@ export function GrupView() {
             </section>
 
             <div className="mt-8 grid gap-6 lg:grid-cols-2">
-              {/* ===== ANGGOTA ===== */}
+              {/* ===== KAS ROMBONGAN (R-049) ===== */}
+            <section className="pt-8">
+              <KasGrupCard code={ruang.group.code} defaultName={namaPengirim} />
+            </section>
+
+            {/* ===== ANGGOTA ===== */}
               <Reveal>
                 <section className="rounded-3xl border bg-card p-6 shadow-sm">
                   <h3 className="flex items-center gap-2 font-extrabold">
@@ -289,6 +469,7 @@ export function GrupView() {
                   {/* Daftar diri */}
                   <div className="mt-4 flex gap-2">
                     <input
+                      aria-label={t("grup.senderName")}
                       value={namaPengirim}
                       onChange={(e) => setNamaPengirim(e.target.value)}
                       placeholder={t("grup.yourName")}

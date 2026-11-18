@@ -8,8 +8,8 @@
  * halaman #/pesanan (status & bayar sandbox & unduh invoice).
  */
 
-import { useMemo, useState } from "react";
-import { apiSend } from "@/lib/client-api";
+import { useEffect, useMemo, useState } from "react";
+import { apiGet, apiSend } from "@/lib/client-api";
 import { navigate } from "@/hooks/use-hash-route";
 import { useT } from "@/lib/i18n";
 import { Icon } from "@/components/site/icon";
@@ -25,6 +25,15 @@ interface CouponPreview {
   reason: string;
   discount?: number;
   finalAmount?: number;
+}
+
+/** R-048 — paket asuransi add-on aktif dari server. */
+interface InsurancePlanLite {
+  code: string;
+  name: string;
+  provider: string;
+  coverage: string;
+  premium: number;
 }
 
 interface CheckoutResult {
@@ -49,6 +58,9 @@ export function CheckoutPanel({ packageId, price, slotsLeft }: { packageId: stri
   const [couponCode, setCouponCode] = useState("");
   const [couponPreview, setCouponPreview] = useState<CouponPreview | null>(null);
   const [couponChecking, setCouponChecking] = useState(false);
+  // R-048 v15.0.0 — asuransi perjalanan add-on (opsional).
+  const [insurancePlans, setInsurancePlans] = useState<InsurancePlanLite[]>([]);
+  const [insuranceCode, setInsuranceCode] = useState("");
   // R-078 UU PDP — persetujuan pemrosesan data wajib saat checkout.
   const [pdpConsent, setPdpConsent] = useState(false);
   const [sending, setSending] = useState(false);
@@ -57,7 +69,21 @@ export function CheckoutPanel({ packageId, price, slotsLeft }: { packageId: stri
 
   const qty = Math.max(1, parseInt(quantity || "1", 10) || 1);
   const subtotal = useMemo(() => price * qty, [price, qty]);
-  const total = couponPreview?.ok ? Math.max(0, subtotal - (couponPreview.discount ?? 0)) : subtotal;
+  // R-048 — premi asuransi: pratinjau klien; final dihitung ulang server.
+  const plan = useMemo(
+    () => insurancePlans.find((p) => p.code === insuranceCode) ?? null,
+    [insurancePlans, insuranceCode],
+  );
+  const premium = plan ? plan.premium * qty : 0;
+  const total =
+    (couponPreview?.ok ? Math.max(0, subtotal - (couponPreview.discount ?? 0)) : subtotal) + premium;
+
+  // R-048 — muat paket asuransi aktif (gagal-aman: panel tetap terpakai).
+  useEffect(() => {
+    apiGet<{ plans: InsurancePlanLite[] }>("/api/insurance-plans")
+      .then((d) => setInsurancePlans(d.plans ?? []))
+      .catch(() => setInsurancePlans([]));
+  }, []);
 
   const checkCoupon = async () => {
     setError("");
@@ -95,6 +121,7 @@ export function CheckoutPanel({ packageId, price, slotsLeft }: { packageId: stri
         quantity: qty,
         notes: notes.trim() || undefined,
         couponCode: couponPreview?.ok ? couponCode.trim() : undefined,
+        insuranceCode: plan?.code || undefined, // R-048 add-on asuransi
         pdpConsent,
       });
       // Simpan nomor WhatsApp agar auto-lacak di #/pesanan?no=… langsung jalan.
@@ -266,6 +293,34 @@ export function CheckoutPanel({ packageId, price, slotsLeft }: { packageId: stri
           )}
         </div>
 
+        {/* R-048 v15.0.0 — asuransi perjalanan add-on */}
+        {insurancePlans.length > 0 && (
+          <div className="space-y-1.5" data-testid="insurance-block">
+            <Label htmlFor="ck-insurance">{t("asuransi.label")}</Label>
+            <select
+              id="ck-insurance"
+              value={insuranceCode}
+              onChange={(e) => setInsuranceCode(e.target.value)}
+              className="h-10 w-full rounded-lg border bg-background px-3 text-sm font-semibold"
+            >
+              <option value="">{t("asuransi.none")}</option>
+              {insurancePlans.map((p) => (
+                <option key={p.code} value={p.code}>
+                  {p.name} — {rupiah(p.premium)}/jamaah
+                </option>
+              ))}
+            </select>
+            {plan ? (
+              <p className="flex items-start gap-1.5 rounded-lg bg-gold/10 px-3 py-2 text-xs font-semibold text-gold-deep dark:text-gold">
+                <Icon name="shield-heart" className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden />
+                {plan.coverage} · {t("asuransi.premiumNote")} {rupiah(premium)}
+              </p>
+            ) : (
+              <p className="text-[11px] text-muted-foreground">{t("asuransi.hint")}</p>
+            )}
+          </div>
+        )}
+
         <div className="rounded-xl border bg-background px-4 py-3">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-muted-foreground">{t("checkout.subtotalLabel")}</span>
@@ -275,6 +330,12 @@ export function CheckoutPanel({ packageId, price, slotsLeft }: { packageId: stri
             <div className="mt-1 flex items-center justify-between" data-testid="coupon-discount-row">
               <span className="text-xs font-semibold text-primary">{t("checkout.discountLabel")} ({couponCode.trim().toUpperCase()})</span>
               <span className="text-xs font-bold text-primary">−{rupiah(couponPreview.discount ?? 0)}</span>
+            </div>
+          )}
+          {premium > 0 && (
+            <div className="mt-1 flex items-center justify-between" data-testid="insurance-premium-row">
+              <span className="text-xs font-semibold text-gold-deep dark:text-gold">{t("asuransi.rowLabel")} ({plan?.name})</span>
+              <span className="text-xs font-bold text-gold-deep dark:text-gold">+{rupiah(premium)}</span>
             </div>
           )}
           <div className="mt-1 flex items-center justify-between border-t pt-2">

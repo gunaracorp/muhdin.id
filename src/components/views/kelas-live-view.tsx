@@ -58,6 +58,13 @@ export function KelasLiveView() {
   const [classes, setClasses] = useState<LiveClassItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState<LiveClassItem | null>(null);
+  // R-034 v15.0.0 — evaluasi instruktur (kelas selesai).
+  const [reviewFor, setReviewFor] = useState<LiveClassItem | null>(null);
+  const [reviewPhone, setReviewPhone] = useState("");
+  const [reviewRating, setReviewRating] = useState(0);
+  const [reviewComment, setReviewComment] = useState("");
+  const [reviewBusy, setReviewBusy] = useState(false);
+  const [reviewResult, setReviewResult] = useState<{ ok: boolean; message: string } | null>(null);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -184,12 +191,17 @@ export function KelasLiveView() {
                       </div>
                     </div>
                     <div className="mt-4 flex gap-2">
-                      <Button size="sm" className="flex-1" disabled={penuh} onClick={() => { setSelected(c); setResult(null); }} data-testid={`kelas-daftar-${c.id}`}>
-                        {penuh ? k("penuh") : k("daftar")}
+                      <Button size="sm" className="flex-1" disabled={penuh || c.status === "DONE"} onClick={() => { setSelected(c); setResult(null); }} data-testid={`kelas-daftar-${c.id}`}>
+                        {c.status === "DONE" ? k("selesai") : penuh ? k("penuh") : k("daftar")}
                       </Button>
                       <Button size="sm" variant="outline" onClick={() => navigate(`forum?kelasId=${c.id}`)} data-testid={`kelas-forum-${c.id}`}>
                         <Icon name="message-square" className="h-3.5 w-3.5" aria-hidden />
                       </Button>
+                      {c.status === "DONE" && (
+                        <Button size="sm" variant="outline" onClick={() => { setReviewFor(c); setReviewResult(null); }} aria-label={t("kelasRev.title")} data-testid={`kelas-review-${c.id}`}>
+                          <Icon name="star" className="h-3.5 w-3.5" aria-hidden />
+                        </Button>
+                      )}
                     </div>
                   </div>
                 </Reveal>
@@ -229,6 +241,101 @@ export function KelasLiveView() {
               )}
               <Button className="w-full" onClick={submit} disabled={submitting || name.trim().length < 2 || phone.trim().length < 8} data-testid="kelas-submit">
                 {submitting ? k("mengirim") : k("daftar")}
+              </Button>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+      {/* Dialog evaluasi instruktur (R-034) */}
+      <Dialog open={!!reviewFor} onOpenChange={(open) => !open && setReviewFor(null)}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>{t("kelasRev.title")}</DialogTitle>
+            <DialogDescription>
+              {reviewFor?.title} · {reviewFor?.instructor}
+            </DialogDescription>
+          </DialogHeader>
+          {reviewResult?.ok ? (
+            <div className="rounded-xl border border-emerald-500/40 bg-emerald-500/10 p-4 text-sm" data-testid="kelas-review-sukses">
+              <p className="font-extrabold text-emerald-700 dark:text-emerald-400">{t("kelasRev.thanks")}</p>
+              <p className="mt-1 text-foreground/80">{reviewResult.message}</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <div className="flex justify-center gap-1.5" role="radiogroup" aria-label={t("kelasRev.rating")}>
+                {[1, 2, 3, 4, 5].map((n) => (
+                  <button
+                    key={n}
+                    type="button"
+                    role="radio"
+                    aria-checked={reviewRating === n}
+                    aria-label={`${n} / 5`}
+                    onClick={() => setReviewRating(n)}
+                    className="rounded-lg p-1.5 transition hover:scale-110"
+                    data-testid={`kelas-review-star-${n}`}
+                  >
+                    <Icon
+                      name="star"
+                      className={cn("h-7 w-7", n <= reviewRating ? "fill-gold text-gold" : "text-muted-foreground/40")}
+                    />
+                  </button>
+                ))}
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="review-phone">{k("telepon")}</Label>
+                <Input id="review-phone" value={reviewPhone} onChange={(e) => setReviewPhone(e.target.value)} placeholder="+62 8xx-xxxx-xxxx" />
+                <p className="text-[11px] text-muted-foreground">{t("kelasRev.phoneNote")}</p>
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="review-comment">{t("kelasRev.comment")}</Label>
+                <textarea
+                  id="review-comment"
+                  value={reviewComment}
+                  onChange={(e) => setReviewComment(e.target.value)}
+                  rows={3}
+                  placeholder={t("kelasRev.commentPh")}
+                  className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
+                />
+                <p className="text-[11px] text-muted-foreground">{t("kelasRev.privacyNote")}</p>
+              </div>
+              {reviewResult && !reviewResult.ok && (
+                <p className="rounded-xl border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive">{reviewResult.message}</p>
+              )}
+              <Button
+                className="w-full"
+                disabled={reviewBusy || reviewRating < 1 || reviewPhone.trim().length < 8}
+                onClick={async () => {
+                  if (!reviewFor) return;
+                  setReviewBusy(true);
+                  setReviewResult(null);
+                  try {
+                    const res = await fetch("/api/instructor-reviews", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({
+                        classId: reviewFor.id,
+                        phone: reviewPhone.trim(),
+                        rating: reviewRating,
+                        comment: reviewComment.trim() || undefined,
+                      }),
+                    });
+                    const data = await res.json().catch(() => ({}));
+                    if (res.ok) {
+                      setReviewResult({ ok: true, message: data.message ?? t("kelasRev.thanks") });
+                      setReviewComment("");
+                      setReviewRating(0);
+                    } else {
+                      setReviewResult({ ok: false, message: data.error ?? t("kelasRev.fail") });
+                    }
+                  } catch {
+                    setReviewResult({ ok: false, message: t("kelasRev.fail") });
+                  } finally {
+                    setReviewBusy(false);
+                  }
+                }}
+                data-testid="kelas-review-submit"
+              >
+                {reviewBusy ? k("mengirim") : t("kelasRev.send")}
               </Button>
             </div>
           )}

@@ -28,6 +28,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useT, formatNumberL10n } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 import { BRAND } from "@/lib/constants";
+import { FamilyGuardianCard, BadgeShowcaseCard } from "@/components/site/family-badges-cards";
 
 /* ================= KONSTANTA ================= */
 
@@ -342,6 +343,11 @@ export function JamaahDashboard() {
       {/* ============ GRID UTAMA ============ */}
       <section aria-label={t("dash.quickTitle")} className="py-10 sm:py-14">
         <div className="mx-auto max-w-7xl space-y-10 px-4 sm:px-6">
+          {/* --- Baris 0 (v15): Pengampu Keluarga (R-018) + Lencana Capaian (R-032) --- */}
+          <div className="grid gap-5 lg:grid-cols-2" data-testid="family-badges-row">
+            <FamilyGuardianCard />
+            <BadgeShowcaseCard />
+          </div>
           {/* --- Baris 1: sholat + keberangkatan + izin --- */}
           <div className="grid gap-5 lg:grid-cols-3">
             {/* JADWAL SHOLAT */}

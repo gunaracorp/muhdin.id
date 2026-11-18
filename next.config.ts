@@ -51,6 +51,17 @@ const nextConfig: NextConfig = {
                 { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=(self)" },
               ],
             },
+            // R-068 v15.0.0 «GOD MODE» — Cache Layer & CDN Aset: aset fingerprint
+            // Next immutable di edge CDN, gambar & ikon publik di-cache lama
+            // dengan stale-while-revalidate agar portal cepat di seluruh Indonesia.
+            {
+              source: "/_next/static/:path*",
+              headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }],
+            },
+            {
+              source: "/:path*.(jpg|jpeg|png|webp|avif|svg|woff2)",
+              headers: [{ key: "Cache-Control", value: "public, max-age=86400, stale-while-revalidate=604800" }],
+            },
           ];
         },
       }),

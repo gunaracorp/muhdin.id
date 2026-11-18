@@ -53,6 +53,7 @@ export const CheckoutSchema = z.object({
   quantity: z.coerce.number().int().min(1, "Jumlah minimal 1").max(50, "Jumlah maksimal 50").default(1),
   notes: z.string().trim().max(500).optional().default(""),
   couponCode: z.string().trim().max(40).optional().default(""),
+  insuranceCode: z.string().trim().max(20).optional().default(""), // R-048 add-on asuransi (opsional)
   pdpConsent: pdpTrue,
 });
 export type CheckoutInput = z.infer<typeof CheckoutSchema>;
@@ -240,3 +241,87 @@ export const MosquePartnerSchema = z.object({
   pdpConsent: pdpTrue,
 });
 export type MosquePartnerInput = z.infer<typeof MosquePartnerSchema>;
+
+/* ---------- R-018 akun pengampu keluarga (v15) ---------- */
+
+export const FamilyMemberSchema = z.object({
+  guardianPhone: phoneId,
+  name: nameId(2, 80),
+  relation: z.enum(["ANAK", "ORANG_TUA", "LANSIA", "PASANGAN", "LAINNYA"], {
+    message: "Hubungan keluarga tidak dikenal.",
+  }),
+  birthYear: z.coerce.number().int().min(1900, "Tahun lahir tidak valid.").max(2100).optional(),
+  passportNo: z.string().trim().max(20).optional().default(""),
+  notes: z.string().trim().max(300).optional().default(""),
+  pdpConsent: pdpTrue,
+});
+export type FamilyMemberInput = z.infer<typeof FamilyMemberSchema>;
+
+/* ---------- R-032 lencana capaian (v15) ---------- */
+
+export const BadgeSyncSchema = z.object({
+  ownerKey: z.string().trim().min(6, "Identitas pemilik lencana tidak valid.").max(80),
+  name: z.string().trim().max(80).optional().default(""),
+  stats: z.object({
+    kelas: z.coerce.number().int().min(0).max(500).default(0),
+    kuis: z.coerce.number().int().min(0).max(500).default(0),
+    forum: z.coerce.number().int().min(0).max(500).default(0),
+    dokumen: z.coerce.number().int().min(0).max(50).default(0),
+    transaksi: z.coerce.number().int().min(0).max(500).default(0),
+  }),
+});
+export type BadgeSyncInput = z.infer<typeof BadgeSyncSchema>;
+
+/* ---------- R-034 evaluasi instruktur (v15) ---------- */
+
+export const InstructorReviewSchema = z.object({
+  classId: z.string().trim().min(1, "Kelas tidak valid.").max(64),
+  phone: phoneId,
+  rating: z.coerce.number().int().min(1, "Nilai 1–5.").max(5, "Nilai 1–5."),
+  comment: z.string().trim().max(400).optional().default(""),
+});
+export type InstructorReviewInput = z.infer<typeof InstructorReviewSchema>;
+
+/* ---------- R-046 lapak mitra marketplace (v15) ---------- */
+
+export const MerchantStoreSchema = z.object({
+  storeName: nameId(3, 100),
+  ownerName: nameId(2, 80),
+  phone: phoneId,
+  city: z.string().trim().min(2, "Kota wajib diisi.").max(80),
+  category: z.enum(["PROVISION", "ATK", "OLEH_OLEH", "JASA", "LAINNYA"], {
+    message: "Kategori lapak tidak dikenal.",
+  }),
+  nib: z.string().trim().max(30).optional().default(""),
+  note: z.string().trim().max(400).optional().default(""),
+  pdpConsent: pdpTrue,
+});
+export type MerchantStoreInput = z.infer<typeof MerchantStoreSchema>;
+
+export const MerchantProductSchema = z.object({
+  name: nameId(2, 100),
+  price: z.coerce.number().int().min(0, "Harga tidak valid.").max(100_000_000),
+  unit: z.string().trim().max(30).optional().default("paket"),
+  desc: z.string().trim().max(300).optional().default(""),
+});
+export type MerchantProductInput = z.infer<typeof MerchantProductSchema>;
+
+/* ---------- R-049 kas rombongan (v15) ---------- */
+
+export const GroupLedgerSchema = z.object({
+  code: z.string().trim().min(6, "Kode grup tidak valid.").max(30).transform((s) => s.toUpperCase()),
+  kind: z.enum(["INCOME", "EXPENSE"], { message: "Jenis catatan kas tidak dikenal." }),
+  amount: z.coerce.number().int().min(1, "Nominal minimal Rp 1.").max(1_000_000_000),
+  note: z.string().trim().min(3, "Keterangan minimal 3 karakter.").max(200),
+  byName: nameId(2, 80),
+});
+export type GroupLedgerInput = z.infer<typeof GroupLedgerSchema>;
+
+/* ---------- R-050 escrow (v15) ---------- */
+
+export const EscrowActionSchema = z.object({
+  orderNumber: z.string().trim().min(6, "Nomor pesanan tidak valid.").max(40),
+  action: z.enum(["RELEASE", "REFUND"], { message: "Aksi escrow tidak dikenal." }),
+  reason: z.string().trim().max(300).optional().default(""),
+});
+export type EscrowActionInput = z.infer<typeof EscrowActionSchema>;

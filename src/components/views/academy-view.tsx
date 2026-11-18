@@ -164,6 +164,9 @@ export function AcademyView() {
         </div>
       </section>
 
+      {/* ALUMNI (R-033 v15.0.0) — direktori alumni terverifikasi */}
+      <AlumniDirectory />
+
       {/* DIALOG: enroll → quiz → hasil */}
       <Dialog open={!!active} onOpenChange={(o) => !o && setActive(null)}>
         <DialogContent className="max-w-xl max-h-[85vh] overflow-y-auto">
@@ -270,3 +273,122 @@ export function AcademyView() {
 }
 
 export default AcademyView;
+
+/* ============ R-033 v15.0.0 «GOD MODE» — Jaringan Alumni Akademi ============ */
+
+interface AlumniRow {
+  kind: "AKADEMI" | "MUTHAWWIF";
+  ref: string;
+  name: string;
+  program: string;
+  tingkat: string;
+  score: number;
+  year: number;
+}
+
+interface AlumniData {
+  total: number;
+  years: number[];
+  alumni: AlumniRow[];
+}
+
+function AlumniDirectory() {
+  const { t } = useT();
+  const [data, setData] = useState<AlumniData | null>(null);
+  const [q, setQ] = useState("");
+  const [year, setYear] = useState("");
+
+  const load = (query = q, y = year) => {
+    const params = new URLSearchParams();
+    if (query.trim()) params.set("q", query.trim());
+    if (y) params.set("tahun", y);
+    apiGet<AlumniData>(`/api/alumni?${params.toString()}`)
+      .then(setData)
+      .catch(() => setData(null));
+  };
+
+  useEffect(() => {
+    load();
+  }, []);
+
+  return (
+    <section className="border-t bg-muted/25 py-14" aria-label={t("alumni.aria")}>
+      <div className="mx-auto max-w-6xl px-4 sm:px-6">
+        <SectionHeadAlumni />
+        <div className="mt-6 flex flex-wrap gap-2">
+          <Input
+            aria-label={t("alumni.search")}
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && load()}
+            placeholder={t("alumni.searchPh")}
+            className="h-10 max-w-xs"
+          />
+          <select
+            aria-label={t("alumni.year")}
+            value={year}
+            onChange={(e) => { const v = e.target.value; setYear(v); load(q, v); }}
+            className="h-10 rounded-lg border bg-background px-3 text-sm font-semibold"
+          >
+            <option value="">{t("alumni.allYears")}</option>
+            {(data?.years ?? []).map((y) => (
+              <option key={y} value={String(y)}>{y}</option>
+            ))}
+          </select>
+          <Button variant="outline" className="h-10" onClick={() => load()}>
+            <Icon name="search" className="h-4 w-4" aria-hidden />
+            <span className="ms-1.5">{t("alumni.search")}</span>
+          </Button>
+        </div>
+
+        {!data ? (
+          <p className="mt-8 rounded-2xl bg-muted/40 p-6 text-center text-sm text-muted-foreground">{t("alumni.loading")}</p>
+        ) : data.total === 0 ? (
+          <p className="mt-8 rounded-2xl bg-muted/40 p-6 text-center text-sm text-muted-foreground">{t("alumni.empty")}</p>
+        ) : (
+          <>
+            <p className="mt-6 text-xs font-bold text-muted-foreground" data-testid="alumni-count">
+              {data.total} {t("alumni.countLabel")}
+            </p>
+            <ul className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {data.alumni.slice(0, 24).map((a) => (
+                <li key={`${a.kind}-${a.ref}`} className="rounded-2xl border bg-card p-4 shadow-sm">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className={cn(
+                      "rounded-full px-2.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wide",
+                      a.kind === "MUTHAWWIF" ? "bg-gold/15 text-gold-deep dark:text-gold" : "bg-primary/10 text-primary",
+                    )}>
+                      {a.kind === "MUTHAWWIF" ? t(`alumni.level.${a.tingkat.toLowerCase()}`) : t("alumni.kindAkademi")}
+                    </span>
+                    <span className="text-[11px] font-bold text-muted-foreground">{a.year}</span>
+                  </div>
+                  <p className="mt-2 font-bold leading-snug">{a.name}</p>
+                  <p className="text-xs text-muted-foreground">{a.program}</p>
+                  <p className="mt-1 text-[11px] font-bold text-gold-deep dark:text-gold" dir="ltr">
+                    <Icon name="award" className="me-1 inline h-3 w-3" aria-hidden />
+                    {t("alumni.score")}: {a.score} · {a.ref}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
+      </div>
+    </section>
+  );
+}
+
+function SectionHeadAlumni() {
+  const { t } = useT();
+  return (
+    <div className="flex items-start justify-between gap-4">
+      <div>
+        <p className="inline-flex items-center gap-1.5 rounded-full border border-gold/40 bg-gold/10 px-3 py-1 text-[10px] font-extrabold uppercase tracking-[0.14em] text-gold-deep dark:text-gold">
+          <Icon name="users" className="h-3 w-3" aria-hidden /> R-033 · v15
+        </p>
+        <h2 className="mt-2 text-2xl font-extrabold">{t("alumni.title")}</h2>
+        <p className="mt-1 max-w-2xl text-sm leading-relaxed text-muted-foreground">{t("alumni.desc")}</p>
+      </div>
+    </div>
+  );
+}

@@ -12,6 +12,8 @@
     "postinstall": "prisma generate",
     "hosting:pack": "node scripts/pack-shared-hosting.mjs",
     "hosting:build": "node scripts/build-shared-hosting.mjs",
+    "mobile:pack": "node scripts/pack-capacitor.mjs",
+    "audit:a11y": "node scripts/audit-a11y.mjs",
     "start": "NODE_ENV=production bun .next/standalone/server.js 2>&1 | tee server.log",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit --incremental false",

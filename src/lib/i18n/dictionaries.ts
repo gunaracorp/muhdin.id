@@ -89,6 +89,9 @@ import { kelasDict } from "@/lib/i18n/locales/kelas";
 import { rombonganDict } from "@/lib/i18n/locales/rombongan";
 import { masjidDict } from "@/lib/i18n/locales/masjid";
 import { v141Dict } from "@/lib/i18n/locales/v141";
+// v15.0.0 «GOD MODE» — pengampu keluarga, lencana, alumni, evaluasi instruktur,
+// lapak mitra, asuransi, kas rombongan, escrow, ISMS
+import { v150Dict } from "@/lib/i18n/locales/v150";
 
 const dicts = [
   commonDict,
@@ -185,6 +188,9 @@ const dicts = [
   rombonganDict,
   masjidDict,
   v141Dict,
+  // v15.0.0 «GOD MODE» — pengampu keluarga (R-018), lencana (R-032), alumni (R-033),
+  // evaluasi instruktur (R-034), lapak mitra (R-046), asuransi (R-048), kas (R-049), CMS
+  v150Dict,
 ];
 
 export const dictionaries: Record<"id" | "en" | "ar", Record<string, unknown>> = {

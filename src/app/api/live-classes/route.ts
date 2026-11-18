@@ -23,8 +23,10 @@ export async function GET(req: NextRequest) {
       // Array polos — dipakai langsung CrudManager & panel mentor.
       return ok(all);
     }
+    // R-034 v15.0.0 — kelas DONE ikut tampil (di urutan bawah) supaya peserta
+    // dapat mengisi evaluasi instruktur dan mengakses rekaman.
     const upcoming = await db.liveClass.findMany({
-      where: { status: { in: ["SCHEDULED", "LIVE"] } },
+      where: { status: { in: ["SCHEDULED", "LIVE", "DONE"] } },
       orderBy: { startsAt: "asc" },
       include: { _count: { select: { registrations: true } } },
     });

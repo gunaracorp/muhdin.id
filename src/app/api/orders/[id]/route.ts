@@ -32,6 +32,15 @@ export async function PUT(req: NextRequest, ctx: { params: Promise<{ id: string 
     }
 
     const updated = await db.order.update({ where: { id }, data: { status: next } });
+    // R-050 — refund pesanan LUNAS melepas escrow sebagai REFUNDED (gagal-aman).
+    if (next === "REFUNDED") {
+      try {
+        const { escrowSettle } = await import("@/lib/escrow");
+        await escrowSettle(order.number, "REFUNDED", "Refund pesanan disetujui panitia.", "CMS");
+      } catch {
+        /* escrow gagal-aman */
+      }
+    }
     await logAudit(req, {
       action: "UPDATE",
       entity: "Order",

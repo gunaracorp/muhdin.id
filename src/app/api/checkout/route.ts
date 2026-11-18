@@ -75,7 +75,19 @@ export async function POST(req: NextRequest) {
       discountAmount = result.discount ?? 0;
       appliedCode = couponCode; // kode valid — dicatat pada Order
     }
-    const amount = subtotal - discountAmount;
+
+    // R-048 v15.0.0 «GOD MODE» — asuransi perjalanan add-on: premi dihitung
+    // ulang server-side dari paket aktif (klien tidak pernah dipercaya).
+    const { insuranceCode } = parsed.data;
+    let insurancePremium = 0;
+    let insuranceName: string | null = null;
+    if (insuranceCode) {
+      const plan = await db.insurancePlan.findUnique({ where: { code: insuranceCode } });
+      if (!plan || !plan.active) return fail("Paket asuransi tidak tersedia — hapus pilihan asuransi atau pilih yang lain.");
+      insurancePremium = plan.premium * quantity;
+      insuranceName = `${plan.name} (${plan.provider})`;
+    }
+    const amount = subtotal - discountAmount + insurancePremium;
 
     // Buat order PENDING + intent pembayaran dari adapter aktif.
     const adapter = getPaymentAdapter();
@@ -99,6 +111,8 @@ export async function POST(req: NextRequest) {
           amount,
           discountAmount,
           couponCode: appliedCode,
+          insuranceCode: insuranceName ? insuranceCode : null,
+          insurancePremium, // R-048 total premi (premi × qty)
           status: "PENDING",
           paymentProvider: adapter.name,
           paymentRef: intent.ref,
@@ -125,8 +139,9 @@ export async function POST(req: NextRequest) {
       entityId: order.id,
       detail:
         `${name} → ${pkg.title} ×${quantity} = ${rupiah(subtotal)}` +
-        (discountAmount > 0 ? ` − kupon ${couponCode} ${rupiah(discountAmount)} = ${rupiah(amount)}` : "") +
-        ` (${adapter.name})`,
+        (discountAmount > 0 ? ` − kupon ${couponCode} ${rupiah(discountAmount)}` : "") +
+        (insurancePremium > 0 ? ` + asuransi ${insuranceCode} ${rupiah(insurancePremium)}` : "") +
+        ` = ${rupiah(amount)} (${adapter.name})`,
     });
 
     // Beri tahu sekretariat ada order baru menunggu pembayaran (gagal-aman).

@@ -696,7 +696,7 @@ export function AdminBisnis() {
                 <Switch checked={vendorForm.verified} onCheckedChange={(v) => setVendorForm({ ...vendorForm, verified: v })} /> Terverifikasi
               </label>
               <div className="space-y-1.5">
-                <select value={vendorForm.status} onChange={(e) => setVendorForm({ ...vendorForm, status: e.target.value })} className={selCls}>
+                <select aria-label="Status vendor" value={vendorForm.status} onChange={(e) => setVendorForm({ ...vendorForm, status: e.target.value })} className={selCls}>
                   <option value="ACTIVE">Aktif</option>
                   <option value="SUSPENDED">Suspended</option>
                 </select>
@@ -980,6 +980,7 @@ export function AdminBisnis() {
                 {regDocs.map((d, i) => (
                   <div key={i} className="grid grid-cols-1 gap-2 rounded-lg border bg-card p-2 sm:grid-cols-12">
                     <select
+                      aria-label="Dokumen persyaratan"
                       value={d.requirementKey}
                       onChange={(e) => setRegDocs(regDocs.map((x, j) => (j === i ? { ...x, requirementKey: e.target.value } : x)))}
                       className="h-9 rounded-lg border border-border bg-card px-2 text-xs sm:col-span-3"

@@ -251,6 +251,16 @@ export async function applyPaid(
     /* kupon gagal-aman */
   }
 
+  // R-050 v15.0.0 «GOD MODE» — escrow: dana pesanan LUNAS ditahan (HELD)
+  // sampai layanan terverifikasi (RELEASE via CMS) atau dikembalikan
+  // (REFUND otomatis saat refund disetujui). Gagal-aman.
+  try {
+    const { escrowHold } = await import("@/lib/escrow");
+    await escrowHold({ number: order.number, amount: order.amount });
+  } catch {
+    /* escrow gagal-aman */
+  }
+
   // Notifikasi sekretariat (gagal-aman) + audit.
   void notifyOrderPaid({
     number: order.number,

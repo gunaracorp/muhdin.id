@@ -1181,6 +1181,8 @@ model Order {
   paymentRef      String? // referensi intent dari provider
   discountAmount  Int       @default(0) // R-042 potongan kupon (≤ amount)
   couponCode      String? // R-042 kode kupon yang terpakai (tebusan saat LUNAS)
+  insuranceCode   String? // R-048 kode paket asuransi add-on (opsional)
+  insurancePremium Int      @default(0) // R-048 total premi asuransi (premi × qty)
   paidAt          DateTime?
   notes           String?
   pdpConsent      Boolean   @default(false) // R-078 UU PDP — persetujuan pemrosesan data saat checkout
@@ -1685,4 +1687,141 @@ model PartnerActivity {
   createdAt  DateTime      @default(now())
 
   @@index([partnerId, date])
+}
+
+/* ============================================================
+ * v15.0.0 «GOD MODE» — R-018/R-032/R-034/R-046/R-048/R-049/R-050/R-098
+ * ============================================================ */
+
+/// R-018 — Anggota keluarga dalam satu akun pengampu: satu penanggung
+/// jawab (nomor WA pengampu) mengelola data & status anggota keluarganya
+/// (anak, orang tua, lansia) dalam satu layar.
+model FamilyMember {
+  id            String   @id @default(cuid())
+  guardianPhone String // nomor WhatsApp pengampu (kunci akses perangkat)
+  name          String
+  relation      String   @default("ANAK") // ANAK | ORANG_TUA | LANSIA | PASANGAN | LAINNYA
+  birthYear     Int?
+  passportNo    String?
+  notes         String?
+  createdAt     DateTime @default(now())
+
+  @@index([guardianPhone])
+}
+
+/// R-032 — Lencana capaian: penghargaan digital atas kelulusan akademi,
+/// kehadiran kelas, kontribusi forum, kelengkapan dokumen, dan transaksi.
+model UserBadge {
+  id        String   @id @default(cuid())
+  ownerKey  String // identitas pemilik (nomor WA / email — device-local friendly)
+  code      String // kode definisi lencana, mis. BADGE-KELAS-3
+  source    String   @default("GENERAL") // KELAS | KUIS | FORUM | DOKUMEN | TRANSAKSI | GENERAL
+  awardedAt DateTime @default(now())
+
+  @@unique([ownerKey, code])
+  @@index([ownerKey])
+}
+
+/// R-034 — Evaluasi instruktur: umpan balik tertutup murid per kelas
+/// (satu evaluasi per peserta per kelas), dirangkum untuk panitia.
+model InstructorReview {
+  id         String   @id @default(cuid())
+  classId    String
+  classTitle String // snapshot judul kelas
+  phone      String // identitas peserta (unik per kelas)
+  rating     Int // 1..5
+  comment    String?
+  createdAt  DateTime @default(now())
+
+  @@unique([classId, phone])
+  @@index([classId])
+}
+
+/// R-046 — Lapak mitra: onboarding merchant marketplace (verifikasi izin
+/// manual oleh panitia, kelola produk sendiri via CMS).
+model MerchantStore {
+  id        String           @id @default(cuid())
+  slug      String           @unique
+  storeName String
+  ownerName String
+  phone     String
+  city      String
+  category  String           @default("OLEH_OLEH") // PROVISION | ATK | OLEH_OLEH | JASA | LAINNYA
+  nib       String? // nomor induk usaha (diverifikasi panitia)
+  status    String           @default("PENDING") // PENDING | ACTIVE | SUSPENDED
+  note      String?
+  createdAt DateTime         @default(now())
+  products  MerchantProduct[]
+
+  @@index([status])
+}
+
+/// R-046 — Produk lapak mitra.
+model MerchantProduct {
+  id      String        @id @default(cuid())
+  storeId String
+  store   MerchantStore @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  name    String
+  price   Int // IDR
+  unit    String        @default("paket")
+  desc    String?
+  active  Boolean       @default(true)
+
+  @@index([storeId, active])
+}
+
+/// R-048 — Paket asuransi perjalanan add-on (premi per jamaah, dihitung
+/// ulang server-side di checkout).
+model InsurancePlan {
+  id        String   @id @default(cuid())
+  code      String   @unique
+  name      String
+  provider  String
+  coverage  String // ringkasan perlindungan
+  premium   Int // IDR per jamaah
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
+
+/// R-049 — Kas rombongan: pencatatan iuran & pengeluaran grup dengan
+/// laporan transparan ke seluruh anggota (gerbang kode grup).
+model GroupLedgerEntry {
+  id        String   @id @default(cuid())
+  groupId   String
+  kind      String // INCOME | EXPENSE
+  amount    Int // IDR, > 0
+  note      String
+  byName    String
+  createdAt DateTime @default(now())
+
+  @@index([groupId, createdAt])
+}
+
+/// R-050 — Escrow pembayaran: dana pesanan LUNAS ditahan (HELD) sampai
+/// layanan terverifikasi selesai (RELEASED) atau dikembalikan (REFUNDED).
+model EscrowEvent {
+  id          String   @id @default(cuid())
+  orderNumber String   @unique // satu siklus escrow per pesanan
+  amount      Int
+  state       String   @default("HELD") // HELD | RELEASED | REFUNDED
+  reason      String?
+  actor       String? // panitia/sistem yang memutuskan
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([state])
+}
+
+/// R-098 — Register kendali ISO 27001:2022 (Annex A): status implementasi
+/// & bukti tiap kendali ISMS — dasar kesiapan audit sertifikasi.
+model ISMSControl {
+  id        String   @id @default(cuid())
+  code      String   @unique // A.5.1 … A.17.x
+  title     String
+  category  String   @default("Teknologi") // Organisasi | Manusia | Fisik | Teknologi
+  status    String   @default("PLANNED") // PLANNED | IMPLEMENTED | VERIFIED
+  evidence  String? // tautan/bukti singkat
+  updatedAt DateTime @updatedAt
+
+  @@index([category, status])
 }

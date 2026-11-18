@@ -129,7 +129,7 @@ export function AdminGroupOps() {
         {!groups ? (
           <Skeleton className="h-10 w-full rounded-xl" />
         ) : (
-          <select value={groupId} onChange={(e) => setGroupId(e.target.value)} className="h-10 w-full rounded-xl border border-border bg-card px-3 text-sm">
+          <select aria-label="Pilih grup perjalanan" value={groupId} onChange={(e) => setGroupId(e.target.value)} className="h-10 w-full rounded-xl border border-border bg-card px-3 text-sm">
             <option value="">— pilih grup —</option>
             {groups.map((g) => (
               <option key={g.id} value={g.id}>{g.code} · {g.name} ({g._count?.members ?? 0} anggota)</option>

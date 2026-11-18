@@ -207,6 +207,7 @@ export function AdminSyllabus() {
           </div>
           <div className="flex items-center gap-2">
             <select
+              aria-label="Pilih kursus kurikulum"
               value={courseId}
               onChange={(e) => setCourseId(e.target.value)}
               className="h-10 w-64 rounded-md border border-input bg-background px-3 text-sm"

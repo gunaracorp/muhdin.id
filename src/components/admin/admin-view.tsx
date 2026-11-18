@@ -58,6 +58,12 @@ import { AdminLiveClasses } from "@/components/admin/admin-live-classes";
 import { AdminPriceRules } from "@/components/admin/admin-price-rules";
 import { AdminRefunds } from "@/components/admin/admin-refunds";
 import { AdminGroupOrders } from "@/components/admin/admin-group-orders";
+// v15.0.0 «GOD MODE» — evaluasi instruktur, lapak mitra, asuransi, escrow, ISMS
+import { AdminInstructorReviews } from "@/components/admin/admin-instructor-reviews";
+import { AdminMerchantStores } from "@/components/admin/admin-merchant-stores";
+import { AdminInsurance } from "@/components/admin/admin-insurance";
+import { AdminEscrow } from "@/components/admin/admin-escrow";
+import { AdminIsms } from "@/components/admin/admin-isms";
 import { AdminMerchants } from "@/components/admin/admin-merchants";
 import { AdminApiPartners } from "@/components/admin/admin-api-partners";
 import { AdminMosquePartners } from "@/components/admin/admin-mosque-partners";
@@ -105,6 +111,12 @@ const MENU = [
   { id: "refunds", label: "Refund & Pembatalan", icon: "rotate" },
   { id: "grouporders", label: "Rombongan B2B", icon: "users" },
   { id: "merchants", label: "Merchant Mitra", icon: "store" },
+  // v15.0.0 «GOD MODE» — panel baru
+  { id: "instruktur-reviews", label: "Evaluasi Instruktur", icon: "star" },
+  { id: "lapak", label: "Lapak Mitra", icon: "shopping-bag" },
+  { id: "insurance", label: "Asuransi Perjalanan", icon: "shield-heart" },
+  { id: "escrow", label: "Escrow Pembayaran", icon: "landmark" },
+  { id: "isms", label: "Kendali ISMS (ISO 27001)", icon: "shield-check" },
   { id: "apipartners", label: "API Mitra", icon: "key-square" },
   { id: "mosquepartners", label: "Kemitraan Masjid", icon: "landmark" },
   { id: "syllabus", label: "Kurikulum Builder", icon: "book-marked" },
@@ -337,6 +349,12 @@ export function AdminView() {
           {section === "refunds" && <AdminRefunds />}
           {section === "grouporders" && <AdminGroupOrders />}
           {section === "merchants" && <AdminMerchants />}
+          {/* v15.0.0 «GOD MODE» */}
+          {section === "instruktur-reviews" && <AdminInstructorReviews />}
+          {section === "lapak" && <AdminMerchantStores />}
+          {section === "insurance" && <AdminInsurance />}
+          {section === "escrow" && <AdminEscrow />}
+          {section === "isms" && <AdminIsms />}
           {section === "apipartners" && <AdminApiPartners />}
           {section === "mosquepartners" && <AdminMosquePartners />}
           {section === "syllabus" && <AdminSyllabus />}

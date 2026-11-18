@@ -17,6 +17,7 @@ import { useT } from "@/lib/i18n";
 import { Icon } from "@/components/site/icon";
 import { Reveal } from "@/components/site/reveal";
 import { DetailHero } from "@/components/views/detail-shell";
+import { IsmsSection } from "@/components/site/isms-section";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -539,6 +540,9 @@ export function ComplianceView({ initialQuery = "" }: { initialQuery?: string })
           </div>
         </Reveal>
       </section>
+
+      {/* R-098 v15.0.0 — Kesiapan ISO 27001 (register kendali ISMS) */}
+      <IsmsSection />
     </div>
   );
 }

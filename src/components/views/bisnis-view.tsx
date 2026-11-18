@@ -16,6 +16,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DetailHero, WaCtaButton } from "@/components/views/detail-shell";
+import { LapakMitraSection } from "@/components/site/lapak-mitra";
 import { cn } from "@/lib/utils";
 import type { VendorItem, MuthowifItem, SeatListingItem } from "@/lib/types";
 
@@ -159,6 +160,8 @@ export function BisnisView() {
           </span>
         </a>
       </section>
+
+      <LapakMitraSection />
 
       <section className="py-12">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">

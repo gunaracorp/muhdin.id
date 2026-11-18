@@ -353,6 +353,7 @@ export function PesananView() {
                         ) : (
                           <>
                             <textarea
+                              aria-label={t("pesanan.refundReasonPh")}
                               value={refundReason}
                               onChange={(e) => setRefundReason(e.target.value)}
                               rows={3}
