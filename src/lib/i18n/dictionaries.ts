@@ -41,10 +41,9 @@ import { dashDict } from "@/lib/i18n/locales/dashboard";
 // Task 51 — Dashboard PPIU & PPIHK + sinkronisasi Nusuk
 import { ppiuPihkDict } from "@/lib/i18n/locales/ppiu-pihk";
 // Task 52 (P0) — Infrastruktur Kepercayaan (8 halaman baru).
-// Catatan: key menu (navbar.items.kepercayaan, layanan.groups.kepercayaan,
-// footer.trust*) ditambahkan langsung ke locales/navbar.ts, locales/layanan.ts
-// & locales/footer.ts karena Object.assign di file ini menimpa root utuh —
-// root duplikat akan mencabut dict lama (bug footer.quick.* sudah terjadi).
+// Catatan: sejak perbaikan v15.0.1, penggabungan dict memakai deepMerge (bukan
+// Object.assign) — root duplikat antar-dict kini MENYATU alih-alih menimpa
+// (bug lama: footer.quick.*, layanan.items.* tampil sebagai kunci mentah).
 import { regulasiDict } from "@/lib/i18n/locales/regulasi";
 import { transparansiDict } from "@/lib/i18n/locales/transparansi";
 import { etikDict } from "@/lib/i18n/locales/etik";
@@ -193,8 +192,34 @@ const dicts = [
   v150Dict,
 ];
 
+/**
+ * v15.0.1 — gabung mendalam (deep merge): objek di-rekursif menyatu, skalar &
+ * array dari dict yang lebih belakang menang. Menggantikan Object.assign yang
+ * menimpa ROOT UTUH sehingga namespace yang dideklarasikan lebih dari satu
+ * dict (layanan, pesanan, benef) kehilangan seluruh isi dict sebelumnya —
+ * t() lalu menampilkan kunci mentah ("layanan.items.bakornas.title") di UI.
+ */
+function deepMerge(
+  target: Record<string, unknown>,
+  source: Record<string, unknown>
+): Record<string, unknown> {
+  const out: Record<string, unknown> = { ...target };
+  for (const [key, value] of Object.entries(source)) {
+    const prev = out[key];
+    if (
+      value && typeof value === "object" && !Array.isArray(value) &&
+      prev && typeof prev === "object" && !Array.isArray(prev)
+    ) {
+      out[key] = deepMerge(prev as Record<string, unknown>, value as Record<string, unknown>);
+    } else {
+      out[key] = value;
+    }
+  }
+  return out;
+}
+
 export const dictionaries: Record<"id" | "en" | "ar", Record<string, unknown>> = {
-  id: Object.assign({}, ...dicts.map((d) => d.id)),
-  en: Object.assign({}, ...dicts.map((d) => d.en)),
-  ar: Object.assign({}, ...dicts.map((d) => d.ar)),
+  id: dicts.reduce((acc, d) => deepMerge(acc, d.id), {}),
+  en: dicts.reduce((acc, d) => deepMerge(acc, d.en), {}),
+  ar: dicts.reduce((acc, d) => deepMerge(acc, d.ar), {}),
 };

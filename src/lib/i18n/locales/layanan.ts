@@ -123,6 +123,27 @@ export const layananDict = {
           title: "Kalender Musim Umrah & Haji",
           desc: "Peta permintaan 12 bulan, indikasi harga, dan catatan praktis memilih waktu keberangkatan.",
         },
+        "doa-dzikir": {
+          title: "Panduan Doa & Dzikir Audio",
+          desc: "Kumpulan 16 doa & dzikir inti ibadah — teks Arab, latin, arti, dan riwayat — dengan lafal audio langsung dari perangkat, mengikuti langkah manasik.",
+          p1: "16 doa inti + dzikir & talbiyah",
+          p2: "Teks Arab, latin, arti & riwayat",
+          p3: "Lafal audio langsung dari perangkat",
+        },
+        "kelas-live": {
+          title: "Kelas Live & Webinar",
+          desc: "Kelas manasik & pelatihan daring terjadwal: pendaftaran mudah satu nomor, forum diskusi per kelas, rekaman sesi, dan evaluasi instruktur.",
+          p1: "Pendaftaran satu nomor + pengingat WA & push",
+          p2: "Forum diskusi per kelas",
+          p3: "Rekaman sesi & evaluasi instruktur",
+        },
+        "rombongan-b2b": {
+          title: "Pendaftaran Rombongan B2B",
+          desc: "Satu tagihan untuk seluruh rombongan: panitia mendaftar banyak jamaah sekali isi, pesanan B2B bernomor MHD-B2B, dan laporan berkas per anggota.",
+          p1: "Sekali isi untuk seluruh jamaah",
+          p2: "Satu tagihan MHD-B2B",
+          p3: "Laporan berkas per anggota",
+        },
         "booking-slot": {
           title: "Booking Slot Layanan",
           desc: "Pesan kelas manasik, konsultasi syariah, dan klinik vaksin.",
@@ -297,6 +318,13 @@ export const layananDict = {
           p2: "Forum & 7 divisi kerja",
           p3: "Target & dampak 2030",
         },
+        "masjid-mitra": {
+          title: "Kemitraan Masjid & Komunitas",
+          desc: "Tiga program kemitraan untuk masjid, pesantren, dan komunitas: kajian & tabarru' terkoordinasi, kelas bersama MUHDIN Academy, dan keberangkatan umrah bersama.",
+          p1: "Kajian & tabarru' terkoordinasi",
+          p2: "Kelas bersama MUHDIN Academy",
+          p3: "Keberangkatan umrah bersama terjadwal",
+        },
         "pembayaran": {
           title: "PEMBAYARAN RESMI",
           desc: "Payment gateway resmi, alur transaksi quote-to-cash, pemisahan dana jamaah, dan ketentuan tertulis.",
@@ -438,6 +466,27 @@ export const layananDict = {
         "kalender-musim": {
           title: "Umrah & Hajj Season Calendar",
           desc: "A 12-month demand map, price indication, and practical notes for choosing your departure window.",
+        },
+        "doa-dzikir": {
+          title: "Prayer & Dhikr Audio Guide",
+          desc: "16 essential prayers & dhikr — Arabic text, transliteration, meaning and narration — with on-device audio pronunciation following each ritual step.",
+          p1: "16 core prayers + dhikr & talbiyah",
+          p2: "Arabic, latin, meaning & narration",
+          p3: "On-device audio pronunciation",
+        },
+        "kelas-live": {
+          title: "Live Classes & Webinars",
+          desc: "Scheduled online manasik classes and training: easy one-number registration, per-class discussion forums, session recordings and instructor evaluation.",
+          p1: "One-number registration + WA & push reminders",
+          p2: "Per-class discussion forum",
+          p3: "Session recordings & instructor evaluation",
+        },
+        "rombongan-b2b": {
+          title: "Group (B2B) Registration",
+          desc: "One invoice for the whole group: coordinators register many pilgrims in a single pass, with an MHD-B2B order number and a per-member document report.",
+          p1: "Single pass for all pilgrims",
+          p2: "One MHD-B2B invoice",
+          p3: "Per-member document report",
         },
         "booking-slot": {
           title: "Book Service Slots",
@@ -613,6 +662,13 @@ export const layananDict = {
           p2: "Forum & 7 working divisions",
           p3: "2030 targets & impact",
         },
+        "masjid-mitra": {
+          title: "Mosque & Community Partnership",
+          desc: "Three partnership programs for mosques, Islamic schools and communities: coordinated study circles & tabarru', joint MUHDIN Academy classes, and scheduled group umrah departures.",
+          p1: "Coordinated study circles & tabarru'",
+          p2: "Joint MUHDIN Academy classes",
+          p3: "Scheduled group umrah departures",
+        },
         "pembayaran": {
           title: "OFFICIAL PAYMENTS",
           desc: "Official payment gateway, quote-to-cash transaction flow, pilgrim-fund segregation, and written terms.",
@@ -754,6 +810,27 @@ export const layananDict = {
         "kalender-musim": {
           title: "تقويم مواسم العمرة والحج",
           desc: "خريطة طلب على مدى ١٢ شهرًا ومؤشر أسعار وملاحظات عملية لاختيار وقت السفر.",
+        },
+        "doa-dzikir": {
+          title: "دليل الأدعية والأذكار الصوتي",
+          desc: "مجموعة من 16 دعاءً وذكراً أساسيين للعبادة — نص عربي وترجمة لاتينية ومعنى ومصدر — مع النطق الصوتي من الجهاز وفق خطوات المناسك.",
+          p1: "16 دعاء أساسي + أذكار والتلبية",
+          p2: "نص عربي وترجمة ومعنى ومصدر",
+          p3: "نطق صوتي من الجهاز",
+        },
+        "kelas-live": {
+          title: "الفصول المباشرة والندوات",
+          desc: "فصول مناسك وتدريب عبر الإنترنت بجدول منتظم: تسجيل سهل برقم واحد، منتدى نقاش لكل فصل، تسجيلات الجلسة، وتقييم المدرّب.",
+          p1: "تسجيل برقم واحد + تذكير واتساب",
+          p2: "منتدى نقاش لكل فصل",
+          p3: "تسجيلات الجلسة وتقييم المدرّب",
+        },
+        "rombongan-b2b": {
+          title: "تسجيل المجموعات (B2B)",
+          desc: "فاتورة واحدة للمجموعة كاملة: تسجيل عدة حجاج دفعة واحدة، طلب B2B برقم MHD-B2B، وتقرير مستندات لكل عضو.",
+          p1: "تسجيل الجميع دفعة واحدة",
+          p2: "فاتورة MHD-B2B واحدة",
+          p3: "تقرير مستندات لكل عضو",
         },
         "booking-slot": {
           title: "حجز مواعيد الخدمات",
@@ -928,6 +1005,13 @@ export const layananDict = {
           p1: "أربعة أركان شراكة",
           p2: "المنتدى و7 فرق عمل",
           p3: "أهداف وأثر 2030",
+        },
+        "masjid-mitra": {
+          title: "شراكة المساجد والمجتمعات",
+          desc: "ثلاثة برامج شراكة للمساجد والمدارس الإسلامية والمجتمعات: حلقات درس وتبرّع منسّقة، فصول مشتركة مع أكاديمية مُهدين، ورحلات عمرة جماعية مجدولة.",
+          p1: "حلقات درس وتبرّع منسّقة",
+          p2: "فصول مشتركة مع أكاديمية مُهدين",
+          p3: "رحلات عمرة جماعية مجدولة",
         },
         "pembayaran": {
           title: "الدفع الرسمي",

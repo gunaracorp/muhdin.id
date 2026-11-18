@@ -29,12 +29,6 @@ export const v141Dict = {
       merchantNote: "Tier KTA divalidasi server-side; tunjukkan kartu di lokasi mitra saat kasir.",
       merchantSuccess: "Tebusan berhasil!",
     },
-    layanan: {
-      "items.doa-dzikir": "Panduan Doa & Dzikir Audio",
-      "items.kelas-live": "Kelas Live & Webinar",
-      "items.rombongan-b2b": "Pendaftaran Rombongan B2B",
-      "items.masjid-mitra": "Kemitraan Masjid & Komunitas",
-    },
   },
   en: {
     pesanan: {
@@ -62,12 +56,6 @@ export const v141Dict = {
       merchantNote: "KTA tier is validated server-side; show your card at the partner's cashier.",
       merchantSuccess: "Redemption successful!",
     },
-    layanan: {
-      "items.doa-dzikir": "Prayer & Dhikr Audio Guide",
-      "items.kelas-live": "Live Classes & Webinars",
-      "items.rombongan-b2b": "B2B Group Registration",
-      "items.masjid-mitra": "Mosque & Community Partnership",
-    },
   },
   ar: {
     pesanan: {
@@ -94,12 +82,6 @@ export const v141Dict = {
       merchantConfirm: "استبدل الآن",
       merchantNote: "تُتحقق الفئة في الخادم؛ أظهر بطاقتك عند المحاسب.",
       merchantSuccess: "تم الاستبدال بنجاح!",
-    },
-    layanan: {
-      "items.doa-dzikir": "دليل الأدعية والأذكار الصوتي",
-      "items.kelas-live": "الفصول المباشرة والندوات",
-      "items.rombongan-b2b": "تسجيل المجموعات للشركات",
-      "items.masjid-mitra": "شراكة المساجد والمجتمعات",
     },
   },
 } as const;

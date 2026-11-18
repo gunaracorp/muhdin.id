@@ -2440,3 +2440,25 @@ QA Gates (hijau penuh):
 
 Stage Summary:
 - **Roadmap MUHDIN 99/99 (100%) — seluruh target v15–v20 tuntas dalam satu sprint.** 13 fitur nyata (bukan mock): pengampu keluarga, lencana, alumni, evaluasi instruktur, lapak mitra, asuransi checkout, kas rombongan transparan, escrow aman ber-audit, wrapper mobile, cache/CDN, a11y AA terukur 0 temuan, ISMS readiness publik, dan open core MIT. QA: tsc 0 · eslint 0 · build OK · a11y 0 · roles 206 route valid · pentest 31/31 · E2E fitur baru 7/7 · escrow+asuransi terverifikasi end-to-end di DB.
+
+## Task ID 35 — v15.0.1 «NAMA JERNIH»: Raw Key i18n Tidak Pernah Lagi Tampil di UI
+Tanggal: 2026-11-18
+
+Task: laporan owner — ada halaman dengan tulisan "nggak jelas" berupa `layanan.items.bakornas.title` (kunci i18n mentah) tampil sebagai isi halaman; minta dihapus indireksinya dan diganti penamaan profesional langsung.
+
+Root Cause (dua lapis):
+1. **dictionaries.ts memakai Object.assign** — menimpa ROOT utuh antar-dict. `v141Dict.layanan` (4 kunci bertitik) menimpa total `layananDict.layanan` (±40 judul item profesional); pola sama menimpa `pesanan` (checkoutDict vs v141) & `benef` (keanggotaanDict vs v141). `t()` gagal → mengembalikan kunci mentah ke layar (mega-menu, #/layanan, #/layanan/<slug>, #/pesanan, benefit).
+2. **Kunci bertitik** (`"cat.HOTEL": "Hotel"`, 57 butir di keanggotaan.ts + 12 di v141.ts) — `lookup()` menelusuri objek bersarang, tidak pernah bisa membaca kunci dengan titik di dalamnya → kategori benefit/akademi/booking tampil mentah (`benef.cat.HOTEL`, `acad.cat.MANASIK`, `book.st.BOOKED`).
+
+Work Log:
+- **deepMerge** di dictionaries.ts (rekursif; objek menyatu, skalar/array dict terakhir menang) — menggantikan Object.assign; 3 root tabrakan kini MENYATU alih-alih saling mencabut. Komentar peringatan lama (bug footer.quick.*) diperbarui.
+- **4 item layanan v14.1** (doa-dzikir, kelas-live, rombongan-b2b, masjid-mitra) ditulis ulang sebagai **entri profesional lengkap** (title+desc+p1/p2/p3) di layanan.ts id/en/ar, menggantikan kunci bertitik v141 yang dihapus — layanan.items kini **48 slug × 3 bahasa, semuanya lengkap**.
+- **keanggotaan.ts: 57 kunci bertitik → nested** (scripts/fix-keanggotaan-nested.py; run berurutan digabung per prefiks agar tak ada properti duplikat).
+- **Sweep final**: grep pola `"x.y":` di seluruh locales/ → 0 sisa kunci bertitik.
+- **scripts/test-i18n-merge.ts** — 14 kasus uji lookup (layanan lama+baru, pesanan, benef, acad, book) semuanya ✓ + audit kelengkapan 48 slug × 3 bahasa.
+- Diagnostik QA: temuan "masih mentah" di browser ternyata **cache disk chunk dev** — diverifikasi bersih lewat server port baru (3100); data nested benar sejak perbaikan (Node tsx ✓).
+
+QA Gates: tsc 0 · eslint 0 · build sukses · test-i18n-merge 14/14 · sweep kunci bertitik 0.
+Browser smoke (port baru, tanpa cache): mega-menu PENGURUS → BAKORNAS/BAKORWIL/BAKORDA/STRUKTUR BKN ✓; #/layanan → chip profesional semua grup ✓ (screenshot); #/layanan/bakornas → title/desc/p1 lengkap ✓; #/pesanan, #/benefit (tab "Hotel"…), #/academy, #/booking → **0 text node raw key**.
+
+Stage Summary: kebocoran kunci i18n mentah dihapus dari akarnya — merge dict kini menyatu (deepMerge), seluruh kunci bertitik dikonversi nested, dan 4 item layanan baru memakai penamaan profesional langsung. Tidak ada lagi halaman yang menampilkan `layanan.items.*`, `benef.cat.*`, `acad.*`, `book.*` sebagai teks.
