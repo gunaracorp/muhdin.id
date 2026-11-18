@@ -20,6 +20,7 @@
     "setup": "node scripts/setup-db.mjs",
     "test:roles": "bun scripts/test-role-matrix.mts",
     "audit:deps": "bash scripts/audit-deps.sh",
+    "pentest": "bun scripts/pentest-berkala.mts",
     "seed:duty": "tsx scripts/seed-duty-officer.ts",
     "backup": "bun scripts/backup-db.ts",
     "db:push": "prisma db push --accept-data-loss",

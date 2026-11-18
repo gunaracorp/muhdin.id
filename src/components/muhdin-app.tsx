@@ -75,6 +75,8 @@ import { PengurusDetail } from "@/components/views/pengurus-detail";
 import { KomunitasView } from "@/components/views/komunitas-view";
 import { LatihanView } from "@/components/views/latihan-view";
 import { GrupView } from "@/components/views/grup-view";
+// v14.0 «KAMPANYE & KAWAL» — R-017 Kalender Musim Umrah & Haji
+import { KalenderView } from "@/components/views/kalender-view";
 // v5.0 — Marketplace paket, forum jamaah, kartu jamaah digital
 import { PaketView } from "@/components/views/paket-view";
 import { PaketDetail } from "@/components/views/paket-detail";
@@ -248,6 +250,10 @@ export function MuhdinApp({ initialLocale = "id" }: { initialLocale?: "id" | "en
     // v13.3 R-012 — Grup Perjalanan Digital (ruang rombongan berbasis kode)
     case "grup":
       content = <GrupView />;
+      break;
+    // v14.0 R-017 — Kalender Musim Umrah & Haji (peta 12 bulan)
+    case "kalender":
+      content = <KalenderView />;
       break;
     // Task 50 — Pusat Layanan, Perizinan & Sertifikasi (menu baru)
     case "layanan":

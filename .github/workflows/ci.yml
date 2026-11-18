@@ -76,6 +76,7 @@ jobs:
       DATABASE_URL: file:/home/runner/work/muhdin/muhdin/db/e2e.db
       E2E_ADMIN_EMAIL: ${{ secrets.E2E_ADMIN_EMAIL }}
       E2E_ADMIN_PASSWORD: ${{ secrets.E2E_ADMIN_PASSWORD }}
+      PAYMENT_WEBHOOK_SECRET: ci-webhook-secret-e2e
     steps:
       - uses: actions/checkout@v4
 
@@ -97,6 +98,16 @@ jobs:
 
       - name: Jalankan suite E2E
         run: bunx playwright test --project=chromium
+
+      - name: Pentest Berkala black-box terhadap server segar (R-080)
+        run: |
+          bunx prisma db push --accept-data-loss --skip-generate
+          NODE_ENV=development npm run dev > /tmp/dev.log 2>&1 &
+          for i in $(seq 1 60); do
+            curl -sf http://127.0.0.1:3000/api/status > /dev/null && break
+            sleep 3
+          done
+          BASE_URL=http://127.0.0.1:3000 bun scripts/pentest-berkala.mts
 
       - name: Unggah laporan & jejak gagal
         if: failure()

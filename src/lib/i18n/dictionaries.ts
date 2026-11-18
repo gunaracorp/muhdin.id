@@ -3,6 +3,7 @@
  * { id, en, ar } — bebas konflik antar agent.
  */
 import { commonDict } from "@/lib/i18n/locales/common";
+import { kalenderDict } from "@/lib/i18n/locales/kalender";
 import { navbarDict } from "@/lib/i18n/locales/navbar";
 import { footerDict } from "@/lib/i18n/locales/footer";
 import { homeDict } from "@/lib/i18n/locales/home";
@@ -168,6 +169,8 @@ const dicts = [
   keanggotaanDict,
   // Audit 2026 — Kemitraan, Pembayaran, Keamanan, Biaya, KPI, ARMINA, Nusuk positioning
   audit13Dict,
+  // v14.0 «KAMPANYE & KAWAL» — R-017 Kalender Musim Umrah & Haji
+  kalenderDict,
 ];
 
 export const dictionaries: Record<"id" | "en" | "ar", Record<string, unknown>> = {

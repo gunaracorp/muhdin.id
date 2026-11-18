@@ -33,6 +33,27 @@ const nextConfig: NextConfig = {
   // Ramah shared hosting: tanpa header "X-Powered-By", respons di-gzip.
   poweredByHeader: false,
   compress: true,
+  // v14.0 «KAMPANYE & KAWAL» — R-080 Pentest Berkala (temuan A1–A4):
+  // header keamanan dasar untuk seluruh halaman & API. Tidak berlaku pada
+  // build statis (output: export) — di sana header diset di server web
+  // (Caddy/nginx, lihat PANDUAN-SHARED-HOSTING.md).
+  ...(isStatic
+    ? {}
+    : {
+        async headers() {
+          return [
+            {
+              source: "/:path*",
+              headers: [
+                { key: "X-Frame-Options", value: "DENY" },
+                { key: "X-Content-Type-Options", value: "nosniff" },
+                { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+                { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=(self)" },
+              ],
+            },
+          ];
+        },
+      }),
   // Wajib untuk shared hosting & Vercel: pastikan seluruh Query Engine Prisma
   // (multi-platform: debian + rhel/CloudLinux/Vercel) dan file database SQLite
   // ikut ter-bundle, sehingga folder node_modules maupun .env tidak dibutuhkan

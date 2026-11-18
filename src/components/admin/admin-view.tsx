@@ -51,6 +51,8 @@ import { AdminFunnel } from "@/components/admin/admin-funnel";
 // v13.2 — R-011 Web Push Pengumuman Keberangkatan
 import { AdminPush } from "@/components/admin/admin-push";
 import { AdminCampaigns } from "@/components/admin/admin-campaigns";
+// v14.0 «KAMPANYE & KAWAL» — Voucher & Kupon Kampanye (R-042)
+import { AdminCoupons } from "@/components/admin/admin-coupons";
 // v12.4 «LUNAS» — Pesanan & Invoice (checkout + payment gateway)
 import { AdminOrders } from "@/components/admin/admin-orders";
 import { AdminJamaahOps } from "@/components/admin/admin-jamaah-ops";
@@ -86,6 +88,8 @@ const MENU = [
   { id: "push", label: "Push Keberangkatan", icon: "bell-ring" },
   // v13.0 «GERBANG» — Kampanye Musiman (R-089)
   { id: "kampanye", label: "Kampanye Musiman", icon: "megaphone" },
+  // v14.0 «KAMPANYE & KAWAL» — Voucher & Kupon Kampanye (R-042)
+  { id: "coupons", label: "Voucher & Kupon", icon: "ticket-percent" },
   { id: "tutorials", label: "Tutorial", icon: "graduation-cap" },
   { id: "messages", label: "Pesan Masuk", icon: "inbox" },
   { id: "complaints", label: "Pengaduan", icon: "shield-alert" },
@@ -308,6 +312,7 @@ export function AdminView() {
           {section === "funnel" && <AdminFunnel />}
           {section === "push" && <AdminPush />}
           {section === "kampanye" && <AdminCampaigns />}
+          {section === "coupons" && <AdminCoupons />}
           {section === "audit" && <AdminAudit />}
           {section === "users" && <AdminUsers meId={user.id} />}
           {/* GABUNG v11 — Power Pack */}

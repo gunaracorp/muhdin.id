@@ -58,8 +58,7 @@ const STATIC_PAGES: { path: string; icon: string; labelKey?: string; labelId: st
   { path: "/peta-situs", icon: "map", labelId: "Peta Situs" },
 ];
 
-/** Route hash kustom di luar #/layanan/<slug> (Task 52). */
-const CUSTOM_ROUTES = new Set(["regulasi", "transparansi", "etik", "pdp", "darurat", "kemitraan", "pembayaran", "keamanan", "biaya"]);
+/** Route hash kustom di luar #/layanan/<slug> kini dibaca langsung dari c.route (v14.0). */
 
 function LinkChip({ path, icon, label }: { path: string; icon: string; label: string }) {
   return (
@@ -142,13 +141,16 @@ export function SitemapView() {
                   <span className="rounded-full bg-muted px-2 py-0.5 text-[10px]">{g.children?.length ?? 0}</span>
                 </h3>
                 <div className="flex flex-wrap gap-2">
-                  {g.children?.map((c) =>
-                    CUSTOM_ROUTES.has(c.slug) ? (
-                      <LinkChip key={c.slug} path={`/${c.slug}`} icon={c.icon} label={l10n(`layanan.items.${c.slug}`, c.slug)} />
-                    ) : (
-                      <LinkChip key={c.slug} path={`/layanan/${c.slug}`} icon={c.icon} label={l10n(`layanan.items.${c.slug}`, c.slug)} />
-                    )
-                  )}
+                  {g.children?.map((c) => (
+                    <LinkChip
+                      key={c.slug}
+                      // v14.0 fix bug: hormati route kustom anak menu (navbar memakai
+                      // c.route ?? layanan/<slug>) — peta situs kini konsisten.
+                      path={`/${c.route ?? `layanan/${c.slug}`}`}
+                      icon={c.icon}
+                      label={l10n(`layanan.items.${c.slug}`, c.slug)}
+                    />
+                  ))}
                 </div>
               </div>
             ))}

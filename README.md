@@ -3,7 +3,7 @@
 
 ![MUHDIN.ID — Portal Digital Ekosistem Umrah dan Haji Indonesia](docs/assets/banner.svg)
 
-# 🕋 MUHDIN.ID — v13.3.0 «JENJANG & BRANKAS»
+# 🕋 MUHDIN.ID — v14.0.0 «KAMPANYE & KAWAL»
 
 ### **MU**asyarakat **U**mroh **H**aji **D**igital **I**ndonesia
 
@@ -17,8 +17,8 @@
 [![React 19](https://img.shields.io/badge/React-19-61DAFB?logo=react)](https://react.dev)
 [![TypeScript 5](https://img.shields.io/badge/TypeScript_5-tsc_0_error-3178C6?logo=typescript)](https://typescriptlang.org)
 [![Tailwind CSS 4](https://img.shields.io/badge/Tailwind_CSS_4-06B6D4?logo=tailwindcss)](https://tailwindcss.com)
-[![Prisma 6](https://img.shields.io/badge/Prisma_6-74_model-2D3748?logo=prisma)](https://prisma.io)
-[![API](https://img.shields.io/badge/API-159_route_handler-black)](#-peta-api)
+[![Prisma 6](https://img.shields.io/badge/Prisma_6-82_model-2D3748?logo=prisma)](https://prisma.io)
+[![API](https://img.shields.io/badge/API-170_route_handler-black)](#-peta-api)
 [![SQLite](https://img.shields.io/badge/DB-SQLite_↔_Postgres_ready-003B57?logo=sqlite)](#-strategi-database)
 [![i18n](https://img.shields.io/badge/i18n-ID_·_EN_·_AR_RTL-16a34a)](#-internasionalisasi)
 [![RBAC](https://img.shields.io/badge/RBAC-4_peran_·_32_modul_CMS-d97706)](#-keamanan-dan-rbac)
@@ -27,7 +27,8 @@
 [![Audit](https://img.shields.io/badge/Audit_Go_Live-10/10_terimplementasi-b8860b)](#-v126-audit-2026--kesiapan-go-live)
 [![CI](https://img.shields.io/badge/CI-verify_·_e2e_·_security-2088FF?logo=githubactions)](.github/workflows/ci.yml)
 [![E2E](https://img.shields.io/badge/E2E-Playwright_jalur_kritis-2EAD33?logo=playwright)](tests/e2e)
-[![Roles](https://img.shields.io/badge/Role_Matrix-tested_159_route-4B32C3)](scripts/test-role-matrix.mts)
+[![Roles](https://img.shields.io/badge/Role_Matrix-tested_170_route-4B32C3)](scripts/test-role-matrix.mts)
+[![Pentest](https://img.shields.io/badge/Pentest_Berkala-31_butir_lolos-8B0000)](scripts/pentest-berkala.mts)
 [![Lint](https://img.shields.io/badge/ESLint-0_problem-4B32C3?logo=eslint)](#-jaminan-kualitas-qa-gates)
 
 > 🕌 **MUHDIN tanpa biaya pendaftaran di fase awal** — struktur biaya & sumber pembiayaan
@@ -58,7 +59,7 @@ penuh dari 7 sumber (SAPUHI, PIHK Kemenag, SATU HAJI Jateng, HIMPUH, AMPHURI + *
 2.087 entri** ekstraksi PDF 124 halaman) dengan dedupe nama + pengayaan kontak — **2.507 anggota
 terverifikasi di 37 wilayah**, tiap entri bersitasi sumber. *Pantau*: **Papan Status Layanan Publik**
 (`#/status`, R-097), **Duty Officer 24/7** (`#/darurat`, R-096), **Survei NPS** di Dashboard Omzet
-(R-092), **Role Matrix test 167 route** di CI (R-079), **audit dependensi otomatis** (R-083),
+(R-092), **Role Matrix test 170 route** di CI (R-079), **audit dependensi otomatis** (R-083),
 **Runbook Pemulihan Bencana** (R-084), ulasan terverifikasi ber-agregat (R-014) — **61/99 item
 roadmap selesai**. Semua fitur hidup, satu database, satu CMS, tiga bahasa.
 
@@ -87,6 +88,22 @@ server-side yang tak pernah membocorkan kunci ke klien, koreksi + pembahasan), d
 At-Rest Dokumen Jamaah** (R-076 — brankas dokumen `docNo`/`fileUrl`/`note` dienkripsi
 AES-256-GCM level field dengan kunci `VAULT_KEY`; bocor database pun isi tetap terlindungi) —
 **69/99 item roadmap selesai (70%)**, semua target v13 tuntas.
+
+Kini **v14.0 «KAMPANYE & KAWAL»** membuka fase v14 dengan empat item baru plus perawatan menyeluruh:
+**Voucher & Kupon Kampanye** (R-042 — kode diskon end-to-end: model Coupon + CouponRedemption,
+validasi server-side lengkap di `lib/coupon.ts` (aktif/jendela/kuota/batas per-WA/minimum belanja),
+checkout menghitung ulang tanpa memercayai klien, tebusan tercatat idempoten saat LUNAS, panel
+CMS dengan kartu ringkasan, pratinjau potongan di panel checkout), **Kalender Musim Umrah & Haji**
+(R-017 — `#/kalender`: peta permintaan 12 bulan, indikasi harga, catatan & saran tri-bahasa,
+disclaimer jujur "pola umum industri, bukan harga final"), **Penetration Test Berkala** (R-080 —
+`bun run pentest`: 31 butir black-box runtime — security headers, gerbang auth 15 endpoint mutasi,
+webhook fail-closed, burst rate-limit + backoff adaptif, probe SQL/XSS/path-traversal, IDOR &
+method probing; temuan perdana = header keamanan hilang → dipasang di `next.config.ts`), dan
+**Design System v2 Terdokumentasi** (R-066 — `docs/design-system.md` terukur dari kode). Termasuk
+pula **penyegaran pusat Tutorial** (22 tutorial: 8 baru + 2 disegarkan + impor CSV, memandu semua
+fitur v13–v14), **dua bug ditemukan & diperbaiki** (peta situs mengabaikan route kustom anak menu;
+versi API status basi), dan kolom `PAYMENT_WEBHOOK_SECRET` kini terdokumentasi wajib produksi —
+**73/99 item roadmap selesai (74%)**.
 ---
 
 ## 📑 Isi
@@ -127,12 +144,12 @@ terpercaya: satu data, satu standar, satu pengalaman.
 
 | Angka | Artinya |
 | --- | --- |
-| **80 model** Prisma | Skema terpadu: dua garis + compliance + roadmap + checkout + PDP + broadcast + itinerary/waitlist + duty officer + NPS + status check + grup perjalanan + sertifikasi muthawwif + bank soal |
-| **167 route handler** `/api/*` | Semua ter-guard RBAC/rate-limit + audit — diuji matriks peran otomatis (lihat [Peta API](#-peta-api)) |
+| **82 model** Prisma | Skema terpadu: dua garis + compliance + roadmap + checkout + PDP + broadcast + itinerary/waitlist + duty officer + NPS + status check + grup perjalanan + sertifikasi muthawwif + bank soal + **kupon kampanye (Coupon/CouponRedemption)** |
+| **170 route handler** `/api/*` | Semua ter-guard RBAC/rate-limit + audit — diuji matriks peran otomatis (lihat [Peta API](#-peta-api)) |
 | **60+ rute halaman publik** | Beranda → ekosistem → layanan digital → trust center → kemitraan (lihat [Peta Halaman](#-peta-halaman-publik-60-rute)) |
-| **38 modul CMS** | Semua konten & transaksi dikelola tanpa sentuh kode |
+| **39 modul CMS** | Semua konten & transaksi dikelola tanpa sentuh kode |
 | **13 kejadian notifikasi × 2 kanal** | Email sekretariat + WhatsApp admin, otomatis (termasuk ORDER, BROADCAST, WAITLIST) |
-| **3 bahasa (ID/EN/AR)** | Arab sungguhan RTL, bukan tempelan — 58 file kamus locale |
+| **3 bahasa (ID/EN/AR)** | Arab sungguhan RTL, bukan tempelan — 59 file kamus locale |
 | **2.507 anggota** terverifikasi | Direktori tumbuh 103 → 735 → 1.392 → **2.507** dari 7 sumber (SAPUHI, PIHK Kemenag, SATU HAJI Jateng, HIMPUH, AMPHURI, Direktori Nasional 2.087), dedupe nama + pengayaan kontak, semua bersitasi sumber |
 | **10/10 tuntutan audit** go-live | Terimplementasi & terdokumentasi (15 Nov 2026) — bukan klaim, ada bukti |
 | **Rp 0 di fase awal** | Tanpa biaya pendaftaran; model biaya & keberlanjutan transparan di `#/biaya` |
@@ -144,12 +161,12 @@ terpercaya: satu data, satu standar, satu pengalaman.
 Semua angka di README ini bisa Anda hitung ulang sendiri di root repo:
 
 ```bash
-grep -c '^model ' prisma/schema.prisma          # 74 model
-find src/app/api -name route.ts | wc -l          # 167 route handler
-ls src/components/views/*.tsx | wc -l            # 78 komponen view
-ls src/components/admin/*.tsx | wc -l            # 39 file (38 modul + admin-view shell)
-ls src/lib/i18n/locales/*.ts | wc -l             # 56 file kamus locale
-ls src/lib/*.ts | wc -l                          # 41 modul lib
+grep -c '^model ' prisma/schema.prisma          # 82 model
+find src/app/api -name route.ts | wc -l          # 170 route handler
+ls src/components/views/*.tsx | wc -l            # 81 komponen view
+ls src/components/admin/*.tsx | wc -l            # 40 file (39 modul + admin-view shell)
+ls src/lib/i18n/locales/*.ts | wc -l             # 59 file kamus locale
+ls src/lib/*.ts | wc -l                          # 45 modul lib
 ```
 
 Prinsip proyek: **angka yang tidak bisa dibuktikan tidak boleh ditulis**. Prinsip yang sama
@@ -376,13 +393,14 @@ SPA hash-router (`#/…`) — satu shell, semua halaman; daftar nyata diambil da
 | **Layanan Digital** | `#/paket` · `#/pindai` (Izin 360°) · `#/lookup` · `#/forum` · `#/kartu` · `#/bisnis` · `#/vault` · `#/compliance` · `#/nusuk` · `#/ppiu-pihk` |
 | **Keanggotaan v11** | `#/kartu-anggota` (KTA) · `#/academy` · `#/booking` · `#/benefit` · `#/paspor` · `#/tracking` · `#/tur-virtual` · `#/whatsapp-ai` |
 | **v13.3 — Grup & Jenjang 🆕** | `#/grup` (Grup Perjalanan berbasis kode MHD-GR-XXXX: anggota, jadwal kumpul, chat, marshal) · `#/latihan` (Latihan Manasik Berjenjang: Dasar/Lanjutan/Mentor, soal teracak + pembahasan) |
+| **v14.0 — Kalender Musim 🆕** | `#/kalender` (peta permintaan 12 bulan: bar grafik + kartu per bulan, demand RENDAH→PUNCAK, indikasi harga HEMAT→PUNCAK, catatan & saran tri-bahasa, CTA ke katalog paket) |
 | **Verifikasi Publik** | `#/verifikasi` · `#/verifikasi-kta/KTA-…` · `#/verifikasi-paspor/PH-…` · `#/verifikasi-sertifikat/SERT-…` |
 | **Konten & Bantuan** | `#/berita` · `#/tutorial` · `#/agenda` · `#/galeri` · `#/unduhan` · `#/faq` · `#/bantuan` (Help Center) · `#/kontak` |
 | **Transaksi & Pelaporan** | `#/pesanan` (lacak + bayar sandbox) · `#/lacak` (tiket) · `#/lapor` (pengaduan) |
 | **Go-Live Audit 🆕** | `#/pembayaran` · `#/keamanan` · `#/biaya` · `#/alur` (ARMINA 12 langkah) |
 | **SEO (SSR, di luar SPA)** | `/paket/[slug]` · `/artikel/[slug]` · `/sitemap.xml` · `/robots.txt` · `/api/og` |
 
-Halaman admin berada di `#/admin` (38 modul, lihat [Keamanan dan RBAC](#-keamanan-dan-rbac)).
+Halaman admin berada di `#/admin` (39 modul, lihat [Keamanan dan RBAC](#-keamanan-dan-rbac)).
 
 ---
 
@@ -533,7 +551,7 @@ AiChatLog, Broadcast).
 └──────────────────────────────┬───────────────────────────────────┘
                                │ /api/* (Next.js Route Handlers)
 ┌──────────────────────────────▼───────────────────────────────────┐
-│  NEXT.JS 16 — src/app/api (167 route) · guardRole RBAC ·         │
+│  NEXT.JS 16 — src/app/api (170 route) · guardRole RBAC ·         │
 │  rateLimit adaptif (blocklist backoff) · logAudit · logger JSON  │
 │  ┌────────────┬─────────────┬──────────────┬─────────────────┐   │
 │  │ Publik     │ Transaksi   │ Layanan      │ Trust & B2B     │   │
@@ -598,14 +616,15 @@ Papan publik #/compliance membaca snapshot terakhir — transparan real-time
 
 ## 🔌 Peta API
 
-**167 route handler** — semua respons konsisten `ok()` / `fail()`, audit via `logAudit`,
+**170 route handler** — semua respons konsisten `ok()` / `fail()`, audit via `logAudit`,
 dilindungi `guardRole` + `rateLimit` adaptif.
 
 | Grup | Endpoint |
 | --- | --- |
 | Publik | `/api/settings` · `/api/members` (+verify) · `/api/track` · `/api/stats` (+public/insights) · `/api/rss` · `/api/search` · `/api/health` · `/api/promo/counter` · `/api/applications` (+live/track) |
 | Transaksi v6 | `/api/packages` (+`[id]/itinerary` · `[id]/waitlist` +auto-offer) · `/api/package-bookings` · `/api/forum` (+replies/moderation, anti-spam) · `/api/pilgrim-cards` (+verify) · `/api/reviews` |
-| Checkout v12.4 | `/api/checkout` (POST publik) · `/api/orders` (admin + agregat) · `/api/orders/[id]` (aksi admin) · `/api/orders/track` (publik) · `/api/payments/callback` (webhook HMAC fail-closed) · `/api/payments/simulate` (sandbox) · `/api/invoices/[number]` (PDF) |
+| Checkout v12.4 | `/api/checkout` (POST publik — kupon divalidasi ulang server-side R-042) · `/api/orders` (admin + agregat) · `/api/orders/[id]` (aksi admin) · `/api/orders/track` (publik) · `/api/payments/callback` (webhook HMAC fail-closed) · `/api/payments/simulate` (sandbox) · `/api/invoices/[number]` (PDF) |
+| Kupon v14.0 🆕 | `/api/coupons` (GET array untuk CrudManager · `?stats=1` ringkasan · POST buat — admin, audit COUPON_CREATE) · `/api/coupons/[id]` (PUT/DELETE admin) · `/api/coupons/validate` (POST publik rate-limit 10/menit — pratinjau potongan, nilai final selalu dihitung ulang di checkout) |
 | Sinergi v12.5 | `/api/import` (CSV massal admin) · `/api/privacy-requests` (+`[id]`, UU PDP) · `/api/metrics` (observability) · `/api/broadcasts` (+`[id]` send) · `/api/vendor-scores` (skor & recalc) · `/api/og` (OG image dinamis) · `/sitemap.xml` dinamis |
 | B2B v6 | `/api/vendors` · `/api/seat-exchange` · `/api/muthowif` (+`/cert` — jalur berjenjang R-021) · `/api/license-registry` · `/api/license-scan` · `/api/compliance-docs` · `/api/jamaah-docs` (terenkripsi AES-256-GCM R-076) · `/api/trip-composer` · `/api/sos-points` |
 | v13.3 Grup & Soal 🆕 | `/api/travel-groups` (admin CRUD) · `/api/travel-groups/[id]` (PUT/DELETE) · `/api/travel-groups/room?code=` (ruang publik) · `/api/travel-groups/join` (rate-limited) · `/api/travel-groups/messages` (chat + moderasi DELETE) · `/api/travel-groups/schedules` (jadwal admin) · `/api/soal-manasik` (GET sesi acak · POST submit/koreksi · admin tambah/hapus) |
@@ -619,7 +638,7 @@ dilindungi `guardRole` + `rateLimit` adaptif.
 
 ## 🌍 Internasionalisasi
 
-- Tiga locale penuh: **Indonesia, English, العربية** — **58 file kamus** di
+- Tiga locale penuh: **Indonesia, English, العربية** — **59 file kamus** di
   `src/lib/i18n/locales/*.ts` (36+ modul + `audit13.ts` ~260 kunci hasil union dua garis + audit)
 - Bahasa Arab = **RTL sungguhan**: `dir="rtl"` pada `<html>`, ikon membalik via `.icon-flip`,
   angka & telepon tetap `dir="ltr"`
@@ -650,15 +669,18 @@ dilindungi `guardRole` + `rateLimit` adaptif.
 
 ## ✅ Jaminan Kualitas (QA Gates)
 
-Keempat gerbang ini **wajib hijau** sebelum commit — semuanya teruji di v12.6:
+Delapan gerbang ini **wajib hijau** sebelum commit — semuanya teruji di v14.0:
 
-| Gerbang | Perintah | Status v12.6 |
+| Gerbang | Perintah | Status v14.0 |
 | --- | --- | --- |
 | Typecheck ketat | `bunx tsc --noEmit` | **0 error** (58 error lama dibersihkan, `ignoreBuildErrors: false`) |
 | Lint | `bunx eslint .` | **0 problem** (1 error hooks + 5 directive mati dibersihkan) |
 | Build produksi | `bun run build` | **Sukses** (generate + next build + post-build standalone) |
+| Role Matrix | `bun run test:roles` | **49 modul · 170 route · 118 guard — LOLOS** |
+| Pentest Berkala | `bun run pentest` (server hidup) | **31/31 butir lolos** (header, auth gate, webhook, rate-limit, injeksi, IDOR) |
+| Smoke alur kupon | `bun scripts/smoke-v14.mts` (server hidup) | **11/11 lolos** (validasi → checkout → webhook LUNAS → tebusan idempoten) |
 | Smoke test | `bun run start` → GET `/`, `/api/members`, `/api/stats/public` | **semua 200** |
-| Verifikasi visual | screenshot 10 halaman audit | **diperiksa** (kemitraan, pembayaran, keamanan, biaya, KPI, ARMINA, nusuk, kontak, regulasi, footer) |
+| Verifikasi visual | screenshot halaman kunci v14 | **diperiksa** (kalender, checkout+kupon, CMS kupon, tutorial, peta situs) |
 
 QA tambahan yang pernah dijalankan dan terdokumentasi di `worklog.md`: E2E lookup izin (38
 insert → lookup tetap normal), uji rate-limit lintas-bucket, uji webhook replay idempoten,
@@ -671,7 +693,7 @@ drill backup/restore (integrity_check + hitung baris), audit `check-postgres-rea
 ```
 src/
 ├── app/
-│   ├── api/                # 167 route handler (lihat Peta API)
+│   ├── api/                # 170 route handler (lihat Peta API)
 │   ├── page.tsx            # shell SPA (locale dari cookie, SSR konsisten)
 │   ├── paket/[slug]/       # landing SSR + JSON-LD Product
 │   └── artikel/[slug]/     # landing SSR + JSON-LD Article
@@ -679,11 +701,11 @@ src/
 │   ├── muhdin-app.tsx      # router SPA utama (60+ rute)
 │   ├── site/               # navbar, footer, FAB, global-search, tour-360,
 │   │                       #   tracking-map, smart-image, slot-counter…
-│   ├── views/              # 76 halaman portal (hash-router)
-│   └── admin/              # 38 modul CMS
+│   ├── views/              # 81 halaman portal (hash-router)
+│   └── admin/              # 39 modul CMS
 ├── hooks/use-hash-route.ts # mesin hash-router + navigate()
 ├── lib/
-│   ├── i18n/               # index + dictionaries + locales/ (52 file, 3 bahasa)
+│   ├── i18n/               # index + dictionaries + locales/ (59 file, 3 bahasa)
 │   ├── license-engine.ts   # ⭐ mesin dossier izin (BPW/PPIU/PIHK, checklist a–l)
 │   ├── payment.ts          # ⭐ adapter payment gateway (R-038) + webhook HMAC + applyPaid idempoten
 │   ├── invoice-pdf.ts      # ⭐ generator invoice PDF (pdfkit + QR lacak)
@@ -718,14 +740,17 @@ worklog.md                  # 27+ task tercatat lengkap (jejak pengembangan)
 | `prisma/seed-fitur-v5/v6/v7.ts` | Seed marketplace/forum/kartu, bisnis/SOS, pindai izin |
 | `scripts/seed-membership.ts` | KTA + poin + akademi + slot + benefit |
 | `scripts/seed-compliance.ts` | Riwayat audit + tren kepatuhan izin (ComplianceAudit/Score/Finding) |
-| `scripts/seed-roadmap99.ts` | 99 item upgrade 6 pilar (RoadmapItem — status jujur: 69 DONE per v13.3) |
+| `scripts/seed-roadmap99.ts` | 99 item upgrade 6 pilar (RoadmapItem — status jujur: 73 DONE per v14.0) |
+| `scripts/seed-tutorial-v14.ts` | v14.0: 8 tutorial baru + 2 refresh + 3 kupon demo + flip roadmap R-042/R-017/R-080/R-066 (idempoten) |
 | `scripts/seed-soal-manasik.ts` | R-023 v13.3: bank soal manasik 63 butir × 3 jenjang (idempoten) |
 | `scripts/seed-travel-groups.ts` | R-012 v13.3: 3 grup rombongan demo + anggota, jadwal, chat (idempoten) |
 | `scripts/seed-muthawwif-cert.ts` | R-021 v13.3: status sertifikasi berjenjang kolam muthawwif (idempoten) |
 | `scripts/encrypt-vault-migrate.ts` | R-076 v13.3: seragamkan brankas dokumen ke AES-256-GCM (idempoten) |
 | `scripts/panen-gabung-28.mts` | Import gabungan 7 sumber resmi → Member: dedupe nama + pengayaan kontak (2.507 anggota, idempoten) |
 | `scripts/seed-duty-officer.ts` | Roster piket Duty Officer 24/7 (`bun run seed:duty`) |
-| `scripts/test-role-matrix.mts` | R-079: uji matriks peran — pindai 167 route, guard valid, mutasi ter-guard (`bun run test:roles`) |
+| `scripts/test-role-matrix.mts` | R-079: uji matriks peran — pindai 170 route, guard valid, mutasi ter-guard (`bun run test:roles`) |
+| `scripts/pentest-berkala.mts` | R-080 v14.0: pentest black-box runtime 31 butir — header, auth gate, webhook fail-closed, rate-limit, injeksi, IDOR; exit 1 saat CRITICAL (`bun run pentest`, butuh server hidup) |
+| `scripts/smoke-v14.mts` | v14.0: uji alur kupon end-to-end (validasi → checkout → webhook → tebusan idempoten) |
 | `scripts/audit-deps.sh` | R-083: audit dependensi produksi — gagal bila ada critical (`bun run audit:deps`) |
 | `scripts/backfill-seo.ts` / `seed-seo-content.ts` / `seed-itinerary.ts` | backfill meta SEO + 3 artikel pilar + itinerary 5 paket (semuanya idempoten) |
 | `scripts/optimize-images.mjs` | konversi WebP `sharp` (13 aset, hemat 23%) |
@@ -904,6 +929,7 @@ ganti 1 baris.
 | **v13.1 «PANEN & PANTAU»** | **Direktori 2.507 anggota × 37 wilayah (7 sumber + Direktori Nasional 2.087, dedupe+pengayaan), Papan Status publik #/status, Duty Officer 24/7 #/darurat, NPS di Dashboard Omzet, role-matrix test 159 route di CI, audit dependensi otomatis, DR runbook — 61/99 roadmap selesai** |
 | **v13.2 «SATU PINTU ORGANISASI»** | **Master Final DPP 2026–2031 di #/pengurus (4 dewan + 2 pilar + 15 bidang + 3 bidang khusus + 38 DPW + standar kerja), 18 Kanal WhatsApp resmi di #/komunitas (17+1, naskah siap-copas, pemetaan departemen, aturan Primary Membership), Web Push keberangkatan (R-011), Funnel analitik pendaftaran (R-093), pencarian fuzzy typo-tolerant (R-064), KTA tier berjenjang (R-028) — 65/99 roadmap selesai** |
 | **v13.3 «JENJANG & BRANKAS»** | **Grup Perjalanan Digital #/grup (R-012: ruang rombongan berbasis kode MHD-GR-XXXX — anggota, jadwal kumpul, chat polling 15 dtk, kontak marshal + 2 panel CMS), Jalur Sertifikasi Muthawwif DASAR→LANJUTAN→MENTOR (R-021: syarat terukur, evaluasi server-side, sertifikat otomatis, lencana #/bisnis), Bank Soal Manasik 63 butir #/latihan (R-023: pengacakan server-side tanpa bocor kunci, koreksi + pembahasan), Enkripsi At-Rest brankas dokumen AES-256-GCM (R-076: VAULT_KEY, migrasi idempoten) — 69/99 roadmap (70%), semua target v13 tuntas** |
+| **v14.0 «KAMPANYE & KAWAL»** | **Voucher & Kupon Kampanye end-to-end (R-042: Coupon+CouponRedemption, validasi server-side lengkap, tebusan idempoten saat LUNAS, CMS kartu ringkasan, pratinjau di checkout), Kalender Musim #/kalender (R-017: 12 bulan demand+harga+catatan tri-bahasa), Pentest Berkala 31 butir `bun run pentest` (R-080: temuan header keamanan diperbaiki di next.config), Design System v2 docs/design-system.md (R-066), Tutorial 22 (8 baru + 2 refresh), 2 bug diperbaiki (peta situs route kustom + versi status API) — 73/99 roadmap (74%)** |
 
 ---
 

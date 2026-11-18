@@ -119,6 +119,10 @@ export const layananDict = {
           title: "Grup Perjalanan Digital",
           desc: "Ruang rombongan: daftar anggota, jadwal kumpul, chat singkat, dan kontak marshal.",
         },
+        "kalender-musim": {
+          title: "Kalender Musim Umrah & Haji",
+          desc: "Peta permintaan 12 bulan, indikasi harga, dan catatan praktis memilih waktu keberangkatan.",
+        },
         "booking-slot": {
           title: "Booking Slot Layanan",
           desc: "Pesan kelas manasik, konsultasi syariah, dan klinik vaksin.",
@@ -431,6 +435,10 @@ export const layananDict = {
           title: "Digital Travel Groups",
           desc: "Group room: member list, meeting schedule, quick chat, and marshal contact.",
         },
+        "kalender-musim": {
+          title: "Umrah & Hajj Season Calendar",
+          desc: "A 12-month demand map, price indication, and practical notes for choosing your departure window.",
+        },
         "booking-slot": {
           title: "Book Service Slots",
           desc: "Reserve manasik classes, sharia consults, vaccination clinics.",
@@ -742,6 +750,10 @@ export const layananDict = {
         "grup-perjalanan": {
           title: "مجموعات السفر الرقمية",
           desc: "غرفة المجموعة: قائمة الأعضاء، جدول الاجتماعات، محادثة سريعة، واتصال المرشد.",
+        },
+        "kalender-musim": {
+          title: "تقويم مواسم العمرة والحج",
+          desc: "خريطة طلب على مدى ١٢ شهرًا ومؤشر أسعار وملاحظات عملية لاختيار وقت السفر.",
         },
         "booking-slot": {
           title: "حجز مواعيد الخدمات",

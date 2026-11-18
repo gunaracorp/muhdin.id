@@ -54,6 +54,8 @@ export interface CrudConfig<T extends { id: string }> {
   searchKeys: string[];
   extraQuery?: string;
   transformLoad?: (items: T[]) => T[];
+  /** v14.0 — dipanggil setelah simpan/hapus sukses (mis. refresh kartu ringkasan). */
+  onSaved?: () => void;
 }
 
 export function CrudManager<T extends { id: string }>({ config }: { config: CrudConfig<T> }) {
@@ -125,6 +127,7 @@ export function CrudManager<T extends { id: string }>({ config }: { config: Crud
       toast({ title: isNew ? "Berhasil ditambahkan ✓" : "Perubahan tersimpan ✓", description: config.itemName });
       setEditing(null);
       load();
+      config.onSaved?.();
     } catch (e) {
       toast({ title: "Gagal menyimpan", description: (e as Error).message, variant: "destructive" });
     } finally {
@@ -138,6 +141,7 @@ export function CrudManager<T extends { id: string }>({ config }: { config: Crud
       await apiSend(`${config.endpoint}/${deleting.id}`, "DELETE");
       toast({ title: "Berhasil dihapus ✓", description: config.itemName });
       load();
+      config.onSaved?.();
     } catch (e) {
       toast({ title: "Gagal menghapus", description: (e as Error).message, variant: "destructive" });
     } finally {

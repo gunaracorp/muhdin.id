@@ -20,8 +20,15 @@ import { Textarea } from "@/components/ui/textarea";
 import { BRAND } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
+interface CouponPreview {
+  ok: boolean;
+  reason: string;
+  discount?: number;
+  finalAmount?: number;
+}
+
 interface CheckoutResult {
-  order: { number: string; status: string; amount: number; packageTitle: string };
+  order: { number: string; status: string; amount: number; subtotal?: number; discountAmount?: number; couponCode?: string | null; packageTitle: string };
   payment: { provider: string; method: string; ref: string; instructions: string; sandbox: boolean };
   message: string;
 }
@@ -37,6 +44,11 @@ export function CheckoutPanel({ packageId, price, slotsLeft }: { packageId: stri
   const [email, setEmail] = useState("");
   const [quantity, setQuantity] = useState("1");
   const [notes, setNotes] = useState("");
+  // R-042 v14.0 — kupon kampanye: pratinjau potongan dihitung server-side;
+  // nilai final tetap dihitung ulang oleh /api/checkout saat submit.
+  const [couponCode, setCouponCode] = useState("");
+  const [couponPreview, setCouponPreview] = useState<CouponPreview | null>(null);
+  const [couponChecking, setCouponChecking] = useState(false);
   // R-078 UU PDP — persetujuan pemrosesan data wajib saat checkout.
   const [pdpConsent, setPdpConsent] = useState(false);
   const [sending, setSending] = useState(false);
@@ -44,7 +56,28 @@ export function CheckoutPanel({ packageId, price, slotsLeft }: { packageId: stri
   const [result, setResult] = useState<CheckoutResult | null>(null);
 
   const qty = Math.max(1, parseInt(quantity || "1", 10) || 1);
-  const total = useMemo(() => price * qty, [price, qty]);
+  const subtotal = useMemo(() => price * qty, [price, qty]);
+  const total = couponPreview?.ok ? Math.max(0, subtotal - (couponPreview.discount ?? 0)) : subtotal;
+
+  const checkCoupon = async () => {
+    setError("");
+    setCouponPreview(null);
+    if (!couponCode.trim()) return setError(t("checkout.couponEmpty"));
+    setCouponChecking(true);
+    try {
+      const res = await apiSend<CouponPreview>("/api/coupons/validate", "POST", {
+        code: couponCode.trim(),
+        amount: subtotal,
+        phone: phone.trim() || undefined,
+      });
+      setCouponPreview(res);
+      if (!res.ok) setError(t("checkout.couponInvalid"));
+    } catch (err) {
+      setError((err as Error).message || t("checkout.couponInvalid"));
+    } finally {
+      setCouponChecking(false);
+    }
+  };
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -61,6 +94,7 @@ export function CheckoutPanel({ packageId, price, slotsLeft }: { packageId: stri
         email: email.trim() || undefined,
         quantity: qty,
         notes: notes.trim() || undefined,
+        couponCode: couponPreview?.ok ? couponCode.trim() : undefined,
         pdpConsent,
       });
       // Simpan nomor WhatsApp agar auto-lacak di #/pesanan?no=… langsung jalan.
@@ -102,6 +136,12 @@ export function CheckoutPanel({ packageId, price, slotsLeft }: { packageId: stri
             <span className="text-xs font-semibold text-muted-foreground">{t("checkout.amountLabel")}</span>
             <span className="text-sm font-extrabold text-gold-deep">{rupiah(result.order.amount)}</span>
           </div>
+          {result.order.discountAmount && result.order.discountAmount > 0 && (
+            <div className="flex items-center justify-between gap-2" data-testid="order-coupon-row">
+              <span className="text-xs font-semibold text-primary">{t("checkout.discountLabel")} ({result.order.couponCode})</span>
+              <span className="text-xs font-bold text-primary">−{rupiah(result.order.discountAmount)}</span>
+            </div>
+          )}
           <div className="flex items-center justify-between gap-2">
             <span className="text-xs font-semibold text-muted-foreground">{t("checkout.refLabel")}</span>
             <code className="text-[11px] text-muted-foreground">{result.payment.ref}</code>
@@ -198,9 +238,49 @@ export function CheckoutPanel({ packageId, price, slotsLeft }: { packageId: stri
           <Textarea id="ck-note" value={notes} onChange={(e) => setNotes(e.target.value)} rows={2} placeholder={t("checkout.notePlaceholder")} />
         </div>
 
-        <div className="flex items-center justify-between rounded-xl border bg-background px-4 py-3">
-          <span className="text-xs font-semibold text-muted-foreground">{t("checkout.total")}</span>
-          <span className={cn("text-base font-extrabold text-gold-deep")} data-testid="checkout-total">{rupiah(total)}</span>
+        {/* R-042 v14.0 — kupon kampanye */}
+        <div className="space-y-1.5">
+          <Label htmlFor="ck-coupon">{t("checkout.couponLabel")}</Label>
+          <div className="flex gap-2">
+            <Input
+              id="ck-coupon"
+              value={couponCode}
+              onChange={(e) => {
+                setCouponCode(e.target.value);
+                setCouponPreview(null);
+              }}
+              placeholder={t("checkout.couponPlaceholder")}
+              className="h-10 uppercase"
+              data-testid="checkout-coupon"
+            />
+            <Button type="button" variant="outline" onClick={checkCoupon} disabled={couponChecking} className="h-10 shrink-0" data-testid="coupon-check">
+              {couponChecking ? <Icon name="loader-2" className="h-4 w-4 animate-spin" aria-hidden /> : <Icon name="ticket-percent" className="h-4 w-4" aria-hidden />}
+              <span className="ms-1.5 text-xs">{t("checkout.couponCheck")}</span>
+            </Button>
+          </div>
+          {couponPreview?.ok && (
+            <p className="flex items-center gap-1.5 rounded-lg bg-primary/10 px-3 py-2 text-xs font-semibold text-primary" data-testid="coupon-ok">
+              <Icon name="badge-check" className="h-3.5 w-3.5 shrink-0" aria-hidden />
+              {t("checkout.couponOk")} −{rupiah(couponPreview.discount ?? 0)}
+            </p>
+          )}
+        </div>
+
+        <div className="rounded-xl border bg-background px-4 py-3">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold text-muted-foreground">{t("checkout.subtotalLabel")}</span>
+            <span className="text-xs font-bold">{rupiah(subtotal)}</span>
+          </div>
+          {couponPreview?.ok && (couponPreview.discount ?? 0) > 0 && (
+            <div className="mt-1 flex items-center justify-between" data-testid="coupon-discount-row">
+              <span className="text-xs font-semibold text-primary">{t("checkout.discountLabel")} ({couponCode.trim().toUpperCase()})</span>
+              <span className="text-xs font-bold text-primary">−{rupiah(couponPreview.discount ?? 0)}</span>
+            </div>
+          )}
+          <div className="mt-1 flex items-center justify-between border-t pt-2">
+            <span className="text-xs font-semibold text-muted-foreground">{t("checkout.total")}</span>
+            <span className={cn("text-base font-extrabold text-gold-deep")} data-testid="checkout-total">{rupiah(total)}</span>
+          </div>
         </div>
 
         {/* R-078 UU PDP — persetujuan pemrosesan data (wajib) */}

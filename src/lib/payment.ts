@@ -214,6 +214,43 @@ export async function applyPaid(
     /* poin gagal-aman */
   }
 
+  // R-042 v14.0 «KAMPANYE & KAWAL» — tebusan kupon: order LUNAS dengan kode
+  // kupon mencatat CouponRedemption (idempoten: orderId unik) + usedCount naik
+  // atomik di bawah kuota. Gagal-aman: kegagalan kupon TIDAK menggagalkan
+  // pembayaran (pesanan sudah lunas sah tanpa diskon).
+  try {
+    const own = await db.order.findUnique({
+      where: { id: order.id },
+      select: { couponCode: true, discountAmount: true, customerPhone: true },
+    });
+    if (own?.couponCode) {
+      const coupon = await db.coupon.findUnique({ where: { code: own.couponCode } });
+      if (coupon) {
+        await db.couponRedemption.upsert({
+          where: { orderId: order.id },
+          create: {
+            couponId: coupon.id,
+            orderId: order.id,
+            orderNumber: order.number,
+            code: coupon.code,
+            amount: own.discountAmount,
+            customerPhone: own.customerPhone,
+          },
+          update: {}, // sudah pernah dicatat → tidak menaikkan kuota lagi
+        });
+        const increment =
+          coupon.usageLimit !== null && coupon.usageLimit !== undefined && coupon.usedCount >= coupon.usageLimit
+            ? 0 // kuota sudah habis — jangan lewati batas (transaksi sudah sah)
+            : 1;
+        if (increment > 0) {
+          await db.coupon.update({ where: { id: coupon.id }, data: { usedCount: { increment } } });
+        }
+      }
+    }
+  } catch {
+    /* kupon gagal-aman */
+  }
+
   // Notifikasi sekretariat (gagal-aman) + audit.
   void notifyOrderPaid({
     number: order.number,

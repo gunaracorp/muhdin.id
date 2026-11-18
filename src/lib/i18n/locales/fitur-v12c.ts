@@ -33,6 +33,15 @@ export const checkoutDict = {
       nameErr: "Nama lengkap minimal 3 karakter.",
       phoneErr: "Nomor WhatsApp/telepon tidak valid.",
       genericErr: "Gagal membuat pesanan. Coba lagi.",
+      // v14.0 «KAMPANYE & KAWAL» — kupon kampanye (R-042)
+      couponLabel: "Kode kupon (opsional)",
+      couponPlaceholder: "Contoh: UMRAH14",
+      couponCheck: "Cek kupon",
+      couponOk: "Kupon berlaku — potongan",
+      couponEmpty: "Tulis kode kupon dulu.",
+      couponInvalid: "Kupon tidak berlaku untuk pesanan ini.",
+      subtotalLabel: "Subtotal",
+      discountLabel: "Diskon kupon",
     },
     pesanan: {
       eyebrow: "STATUS PESANAN",
@@ -111,6 +120,15 @@ export const checkoutDict = {
       nameErr: "Full name must be at least 3 characters.",
       phoneErr: "Invalid WhatsApp/phone number.",
       genericErr: "Failed to create order. Please try again.",
+      // v14.0 «KAMPANYE & KAWAL» — campaign coupons (R-042)
+      couponLabel: "Coupon code (optional)",
+      couponPlaceholder: "e.g. UMRAH14",
+      couponCheck: "Check",
+      couponOk: "Coupon valid — discount",
+      couponEmpty: "Enter a coupon code first.",
+      couponInvalid: "This coupon is not valid for this order.",
+      subtotalLabel: "Subtotal",
+      discountLabel: "Coupon discount",
     },
     pesanan: {
       eyebrow: "ORDER STATUS",
@@ -185,6 +203,15 @@ export const checkoutDict = {
       nameErr: "الاسم الكامل يجب أن يكون 3 أحرف على الأقل.",
       phoneErr: "رقم هاتف/واتساب غير صالح.",
       genericErr: "فشل إنشاء الطلب. حاول مرة أخرى.",
+      // v14.0 «KAMPANYE & KAWAL» — كوبونات الحملة (R-042)
+      couponLabel: "رمز الكوبون (اختياري)",
+      couponPlaceholder: "مثال: UMRAH14",
+      couponCheck: "تحقق",
+      couponOk: "كوبون صالح — خصم",
+      couponEmpty: "أدخل رمز الكوبون أولاً.",
+      couponInvalid: "هذا الكوبون غير صالح لهذا الطلب.",
+      subtotalLabel: "المجموع الفرعي",
+      discountLabel: "خصم الكوبون",
     },
     pesanan: {
       eyebrow: "حالة الطلب",

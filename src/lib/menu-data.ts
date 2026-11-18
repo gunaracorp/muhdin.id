@@ -88,6 +88,8 @@ export const MENU_NODES: MenuNode[] = [
       { slug: "latihan-manasik", icon: "book-open", route: "latihan" },
       // v13.3 R-012 — Grup Perjalanan Digital
       { slug: "grup-perjalanan", icon: "users", route: "grup" },
+      // v14.0 R-017 — Kalender Musim Umrah & Haji
+      { slug: "kalender-musim", icon: "calendar-days", route: "kalender" },
       { slug: "booking-slot", icon: "calendar-check", route: "booking" },
       { slug: "benefit-kta", icon: "gift", route: "benefit" },
       { slug: "paspor-haji", icon: "wallet-cards", route: "paspor" },

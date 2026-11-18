@@ -48,6 +48,8 @@ export const SECTION_ROLES: { id: string; roles: Role[] }[] = [
   { id: "push", roles: ["SUPER_ADMIN", "ADMIN"] },
   // v13.0 «GERBANG» — Kampanye Musiman (R-089)
   { id: "kampanye", roles: ["SUPER_ADMIN", "ADMIN", "EDITOR"] },
+  // v14.0 «KAMPANYE & KAWAL» — Voucher & Kupon Kampanye (R-042)
+  { id: "coupons", roles: ["SUPER_ADMIN", "ADMIN", "EDITOR"] },
   { id: "tutorials", roles: ["SUPER_ADMIN", "ADMIN", "EDITOR"] },
   { id: "messages", roles: ["SUPER_ADMIN", "ADMIN"] },
   { id: "complaints", roles: ["SUPER_ADMIN", "ADMIN", "VERIFIKATOR"] },

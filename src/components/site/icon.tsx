@@ -27,6 +27,11 @@ import {
   IdCard,
   // v12.5 — Help Center & impor CSV (Task 19)
   Upload,
+  // v14.0 «KAMPANYE & KAWAL» — kupon + kalender musim
+  TicketPercent,
+  CalendarDays,
+  Flame,
+  TrendingDown,
   Zap,
   PlayCircle,
   Check,
@@ -139,6 +144,11 @@ export const ICONS: Record<string, React.ComponentType<{ className?: string; str
   user: User,
   webhook: Webhook,
   "qr-code": QrCode,
+  // v14.0 «KAMPANYE & KAWAL»
+  "ticket-percent": TicketPercent,
+  "calendar-days": CalendarDays,
+  flame: Flame,
+  "trending-down": TrendingDown,
   braces: Braces,
   terminal: Terminal,
   activity: Activity,

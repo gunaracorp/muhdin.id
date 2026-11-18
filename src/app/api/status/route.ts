@@ -76,7 +76,7 @@ export async function GET(req: NextRequest) {
   return ok({
     ok: dbOk,
     service: "muhdin.id",
-    version: "v13.1.0",
+    version: "v14.0.0",
     runtime: {
       node: process.version,
       platform: `${os.platform()}-${os.arch()}`,

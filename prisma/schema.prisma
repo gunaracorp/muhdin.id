@@ -1171,6 +1171,8 @@ model Order {
   status          String    @default("PENDING") // PENDING | PAID | CANCELLED | REFUNDED | EXPIRED
   paymentProvider String    @default("SANDBOX") // SANDBOX | MIDTRANS | XENDIT | …
   paymentRef      String? // referensi intent dari provider
+  discountAmount  Int       @default(0) // R-042 potongan kupon (≤ amount)
+  couponCode      String? // R-042 kode kupon yang terpakai (tebusan saat LUNAS)
   paidAt          DateTime?
   notes           String?
   pdpConsent      Boolean   @default(false) // R-078 UU PDP — persetujuan pemrosesan data saat checkout
@@ -1431,4 +1433,43 @@ model SoalManasik {
   updatedAt   DateTime @updatedAt
 
   @@index([level, active])
+}
+
+/// R-042 v14.0 «KAMPANYE & KAWAL» — Voucher & kupon kampanye: kode diskon
+/// berbatas waktu, kuota, dan segmen minimum belanja untuk checkout marketplace.
+model Coupon {
+  id           String   @id @default(cuid())
+  code         String   @unique // disimpan UPPERCASE tanpa spasi
+  discountType String   @default("PERCENT") // PERCENT | FIXED
+  value        Int // persen (1–100) atau rupiah tetap
+  minAmount    Int      @default(0) // subtotal minimum untuk berlaku
+  maxDiscount  Int? // batas atas diskon PERCENT (opsional)
+  startsAt     DateTime? // jendela kampanye (opsional)
+  endsAt       DateTime?
+  usageLimit   Int? // kuota total pemakaian (opsional)
+  usedCount    Int      @default(0)
+  perPhoneLimit Int     @default(1) // maksimum pemakaian per nomor WhatsApp
+  active       Boolean  @default(true)
+  description  String   @default("")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  redemptions CouponRedemption[]
+
+  @@index([active, endsAt])
+}
+
+/// Tebusan kupon: tercatat satu kali per order saat order LUNAS (idempoten).
+model CouponRedemption {
+  id          String   @id @default(cuid())
+  couponId    String
+  coupon      Coupon   @relation(fields: [couponId], references: [id], onDelete: Cascade)
+  orderId     String   @unique
+  orderNumber String
+  code        String // snapshot kode saat dipakai
+  amount      Int // nominal diskon yang diberikan
+  customerPhone String @default("")
+  createdAt   DateTime @default(now())
+
+  @@index([couponId, createdAt])
 }
