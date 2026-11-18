@@ -2462,3 +2462,19 @@ QA Gates: tsc 0 · eslint 0 · build sukses · test-i18n-merge 14/14 · sweep ku
 Browser smoke (port baru, tanpa cache): mega-menu PENGURUS → BAKORNAS/BAKORWIL/BAKORDA/STRUKTUR BKN ✓; #/layanan → chip profesional semua grup ✓ (screenshot); #/layanan/bakornas → title/desc/p1 lengkap ✓; #/pesanan, #/benefit (tab "Hotel"…), #/academy, #/booking → **0 text node raw key**.
 
 Stage Summary: kebocoran kunci i18n mentah dihapus dari akarnya — merge dict kini menyatu (deepMerge), seluruh kunci bertitik dikonversi nested, dan 4 item layanan baru memakai penamaan profesional langsung. Tidak ada lagi halaman yang menampilkan `layanan.items.*`, `benef.cat.*`, `acad.*`, `book.*` sebagai teks.
+
+## Task ID 36 — v15.0.2 «PENGAWAS»: Audit Situs Menyeluruh + Guard Anti Raw-Key Permanen
+Tanggal: 2026-11-18
+
+Task: lanjutan penyempurnaan pasca Task 35 — pastikan tak ada lagi cacat tampilan di seluruh situs dan pasang pengaman permanen agar kebocoran kunci i18n tidak pernah terulang.
+
+Work Log:
+- **Crawl-audit 61 route** (scripts/crawl-audit.sh, dev server port bersih anti-cache): setiap route diperiksa — (1) text node berpola kunci bertitik, (2) gambar naturalWidth=0, (3) resource HTTP ≥400, (4) konten utuh. Hasil: **0 raw key, 0 gambar rusak, 0 request gagal, 0 halaman kosong**. Satu-satunya kemunculan pola titik adalah nama domain sah di footer (www.muhdin.web.id, digiman.id).
+- **Audit locale EN & AR**: switch cookie muhdin-locale → EN menampilkan "Prayer & Dhikr Audio Guide" ✓, AR dir=rtl ✓, rawCount 0 di keduanya; restore ID ✓.
+- **Halaman detail dinamis** #/layanan/doa-dzikir (slug baru v14.1): title + p3 tampil, 0 raw key ✓.
+- **Guard 1 — dev warning di t()** (src/lib/i18n/index.tsx): bila lookup gagal dan kunci mengandung titik, console.warn `[i18n] kunci tidak ditemukan` hanya di NODE_ENV=development — deteksi dini, tanpa mengubah perilaku produksi.
+- **Guard 2 — uji statis kunci bertitik** (scripts/test-i18n-merge.ts): walk rekursif merged dictionaries (id/en/ar, depth 6) — gagal build uji bila ada kunci bertitik kembali. Hasil: **0 kunci bertitik**.
+- Diagnostik stabil: dev server Next berulang kali ter-OOM di sandbox → audit dilanjutkan dengan build produksi + `next start` (ringan & stabil); temuan "masih mentah" di tengah audit adalah cache disk browser, bukan kode.
+
+QA Gates: tsc 0 · eslint 0 · build produksi OK · test-i18n-merge 14/14 + 0 dotted keys · crawl 61 route bersih · EN/AR/ID smoke bersih.
+Stage Summary: situs lulus audit menyeluruh tanpa cacat tampilan; dua pengaman permanen (dev warning + uji statis) memastikan pola bug raw-key tidak bisa masuk kembali diam-diam.

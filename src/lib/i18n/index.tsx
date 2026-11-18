@@ -73,6 +73,12 @@ export function LocaleProvider({
   const t = useCallback(
     (key: string, vars?: Record<string, string | number>) => {
       let text = lookup(dictionaries[locale], key) ?? lookup(dictionaries.id, key) ?? key;
+      if (process.env.NODE_ENV !== "production" && text === key && key.includes(".")) {
+        // Guard Task 36 — kunci mentah bocor ke UI (bug v13–v15: layanan.items.*,
+        // benef.cat.*, acad.*, book.*). Di dev, beri tahu segera supaya locale
+        // diperbaiki alih-alih membiarkan teks kunci tampil ke pengguna.
+        console.warn(`[i18n] kunci tidak ditemukan: "${key}" (locale: ${locale})`);
+      }
       if (vars) {
         for (const [k, v] of Object.entries(vars)) {
           text = text.replaceAll(`{${k}}`, String(v));

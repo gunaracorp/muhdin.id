@@ -55,4 +55,18 @@ for (const lang of ["en", "ar"] as const) {
   const missing = slugs.filter((s) => !it[s]?.title);
   console.log(`${lang}: ${Object.keys(it).length} slug; missing title: ${missing.length ? missing.join(", ") : "—"}`);
 }
-process.exit(fail > 0 || incomplete.length > 0 ? 1 : 0);
+
+// Guard Task 36 — tidak boleh ada lagi kunci bertitik di merged dictionaries:
+// lookup() menelusuri objek bersarang; kunci "x.y" tak terjangkau dan akhirnya
+// tampil mentah di UI. Uji statis ini mencegah regresi pola bug v13–v15.
+const dotted: string[] = [];
+function walk(obj: unknown, path: string, depth: number) {
+  if (!obj || typeof obj !== "object" || depth > 6) return;
+  for (const [k, v] of Object.entries(obj as Record<string, unknown>)) {
+    if (k.includes(".")) dotted.push(`${path}${k}`);
+    walk(v, `${path}${k}.`, depth + 1);
+  }
+}
+for (const lang of ["id", "en", "ar"] as const) walk(dictionaries[lang], `${lang}.`, 0);
+console.log(`\nkunci bertitik di merged dictionaries: ${dotted.length}${dotted.length ? " → " + dotted.slice(0, 8).join(", ") : ""}`);
+process.exit(fail > 0 || incomplete.length > 0 || dotted.length > 0 ? 1 : 0);
