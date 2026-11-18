@@ -5,6 +5,8 @@ import { logAudit } from "@/lib/audit";
 
 /**
  * v6.0 — Kolam Muthowif (hulu): pembimbing ibadah bersertifikat multi-bahasa.
+ * v13.3 R-021 — GET juga membawa catatan sertifikasi berjenjang (certs) untuk
+ * lencana jenjang di portal (DASAR/LANJUTAN/MENTOR).
  * GET  publik: semua muthowif; filter ?lang=ID/AR/EN &q= &availability=
  * POST admin [SUPER_ADMIN, ADMIN, EDITOR]: daftarkan muthowif.
  */
@@ -30,7 +32,10 @@ export async function GET(req: NextRequest) {
 
     const rows = await db.muthowif.findMany({
       where,
-      include: { member: { select: { id: true, name: true, city: true } } },
+      include: {
+        member: { select: { id: true, name: true, city: true } },
+        certs: { select: { level: true, status: true, certNo: true, serviceHours: true, examScore: true } },
+      },
       orderBy: [{ rating: "desc" }, { experienceYears: "desc" }, { fullName: "asc" }],
     });
     return ok(rows);

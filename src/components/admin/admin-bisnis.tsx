@@ -31,6 +31,7 @@ import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import type { VendorItem, ComplianceDocItem, SeatListingItem, MuthowifItem, RegistryCompanyItem } from "@/lib/types";
 import { LICENSE_CATALOG } from "@/lib/license-catalog"; // v7.0 — katalog syarat a–l
+import { CERT_LEVELS, CERT_REQUIREMENTS } from "@/lib/muthawwif-cert"; // R-021 v13.3 — jalur berjenjang
 
 interface MemberOption { id: string; name: string; type: string; city: string; status: string }
 interface PkgOption { id: string; title: string }
@@ -114,6 +115,10 @@ export function AdminBisnis() {
   const [mutForm, setMutForm] = useState(emptyMuthowif());
   const [mutEdit, setMutEdit] = useState<MuthowifItem | null>(null);
   const [mutDialog, setMutDialog] = useState(false);
+  // R-021 v13.3 — jalur sertifikasi berjenjang per muthawif
+  const [certFor, setCertFor] = useState<MuthowifItem | null>(null);
+  const [certInputs, setCertInputs] = useState<Record<string, { serviceHours: string; examScore: string }>>({});
+  const [certResults, setCertResults] = useState<Record<string, { status: string; certNo: string | null; reasons: string[] }>>({});
 
   // v7.0 — Registri Pindai Izin
   const [regForm, setRegForm] = useState(emptyRegistry());
@@ -275,6 +280,48 @@ export function AdminBisnis() {
       toast({ title: "Dihapus ✓", description: deleting.label });
       load();
     } catch (err) { errToast("Gagal menghapus", err); } finally { setDeleting(null); }
+  };
+
+  /* ===== SERTIFIKASI MUTHAWWIF BERJENJANG (R-021 v13.3) ===== */
+  const openCert = (m: MuthowifItem) => {
+    setCertFor(m);
+    const inputs: Record<string, { serviceHours: string; examScore: string }> = {};
+    for (const lv of CERT_LEVELS) {
+      const row = m.certs?.find((c) => c.level === lv);
+      inputs[lv] = { serviceHours: row ? String(row.serviceHours) : "", examScore: row ? String(row.examScore) : "" };
+    }
+    setCertInputs(inputs);
+    setCertResults({});
+  };
+
+  const saveCert = async (lv: (typeof CERT_LEVELS)[number]) => {
+    if (!certFor) return;
+    const inp = certInputs[lv];
+    if (!inp) return;
+    setSaving(true);
+    try {
+      const res = await apiSend<{ cert: { level: string; status: string; certNo: string | null; serviceHours: number; examScore: number }; evaluation: { eligible: boolean; reasons: string[] } }>(
+        "/api/muthowif/cert",
+        "POST",
+        { muthowifId: certFor.id, level: lv, serviceHours: Number(inp.serviceHours) || 0, examScore: Number(inp.examScore) || 0 },
+      );
+      setCertResults((prev) => ({ ...prev, [lv]: { status: res.cert.status, certNo: res.cert.certNo, reasons: res.evaluation.reasons } }));
+      // Perbarui daftar lokal agar lencana portal ikut segar.
+      const row = { level: res.cert.level, status: res.cert.status, certNo: res.cert.certNo, serviceHours: res.cert.serviceHours, examScore: res.cert.examScore };
+      setMuthowifs((prev) =>
+        (prev ?? []).map((x) =>
+          x.id === certFor.id ? { ...x, certs: [...(x.certs ?? []).filter((c) => c.level !== lv), row] } : x,
+        ),
+      );
+      toast({
+        title: res.cert.status === "PASSED" ? `Jenjang ${lv} lulus ✓` : `Jenjang ${lv} belum lulus`,
+        description: res.cert.status === "PASSED" ? `No. ${res.cert.certNo}` : res.evaluation.reasons.join(" ") || undefined,
+      });
+    } catch (err) {
+      errToast("Gagal menyimpan sertifikasi", err);
+    } finally {
+      setSaving(false);
+    }
   };
 
   const memberName = (id?: string | null) => members.find((m) => m.id === id)?.name ?? "—";
@@ -531,6 +578,10 @@ export function AdminBisnis() {
                       setMutEdit(m); setMutDialog(true);
                     }}>
                       <Icon name="pencil" className="h-3.5 w-3.5 mr-1" aria-hidden /> Ubah
+                    </Button>
+                    {/* R-021 v13.3 — catat jam & ujian, evaluasi jenjang otomatis */}
+                    <Button variant="outline" size="sm" className="text-gold-deep border-gold/40 hover:bg-gold/10" onClick={() => openCert(m)}>
+                      <Icon name="award" className="h-3.5 w-3.5 mr-1" aria-hidden /> Sertifikasi
                     </Button>
                     <Button variant="outline" size="sm" className="text-destructive border-destructive/40 hover:bg-destructive/10 sm:ml-auto" onClick={() => setDeleting({ kind: "mut", id: m.id, label: m.fullName })}>
                       <Icon name="trash" className="h-3.5 w-3.5 mr-1" aria-hidden /> Hapus
@@ -824,6 +875,69 @@ export function AdminBisnis() {
               </Button>
             </DialogFooter>
           </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* ===== DIALOG SERTIFIKASI BERJENJANG (R-021 v13.3) ===== */}
+      <Dialog open={!!certFor} onOpenChange={(o) => !o && setCertFor(null)}>
+        <DialogContent className="sm:max-w-2xl max-h-[88vh] overflow-y-auto scrollbar-thin">
+          <DialogHeader>
+            <DialogTitle className="text-left">Jalur Sertifikasi — {certFor?.fullName}</DialogTitle>
+            <DialogDescription className="text-left">
+              Catat jam pelayanan + skor ujian per jenjang. Lulus otomatis bila seluruh syarat terpenuhi; nomor sertifikat terbit dari server.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3">
+            {CERT_LEVELS.map((lv) => {
+              const req = CERT_REQUIREMENTS[lv];
+              const row = certFor?.certs?.find((c) => c.level === lv);
+              const res = certResults[lv];
+              const status = res?.status ?? row?.status ?? "CANDIDATE";
+              return (
+                <div key={lv} className="rounded-2xl border bg-card p-4">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                      <span className="grid h-8 w-8 place-items-center rounded-xl bg-gold/15 text-gold-deep"><Icon name="award" className="h-4 w-4" aria-hidden /></span>
+                      <div>
+                        <p className="text-sm font-extrabold">{req.label}</p>
+                        <p className="text-[11px] text-muted-foreground">
+                          Syarat: skor ≥ {req.minScore}{req.minHours ? ` · jam ≥ ${req.minHours}` : ""}{req.prior ? ` · lulus ${CERT_REQUIREMENTS[req.prior].label}` : ""}{req.minYears ? ` · pengalaman ≥ ${req.minYears} thn` : ""}
+                        </p>
+                      </div>
+                    </div>
+                    <Badge variant="outline" className={cn("text-[10px] font-extrabold",
+                      status === "PASSED" ? "bg-emerald-500/10 text-emerald-700 border-emerald-500/30 dark:text-emerald-400"
+                      : status === "FAILED" ? "bg-destructive/10 text-destructive border-destructive/30"
+                      : "bg-muted text-muted-foreground")}>
+                      {status === "PASSED" ? "LULUS" : status === "FAILED" ? "GAGAL" : "CANDIDATE"}
+                    </Badge>
+                  </div>
+                  {(res?.certNo ?? row?.certNo) && status === "PASSED" && (
+                    <p className="mt-2 text-[11px] font-bold text-primary" dir="ltr">No. Sertifikat: {res?.certNo ?? row?.certNo}</p>
+                  )}
+                  {res && res.status !== "PASSED" && res.reasons.length > 0 && (
+                    <p className="mt-2 text-[11px] font-semibold text-destructive">{res.reasons.join(" · ")}</p>
+                  )}
+                  <div className="mt-3 grid grid-cols-2 gap-2">
+                    <div className="space-y-1">
+                      <Label className="text-xs">Jam Pelayanan</Label>
+                      <Input type="number" min={0} value={certInputs[lv]?.serviceHours ?? ""} onChange={(e) => setCertInputs((p) => ({ ...p, [lv]: { ...(p[lv] ?? { examScore: "" }), serviceHours: e.target.value } }))} />
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-xs">Skor Ujian (0–100)</Label>
+                      <Input type="number" min={0} max={100} value={certInputs[lv]?.examScore ?? ""} onChange={(e) => setCertInputs((p) => ({ ...p, [lv]: { ...(p[lv] ?? { serviceHours: "" }), examScore: e.target.value } }))} />
+                    </div>
+                  </div>
+                  <Button type="button" size="sm" disabled={saving} onClick={() => saveCert(lv)} className="mt-3 w-full bg-gradient-to-r from-primary to-forest text-white">
+                    {saving ? "Menilai…" : "Nilai & Evaluasi Jenjang"}
+                  </Button>
+                </div>
+              );
+            })}
+            <p className="text-[11px] leading-relaxed text-muted-foreground">
+              Pengalaman tercatat: {certFor?.experienceYears ?? 0} tahun. Jenjang MENTOR menuntut lulus Lanjutan, ≥500 jam, ujian ≥85, dan pengalaman ≥3 tahun.
+            </p>
+          </div>
         </DialogContent>
       </Dialog>
 

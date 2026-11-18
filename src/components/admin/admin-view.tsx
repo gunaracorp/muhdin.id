@@ -34,6 +34,8 @@ import { AdminForum } from "@/components/admin/admin-forum";
 import { AdminPilgrimCards } from "@/components/admin/admin-pilgrim-cards";
 // v6.0 — Ekosistem hulu-hilir: Pusat Bisnis B2B + Operasi Jamaah
 import { AdminBisnis } from "@/components/admin/admin-bisnis";
+import { AdminTravelGroups } from "@/components/admin/admin-travel-groups";
+import { AdminGroupOps } from "@/components/admin/admin-group-ops";
 import { AdminCompliance } from "@/components/admin/admin-compliance";
 // v12.2 — 99 Roadmap Upgrade
 import { AdminRoadmapItems } from "@/components/admin/admin-roadmap-items";
@@ -91,6 +93,9 @@ const MENU = [
   { id: "cards", label: "Kartu Jamaah", icon: "qr-code" },
   { id: "bisnis", label: "Pusat Bisnis B2B", icon: "briefcase" },
   { id: "jamaahops", label: "Operasi Jamaah", icon: "clipboard-check" },
+  // v13.3 «JENJANG & BRANKAS» — Grup Perjalanan Digital (R-012)
+  { id: "groups", label: "Grup Perjalanan", icon: "users" },
+  { id: "groupops", label: "Jadwal Grup & Chat", icon: "calendar-clock" },
   // v12.1 — God-Mode Izin Compliance Checker
   { id: "compliance", label: "Compliance Checker", icon: "shield-check" },
   // v12.2 — 99 Roadmap Upgrade
@@ -268,6 +273,9 @@ export function AdminView() {
           {section === "cards" && <AdminPilgrimCards />}
           {section === "bisnis" && <AdminBisnis />}
           {section === "jamaahops" && <AdminJamaahOps />}
+          {/* v13.3 R-012 — Grup Perjalanan Digital */}
+          {section === "groups" && <AdminTravelGroups />}
+          {section === "groupops" && <AdminGroupOps />}
           {section === "compliance" && <AdminCompliance />}
           {section === "roadmap99" && <AdminRoadmapItems />}
           {section === "keamanan" && <AdminSecurity />}

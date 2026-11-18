@@ -662,6 +662,8 @@ export interface MuthowifItem {
   availability: string;
   memberId: string | null;
   member?: { id: string; name: string; city: string } | null;
+  /** R-021 v13.3 — catatan sertifikasi berjenjang untuk lencana portal. */
+  certs?: { level: string; status: string; certNo: string | null; serviceHours: number; examScore: number }[];
   createdAt: string;
 }
 

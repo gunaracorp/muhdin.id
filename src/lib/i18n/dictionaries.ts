@@ -29,6 +29,8 @@ import { pengurusDict } from "@/lib/i18n/locales/pengurus";
 // Task 29 (v13.2) — Master Final Organisasi + Komunitas WA
 import { orgMasterDict } from "@/lib/i18n/locales/org-master";
 import { waKomunitasDict } from "@/lib/i18n/locales/komunitas";
+import { latihanDict } from "@/lib/i18n/locales/latihan";
+import { grupDict } from "@/lib/i18n/locales/grup";
 // R-011 — Web Push Pengumuman Keberangkatan
 import { pushDict } from "@/lib/i18n/locales/push";
 // Task 50 — Pusat Layanan, Perizinan & Sertifikasi (menu baru)
@@ -150,6 +152,10 @@ const dicts = [
   // Task 29 (v13.2) — Master Final Organisasi DPP 2026–2031 + 18 Kanal WA
   orgMasterDict,
   waKomunitasDict,
+  // v13.3 R-023 — Bank Soal Manasik
+  latihanDict,
+  // v13.3 R-012 — Grup Perjalanan Digital
+  grupDict,
   // R-011 — Web Push
   pushDict,
   // v12.4 «LUNAS» — Checkout & Lacak Pesanan

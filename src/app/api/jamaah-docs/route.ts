@@ -3,10 +3,14 @@ import { db } from "@/lib/db";
 import { guardRole, ok, fail, computeLifecycle } from "@/lib/api-helpers";
 import { rateLimit } from "@/lib/ratelimit";
 import { logAudit } from "@/lib/audit";
+import { decryptField, encryptField } from "@/lib/vault-crypto";
 
 /**
  * v6.0 — Brankas Dokumen Jamaah (proses): paspor/visa/vaksin/tiket/asuransi
  * menempel pada kartu jamaah. Peringatan kedaluwarsa otomatis (EXPIRING ≤90 hari).
+ * v13.3 R-076 — docNo/fileUrl/note dienkripsi AES-256-GCM at-rest (vault-crypto):
+ * ditulis terenkripsi, didekripsi transparan saat dibaca; pencarian admin
+ * menyaring pada plaintext hasil dekripsi (bukan ciphertext).
  * GET  admin [SUPER_ADMIN, ADMIN, VERIFIKATOR]: semua dokumen (?cardNo= filter).
  * GET  publik ?cardNo=XXX: ringkasan dokumen milik kartu (tanpa docNo/fileUrl) — mode brankas jamaah.
  * POST publik (rateLimit 6/menit/IP): ajukan dokumen baru → PENDING; kartu harus ACTIVE.
@@ -14,7 +18,7 @@ import { logAudit } from "@/lib/audit";
 
 const KINDS = ["PASPOR", "VISA", "VAKSIN", "TIKET", "ASURANSI", "LAINNYA"];
 
-function withLifecycle(doc: { expiryDate: Date | string | null }) {
+function withLifecycle<T extends { expiryDate: Date | string | null }>(doc: T) {
   const { lifecycle, daysLeft } = computeLifecycle(doc.expiryDate);
   return { ...doc, lifecycle, daysLeft };
 }
@@ -37,10 +41,11 @@ export async function GET(req: NextRequest) {
         where: { pilgrimCardId: card.id },
         orderBy: [{ kind: "asc" }, { createdAt: "desc" }],
       });
-      // Ringkasan aman: tanpa docNo penuh & fileUrl.
+      // Ringkasan aman: tanpa docNo penuh & fileUrl. docNo didekripsi dulu (R-076) lalu disamarkan.
       const safe = docs.map((d) => {
         const { lifecycle, daysLeft } = computeLifecycle(d.expiryDate);
-        const masked = d.docNo ? `${d.docNo.slice(0, 3)}••••${d.docNo.slice(-2)}` : "";
+        const plainNo = decryptField(d.docNo) ?? "";
+        const masked = plainNo ? `${plainNo.slice(0, 3)}••••${plainNo.slice(-2)}` : "";
         return {
           id: d.id,
           kind: d.kind,
@@ -48,7 +53,7 @@ export async function GET(req: NextRequest) {
           issueDate: d.issueDate,
           expiryDate: d.expiryDate,
           verifyStatus: d.verifyStatus,
-          note: d.note,
+          note: decryptField(d.note),
           lifecycle,
           daysLeft,
         };
@@ -62,14 +67,22 @@ export async function GET(req: NextRequest) {
     const where: Record<string, unknown> = {};
     if (cardNo) where.card = { is: { cardNo: cardNo } };
     const q = sp.get("q")?.trim();
-    if (q) where.OR = [{ docNo: { contains: q } }, { card: { is: { fullName: { contains: q } } } }];
+    if (q) {
+      // R-076: docNo terenkripsi — nama dicari via DB, nomor dokumen disaring
+      // pada plaintext hasil dekripsi setelah fetch (di bawah).
+      where.card = { is: { cardNo: cardNo, fullName: { contains: q } } };
+    }
 
     const rows = await db.jamaahDoc.findMany({
       where,
       include: { card: { select: { id: true, cardNo: true, fullName: true, groupName: true, status: true } } },
       orderBy: [{ verifyStatus: "asc" }, { createdAt: "desc" }],
     });
-    return ok(rows.map(withLifecycle));
+    // R-076: docNo tersimpan terenkripsi — dekripsi untuk tampilan, dan bila ada
+    // kata kunci, saring juga pada nomor dokumen (plaintext) di sisi aplikasi.
+    const decrypted = rows.map((r) => ({ ...r, docNo: decryptField(r.docNo), note: decryptField(r.note) }));
+    const filtered = q ? decrypted.filter((r) => (r.docNo ?? "").toLowerCase().includes(q.toLowerCase())) : decrypted;
+    return ok(filtered.map(withLifecycle));
   } catch {
     return fail("Gagal memuat brankas dokumen.", 500);
   }
@@ -99,17 +112,19 @@ export async function POST(req: NextRequest) {
       data: {
         pilgrimCardId: card.id,
         kind,
-        docNo: String(body.docNo || ""),
+        docNo: encryptField(String(body.docNo || "")) ?? "",
         issueDate,
         expiryDate,
-        fileUrl: body.fileUrl ? String(body.fileUrl) : null,
-        note: body.note ? String(body.note) : null,
+        fileUrl: body.fileUrl ? encryptField(String(body.fileUrl)) : null,
+        note: body.note ? encryptField(String(body.note)) : null,
         verifyStatus: "PENDING",
       },
     });
 
-    void logAudit(req, { action: "CREATE", entity: "JamaahDoc", entityId: doc.id, detail: `${cardNo} — ${kind} (diajukan pemilik)` });
-    return ok(withLifecycle(doc), 201);
+    void logAudit(req, { action: "CREATE", entity: "JamaahDoc", entityId: doc.id, detail: `${cardNo} — ${kind} (diajukan pemilik, docNo dienkripsi AES-256-GCM)` });
+    // Balas dengan plaintext (milik pengirim sendiri) agar UI menampilkan apa yang baru diajukan.
+    const plain = { ...doc, docNo: decryptField(doc.docNo), fileUrl: decryptField(doc.fileUrl), note: decryptField(doc.note) };
+    return ok(withLifecycle({ ...plain, expiryDate: plain.expiryDate }), 201);
   } catch {
     return fail("Gagal mengajukan dokumen.", 500);
   }

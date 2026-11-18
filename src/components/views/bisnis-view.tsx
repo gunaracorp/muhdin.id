@@ -62,6 +62,16 @@ function Stars({ rating }: { rating: number }) {
   );
 }
 
+/** R-021 v13.3 — lencana jenjang tertinggi yang lulus dari catatan sertifikasi. */
+function certBadge(certs?: { level: string; status: string }[]): { label: string; cls: string } | null {
+  if (!certs?.length) return null;
+  const passed = certs.filter((c) => c.status === "PASSED").map((c) => c.level);
+  if (passed.includes("MENTOR")) return { label: "Mentor", cls: "bg-gradient-to-r from-gold/25 to-gold/10 text-gold-deep border-gold/50" };
+  if (passed.includes("LANJUTAN")) return { label: "Lanjutan", cls: "bg-primary/10 text-primary border-primary/35" };
+  if (passed.includes("DASAR")) return { label: "Dasar", cls: "bg-emerald-500/10 text-emerald-700 border-emerald-500/30 dark:text-emerald-400" };
+  return null;
+}
+
 export function BisnisView() {
   const { t } = useT();
   const [vendors, setVendors] = useState<VendorItem[] | null>(null);
@@ -318,6 +328,12 @@ export function BisnisView() {
                               {t(`bisnis.lang${l.trim()}`) !== `bisnis.lang${l.trim()}` ? t(`bisnis.lang${l.trim()}`) : l.trim()}
                             </Badge>
                           ))}
+                          {/* R-021 v13.3 — lencana jenjang tertinggi yang lulus */}
+                          {certBadge(m.certs) && (
+                            <Badge variant="outline" className={cn("text-[10px] font-extrabold", certBadge(m.certs)!.cls)}>
+                              <Icon name="award" className="h-3 w-3" aria-hidden /> {certBadge(m.certs)!.label}
+                            </Badge>
+                          )}
                         </div>
                         {m.specialties && <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">{m.specialties}</p>}
                         {m.certNo && (

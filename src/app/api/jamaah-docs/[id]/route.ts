@@ -2,9 +2,12 @@ import { NextRequest } from "next/server";
 import { db } from "@/lib/db";
 import { guardRole, ok, fail, computeLifecycle } from "@/lib/api-helpers";
 import { logAudit } from "@/lib/audit";
+import { decryptField, encryptField } from "@/lib/vault-crypto";
 
 /**
  * v6.0 — Verifikasi brankas dokumen jamaah (CMS).
+ * v13.3 R-076 — docNo/fileUrl/note ditulis terenkripsi AES-256-GCM (at-rest);
+ * respons selalu plaintext hasil dekripsi agar UI CMS tetap terbaca.
  * PUT  admin [SUPER_ADMIN, ADMIN, VERIFIKATOR]: verifikasi/tolak pengajuan + ubah data.
  * DELETE admin [SUPER_ADMIN, ADMIN].
  */
@@ -24,7 +27,7 @@ export async function PUT(req: NextRequest, ctx: { params: Promise<{ id: string 
     if (body.kind !== undefined && ["PASPOR", "VISA", "VAKSIN", "TIKET", "ASURANSI", "LAINNYA"].includes(String(body.kind))) {
       data.kind = String(body.kind);
     }
-    if (body.docNo !== undefined) data.docNo = String(body.docNo);
+    if (body.docNo !== undefined) data.docNo = encryptField(String(body.docNo)) ?? "";
     if (body.issueDate !== undefined) {
       if (!body.issueDate) data.issueDate = null;
       else {
@@ -41,8 +44,8 @@ export async function PUT(req: NextRequest, ctx: { params: Promise<{ id: string 
         data.expiryDate = d;
       }
     }
-    if (body.fileUrl !== undefined) data.fileUrl = body.fileUrl ? String(body.fileUrl) : null;
-    if (body.note !== undefined) data.note = body.note ? String(body.note) : null;
+    if (body.fileUrl !== undefined) data.fileUrl = body.fileUrl ? encryptField(String(body.fileUrl)) : null;
+    if (body.note !== undefined) data.note = body.note ? encryptField(String(body.note)) : null;
     if (body.verifyStatus !== undefined && ["PENDING", "VERIFIED", "REJECTED"].includes(String(body.verifyStatus))) {
       data.verifyStatus = String(body.verifyStatus);
     }
@@ -59,7 +62,7 @@ export async function PUT(req: NextRequest, ctx: { params: Promise<{ id: string 
       detail: `${existing.card.cardNo} — ${doc.kind} → ${doc.verifyStatus}`,
     });
     const { lifecycle, daysLeft } = computeLifecycle(doc.expiryDate);
-    return ok({ ...doc, lifecycle, daysLeft });
+    return ok({ ...doc, docNo: decryptField(doc.docNo), fileUrl: decryptField(doc.fileUrl), note: decryptField(doc.note), lifecycle, daysLeft });
   } catch {
     return fail("Gagal memperbarui dokumen jamaah.", 500);
   }

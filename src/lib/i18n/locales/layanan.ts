@@ -111,6 +111,14 @@ export const layananDict = {
           title: "Akademi Manasik",
           desc: "Kursus manasik berjenjang dengan sertifikat digital ber-QR.",
         },
+        "latihan-manasik": {
+          title: "Latihan Manasik Berjenjang",
+          desc: "Bank soal teracak per jenjang Dasar, Lanjutan, dan Mentor dengan pembahasan.",
+        },
+        "grup-perjalanan": {
+          title: "Grup Perjalanan Digital",
+          desc: "Ruang rombongan: daftar anggota, jadwal kumpul, chat singkat, dan kontak marshal.",
+        },
         "booking-slot": {
           title: "Booking Slot Layanan",
           desc: "Pesan kelas manasik, konsultasi syariah, dan klinik vaksin.",
@@ -415,6 +423,14 @@ export const layananDict = {
           title: "Manasik Academy",
           desc: "Levelled manasik courses with QR-verified digital certificates.",
         },
+        "latihan-manasik": {
+          title: "Graded Manasik Practice",
+          desc: "Shuffled question bank across Basic, Advanced, and Mentor levels with explanations.",
+        },
+        "grup-perjalanan": {
+          title: "Digital Travel Groups",
+          desc: "Group room: member list, meeting schedule, quick chat, and marshal contact.",
+        },
         "booking-slot": {
           title: "Book Service Slots",
           desc: "Reserve manasik classes, sharia consults, vaccination clinics.",
@@ -718,6 +734,14 @@ export const layananDict = {
         "akademi": {
           title: "أكاديمية المناسك",
           desc: "دورات مناسك متدرجة بشهادات رقمية موثقة بـ QR.",
+        },
+        "latihan-manasik": {
+          title: "تدريب المناسك على المستويات",
+          desc: "بنك أسئلة مخلوط عبر مستويات أساسي ومتقدم ومرشد مع الشرح.",
+        },
+        "grup-perjalanan": {
+          title: "مجموعات السفر الرقمية",
+          desc: "غرفة المجموعة: قائمة الأعضاء، جدول الاجتماعات، محادثة سريعة، واتصال المرشد.",
         },
         "booking-slot": {
           title: "حجز مواعيد الخدمات",

@@ -579,6 +579,7 @@ model TourPackage {
   seatListings  SeatListing[]
   itinerary     ItineraryDay[]
   waitlist      WaitlistEntry[]
+  travelGroups  TravelGroup[]
 }
 
 /// Booking/permintaan jadwal jamaah terhadap sebuah paket (pipeline panitia).
@@ -738,6 +739,7 @@ model Muthowif {
   availability    String   @default("AVAILABLE") // AVAILABLE | ASSIGNED | UNAVAILABLE
   memberId        String?
   member          Member?  @relation("MuthowifAffiliation", fields: [memberId], references: [id], onDelete: SetNull)
+  certs           MuthawwifCert[]
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 }
@@ -1326,4 +1328,107 @@ model StatusCheck {
   createdAt   DateTime @default(now())
 
   @@index([createdAt])
+}
+
+// ==================== v13.3 «JENJANG & BRANKAS» ====================
+
+/// R-012 Grup Perjalanan Digital — ruang khusus per rombongan: daftar anggota,
+/// chat singkat, jadwal kumpul, dan kontak marshal. Bergabung memakai kode grup.
+model TravelGroup {
+  id            String       @id @default(cuid())
+  code          String       @unique // kode bergabung, mis. MHD-GR-8F3K
+  name          String
+  packageId     String? // opsional terikat paket keberangkatan
+  pkg           TourPackage? @relation(fields: [packageId], references: [id], onDelete: SetNull)
+  departureDate DateTime?
+  marshalName   String       @default("") // nama marshal (pemandu rombongan)
+  marshalPhone  String       @default("") // kontak marshal (WA)
+  notes         String?
+  status        String       @default("ACTIVE") // ACTIVE | ARCHIVED
+  members       GroupMember[]
+  messages      GroupMessage[]
+  schedules     GroupSchedule[]
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  @@index([status])
+}
+
+/// Anggota rombongan — masuk via kode grup (jamaah) atau diundur CMS.
+model GroupMember {
+  id       String      @id @default(cuid())
+  groupId  String
+  group    TravelGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  cardNo   String? // opsional tautan kartu jamaah
+  fullName String
+  phone    String      @default("")
+  role     String      @default("ANGGOTA") // MARSHAL | ANGGOTA
+  joinedAt DateTime    @default(now())
+
+  @@index([groupId])
+}
+
+/// Chat singkat per grup — ringan, tanpa lampiran; moderasi via CMS hapus.
+model GroupMessage {
+  id         String      @id @default(cuid())
+  groupId    String
+  group      TravelGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  authorName String
+  body       String
+  createdAt  DateTime    @default(now())
+
+  @@index([groupId, createdAt])
+}
+
+/// Jadwal kumpul rombongan — titik, waktu, dan catatan singkat.
+model GroupSchedule {
+  id       String      @id @default(cuid())
+  groupId  String
+  group    TravelGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  title    String
+  location String      @default("")
+  startsAt DateTime
+  note     String?
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  @@index([groupId, startsAt])
+}
+
+/// R-021 Jalur Sertifikasi Muthawwif Berjenjang — DASAR → LANJUTAN → MENTOR
+/// dengan syarat jam pelayanan + skor ujian per jenjang (lib/muthawwif-cert.ts).
+model MuthawwifCert {
+  id           String    @id @default(cuid())
+  muthowifId   String
+  muthowif     Muthowif  @relation(fields: [muthowifId], references: [id], onDelete: Cascade)
+  level        String    @default("DASAR") // DASAR | LANJUTAN | MENTOR
+  serviceHours Int       @default(0) // jam pelayanan tercatat
+  examScore    Int       @default(0) // 0–100 ujian jenjang
+  status       String    @default("CANDIDATE") // CANDIDATE | PASSED | FAILED
+  certNo       String?   @unique // terisi saat PASSED: MHD-MT-<jenjang>-<tahun>-####
+  issuedAt     DateTime?
+  expiresAt    DateTime?
+  reviewer     String?
+  note         String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@index([muthowifId, level])
+}
+
+/// R-023 Bank Soal Manasik Berjenjang — butir soal terkurasi per level;
+/// pengacakan soal + opsi dilakukan server-side saat sesi latihan.
+model SoalManasik {
+  id          String  @id @default(cuid())
+  level       String  @default("DASAR") // DASAR | LANJUTAN | MENTOR
+  category    String  @default("UMUM") // UMUM | RUKUN | LARANGAN | DOA | WAKTU | WANITA
+  question    String
+  options     String  @default("[]") // JSON array 4 opsi
+  answerIdx   Int     @default(0) // indeks jawaban benar pada array opsi asli
+  explanation String  @default("") // pembahasan singkat
+  active      Boolean @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([level, active])
 }

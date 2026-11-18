@@ -57,6 +57,9 @@ export const SECTION_ROLES: { id: string; roles: Role[] }[] = [
   // v6.0 — Pusat Bisnis B2B (hulu) + Operasi Jamaah (proses & hilir)
   { id: "bisnis", roles: ["SUPER_ADMIN", "ADMIN", "EDITOR"] },
   { id: "jamaahops", roles: ["SUPER_ADMIN", "ADMIN", "VERIFIKATOR"] },
+  // v13.3 R-012 — Grup Perjalanan Digital (ruang rombongan + jadwal/chat)
+  { id: "groups", roles: ["SUPER_ADMIN", "ADMIN", "VERIFIKATOR"] },
+  { id: "groupops", roles: ["SUPER_ADMIN", "ADMIN", "EDITOR"] },
   // v12.1 — God-Mode Izin Compliance Checker
   { id: "compliance", roles: ["SUPER_ADMIN", "ADMIN", "VERIFIKATOR"] },
   // v12.2 — 99 Roadmap Upgrade

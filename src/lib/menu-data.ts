@@ -84,6 +84,10 @@ export const MENU_NODES: MenuNode[] = [
     groupIcon: "sparkles",
     children: [
       { slug: "akademi", icon: "graduation-cap", route: "academy" },
+      // v13.3 R-023 — Latihan Manasik Berjenjang
+      { slug: "latihan-manasik", icon: "book-open", route: "latihan" },
+      // v13.3 R-012 — Grup Perjalanan Digital
+      { slug: "grup-perjalanan", icon: "users", route: "grup" },
       { slug: "booking-slot", icon: "calendar-check", route: "booking" },
       { slug: "benefit-kta", icon: "gift", route: "benefit" },
       { slug: "paspor-haji", icon: "wallet-cards", route: "paspor" },
