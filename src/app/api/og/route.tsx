@@ -8,11 +8,24 @@
  */
 import { ImageResponse } from "next/og";
 import type { NextRequest } from "next/server";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
+
+// Task 37 — emblem logo resmi (disahkan) disematkan sebagai data-URI agar
+// ImageResponse dapat merendernya tanpa fetch jaringan.
+let emblemDataUri: string | null = null;
+function getEmblemDataUri(): string {
+  if (!emblemDataUri) {
+    const buf = readFileSync(join(process.cwd(), "public", "brand", "og-emblem.png"));
+    emblemDataUri = `data:image/png;base64,${buf.toString("base64")}`;
+  }
+  return emblemDataUri;
+}
 
 export async function GET(req: NextRequest) {
   const sp = req.nextUrl.searchParams;
@@ -42,7 +55,14 @@ export async function GET(req: NextRequest) {
         <div style={{ position: "absolute", right: 40, bottom: -140, width: 300, height: 300, borderRadius: 9999, background: "rgba(255,255,255,0.06)", display: "flex" }} />
 
         <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
-          <div style={{ width: 64, height: 64, borderRadius: 18, background: "#d4af37", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 36, color: "#0b3d2e", fontWeight: 800 }}>م</div>
+          {/* Task 37 — emblem logo resmi menggantikan monogram sementara */}
+          <img
+            src={getEmblemDataUri()}
+            width={96}
+            height={96}
+            alt="Logo Resmi MUHDIN"
+            style={{ borderRadius: 20 }}
+          />
           <div style={{ display: "flex", flexDirection: "column" }}>
             <div style={{ fontSize: 34, fontWeight: 800, color: "#ffffff", letterSpacing: 4 }}>MUHDIN INDONESIA</div>
             <div style={{ fontSize: 19, color: "#d4af37", letterSpacing: 2 }}>TRUSTED PILGRIM ECOSYSTEM</div>

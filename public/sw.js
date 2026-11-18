@@ -2,7 +2,7 @@
  * Menangani push event (tampilkan notifikasi) + klik notifikasi (buka URL).
  * Diregistrasi otomatis oleh push-client.ts saat jamaah menyalakan notifikasi.
  */
-const CACHE = "muhdin-push-sw-v1";
+const CACHE = "muhdin-push-sw-v2";
 
 self.addEventListener("install", (event) => {
   event.waitUntil(self.skipWaiting());

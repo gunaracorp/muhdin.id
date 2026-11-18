@@ -2478,3 +2478,23 @@ Work Log:
 
 QA Gates: tsc 0 · eslint 0 · build produksi OK · test-i18n-merge 14/14 + 0 dotted keys · crawl 61 route bersih · EN/AR/ID smoke bersih.
 Stage Summary: situs lulus audit menyeluruh tanpa cacat tampilan; dua pengaman permanen (dev warning + uji statis) memastikan pola bug raw-key tidak bisa masuk kembali diam-diam.
+
+## Task ID 37 — v15.1.0 «LOGO RESMI»: Branding Total dengan Logo Official yang Disahkan
+Tanggal: 2026-11-18
+
+Task: owner mengunggah logo super official MUHDIN yang sudah fix & disahkan (islamic_geometry_fix_official_muhdin_logo.png, 430×470) — ganti SEMUA logo di seluruh website karena menyangkut konsistensi branding ke kop surat & organization profile.
+
+Karya resmi: bintang geometri Islami 8 sudut berbingkai emas, monogram M emas 3D, Kaaba dengan sabuk hijau & burung hamsah, bulan sabit, buku terbuka; wordmark MUHDIN — MASYARAKAT UMROH HAJI DIGITAL — INDONESIA; latar hijau tua gradien resmi (tepi #000e06).
+
+Work Log:
+- **scripts/make-brand-assets.py** (PIL): karya resmi TIDAK diubah — hanya kanvas & potongan turunan dengan ekspansi tepi (edge-smear) sehingga gradien hijau resmi menyatu mulus tanpa jahitan:
+  public/brand/logo-full.png (karya utuh) · logo-emblem.png 512² (emblem tanpa wordmark) · og-emblem.png · icons/icon-192, icon-512 (karya utuh persegi) · icon-maskable-192/512 (safe zone 76%) · apple-touch-icon 180² · src/app/favicon.ico (16/32/48, RGBA) · logo.svg (embed PNG resmi).
+- **src/components/site/logo.tsx**: MuhdinLogo SVG lama (hexagon generik) → <img /brand/logo-emblem.png> resmi; seluruh titik yang memakai komponen otomatis terbarui: navbar, footer (MuhdinBrand), kartu KTA (h-11), admin view, admin pilgrim cards. SVG digiman.id di footer TIDAK diubah (logo perusahaan mitra, bukan MUHDIN).
+- **/api/og (kartu share WhatsApp/FB/X)**: kotak "م" sementara → emblem resmi 96px via data-URI (fs read public/brand/og-emblem.png).
+- **manifest.webmanifest**: background_color #f7fcf9 → #000e06 (tepi gradien resmi); theme tetap #0b5c3f.
+- **public/sw.js**: cache muhddin-push-sw-v1 → v2 — perangkat PWA lama menarik ulang ikon resmi, tak macet cache v1.
+- **offline.html** & badge widget: aman (ikon status, bukan logo MUHDIN).
+- Verifikasi item sesi lalu: teks "Bunda" = 0 di seluruh src; "Dua Pilar Kepemimpinan" kini proporsional (SectionHeading + 2 kartu, bukan dominan).
+
+QA Gates: tsc 0 · eslint 0 · build produksi OK · 10 URL aset brand 200 (content-type benar) · favicon.ico 200 image/x-icon · /api/og 200 PNG 1200×630 dengan emblem resmi · browser smoke: header ✓ footer ✓ kartu ✓ (bukti visual tersimpan).
+Stage Summary: identitas visual resmi kini mengalir konsisten dari favicon → header → kartu KTA → kartu share sosial media → PWA perangkat. Aset di public/brand/ siap dipakai ulang untuk kop surat & organization profile tanpa pengolahan tambahan.
