@@ -6,11 +6,27 @@
  */
 import { NextRequest } from "next/server";
 import os from "node:os";
+import { readFileSync } from "node:fs";
 import { db } from "@/lib/db";
 import { ok, fail } from "@/lib/api-helpers";
 import { rateLimit } from "@/lib/ratelimit";
 
 export const dynamic = "force-dynamic";
+
+// Task 38 — versi layanan dibaca dari package.json (satu sumber kebenaran);
+// sebelumnya hardcoded "v14.1.0" dan tertinggal saat versi naik.
+let appVersion: string | null = null;
+function getAppVersion(): string {
+  if (!appVersion) {
+    try {
+      const pkg = JSON.parse(readFileSync("package.json", "utf8")) as { version?: string };
+      appVersion = `v${pkg.version ?? "0.0.0"}`;
+    } catch {
+      appVersion = "v0.0.0";
+    }
+  }
+  return appVersion;
+}
 
 export async function GET(req: NextRequest) {
   // pencatatan sampel + agregat ringan — rate-limit mencegah spam sampel
@@ -76,7 +92,7 @@ export async function GET(req: NextRequest) {
   return ok({
     ok: dbOk,
     service: "muhdin.id",
-    version: "v14.1.0",
+    version: getAppVersion(),
     runtime: {
       node: process.version,
       platform: `${os.platform()}-${os.arch()}`,

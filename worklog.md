@@ -2498,3 +2498,23 @@ Work Log:
 
 QA Gates: tsc 0 · eslint 0 · build produksi OK · 10 URL aset brand 200 (content-type benar) · favicon.ico 200 image/x-icon · /api/og 200 PNG 1200×630 dengan emblem resmi · browser smoke: header ✓ footer ✓ kartu ✓ (bukti visual tersimpan).
 Stage Summary: identitas visual resmi kini mengalir konsisten dari favicon → header → kartu KTA → kartu share sosial media → PWA perangkat. Aset di public/brand/ siap dipakai ulang untuk kop surat & organization profile tanpa pengolahan tambahan.
+
+## Task ID 38 — v15.1.1 «RAMBU»: Audit Bug Nol + Tutorial Hulu-ke-Hilir + README Sinkron
+Tanggal: 2026-11-18
+
+Task: push dengan token terbaru; pastikan tidak ada satu pun bug; buat tutorial lengkap pengembangan hulu-ke-hilir; perbarui README & worklog.
+
+Work Log:
+- **Audit menyeluruh** (build produksi Task 37 + crawl 61 route): 0 raw key, 0 gambar rusak, 0 request gagal (HTTP ≥400), 0 halaman kosong — satu-satunya pola bertitik = domain sah footer. tsc 0 · eslint 0.
+- **Audit statis frontend↔backend**: 122 panggilan "/api/..." unik dari components+lib dicocokkan ke route handler — ditemukan **2 endpoint hilang** (bug nyata: tombol admin 404 saat runtime):
+  1. `POST /api/email-settings/test` (admin-notifications.tsx) → **dibuat**: guardRole SUPER_ADMIN/ADMIN, memakai `sendEmailTest()` yang memang sudah ada di src/lib/email.ts (template uji + audit log).
+  2. `POST /api/whatsapp/test` (admin-whatsapp.tsx) → **dibuat**: guardRole, `sendWhatsAppMessage()` pesan uji, pencatatan `lastTestAt/lastTestStatus` + `logNotification` — pola persis notifyContactMessage.
+  Re-audit: **0 panggilan tanpa endpoint** (122/122 terlayani).
+- **Bug 3 — versi layanan tertinggal**: `/api/status` hardcode `v14.1.0` → dinamis `getAppVersion()` membaca package.json; package.json version 3.1.0 → **15.1.0** (satu sumber kebenaran; terverifikasi `/api/status` kini `v15.1.0`).
+- Pesan `[setup-db] Skema berubah?` diselidiki: hint informatif by-design (db sudah ada) — bukan bug, diberi klarifikasi di TUTORIAL §2.2 & §9.
+- **TUTORIAL.md (baru, ±460 baris, 10 bab)**: gambaran teknologi · HULU (prasyarat, bootstrap 5 perintah, cheat sheet) · arsitektur & peta kode (hash-SPA vs landing SSR, pola API wajib ok/fail/rateLimit/guardRole, i18n tiga bahasa + guard, branding terpusat) · ALUR (siklus Task/worklog, view baru, skema, API, i18n, RBAC) · resep how-to (logo, notifier, OG, seed idempotent, badge) · HILIR (5 QA gates + audit visual + build) · deploy Node/shared-hosting/migrasi Postgres + checklist pasca-deploy · pemeliharaan (uptime, backup, pentest, rotasi kredensial) · troubleshooting 9 kasus · 10 konvensi tak terlanggar.
+- **README.md disinkronkan**: judul → v15.1.0 «LOGO RESMI», badge API 206 → **209 route handler**, blok riwayat v15.0.1/v15.0.2/v15.1.0 ditambahkan, pointer menonjol ke TUTORIAL.md di bagian atas.
+- QA runtime pasca-fix: `/api/status` v15.1.0 ok+db ✓; kedua endpoint uji baru 401 tanpa sesi (benar — guard bekerja, bukan 404 lagi).
+
+QA Gates: tsc 0 · eslint 0 · build produksi OK · test-i18n-merge hijau · crawl 61 route bersih · 122/122 endpoint terlayani · /api/status v15.1.0 ✓ · endpoint uji 401-guard ✓.
+Stage Summary: situs lulus audit tanpa satu pun bug (3 temuan ditutup permanen), pengetahuan pengembangan kini terdokumentasi end-to-end di TUTORIAL.md, README sinkron dengan realitas kode (v15.1.1 «RAMBU» — papan penunjuk arah).

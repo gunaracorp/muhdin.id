@@ -3,7 +3,7 @@
 
 ![MUHDIN.ID — Portal Digital Ekosistem Umrah dan Haji Indonesia](docs/assets/banner.svg)
 
-# 🕋 MUHDIN.ID — v15.0.0 «GOD MODE»
+# 🕋 MUHDIN.ID — v15.1.0 «LOGO RESMI»
 
 ### **MU**asyarakat **U**mroh **H**aji **D**igital **I**ndonesia
 
@@ -13,12 +13,15 @@
 
 *Terakhir diperbarui: 18 November 2026*
 
+> 📖 **Baru di sini? Baca [TUTORIAL.md](TUTORIAL.md) — panduan lengkap pengembangan
+> dari hulu (setup & arsitektur) ke hilir (QA gates, build, deploy, pemeliharaan).**
+
 [![Next.js 16](https://img.shields.io/badge/Next.js-16-black?logo=nextdotjs)](https://nextjs.org)
 [![React 19](https://img.shields.io/badge/React-19-61DAFB?logo=react)](https://react.dev)
 [![TypeScript 5](https://img.shields.io/badge/TypeScript_5-tsc_0_error-3178C6?logo=typescript)](https://typescriptlang.org)
 [![Tailwind CSS 4](https://img.shields.io/badge/Tailwind_CSS_4-06B6D4?logo=tailwindcss)](https://tailwindcss.com)
 [![Prisma 6](https://img.shields.io/badge/Prisma_6-101_model-2D3748?logo=prisma)](https://prisma.io)
-[![API](https://img.shields.io/badge/API-206_route_handler-black)](#-peta-api)
+[![API](https://img.shields.io/badge/API-209_route_handler-black)](#-peta-api)
 [![SQLite](https://img.shields.io/badge/DB-SQLite_↔_Postgres_ready-003B57?logo=sqlite)](#-strategi-database)
 [![i18n](https://img.shields.io/badge/i18n-ID_·_EN_·_AR_RTL-16a34a)](#-internasionalisasi)
 [![RBAC](https://img.shields.io/badge/RBAC-4_peran_·_57_modul_CMS-d97706)](#-keamanan-dan-rbac)
@@ -133,6 +136,19 @@ Aset (R-068), Audit Aksesibilitas WCAG AA dengan skrip gerbang `audit:a11y` — 
 Kesiapan ISO 27001 dengan register kendali Annex A di CMS + Compliance Hub (R-098), dan MUHDIN Open Core
 — ekstraksi modul RBAC/QR/compliance/ledger sebagai pustaka sumber-terbuka MIT (R-099) — **99/99 item
 roadmap selesai (100%)**.
+
+**v15.0.1 «NAMA JERNIH»** (Task 35) — 88 lokasi raw key i18n di 14 berkas dibersihkan;
+`t()` kini punya fallback ID, dan guard dev-warning mengingatkan kunci hilang.
+
+**v15.0.2 «PENGAWAS»** (Task 36) — audit menyeluruh 61 route (0 raw key, 0 gambar rusak,
+0 request gagal, 0 halaman kosong) + dua pengaman permanen: dev warning di `t()` dan
+uji statis anti kunci bertitik di `scripts/test-i18n-merge.ts`.
+
+**v15.1.0 «LOGO RESMI»** (Task 37–38) — logo official yang disahkan menguasai seluruh
+titik branding (header, footer, favicon, KTA, kartu share OG, 5 ikon PWA, manifest,
+SW cache v2) via `scripts/make-brand-assets.py`; Task 38 menutup 3 bug audit
+(2 endpoint admin uji email/WhatsApp 404 → dibuat, versi `/api/status` kini dinamis
+dari package.json) dan menyusun **TUTORIAL.md** — panduan pengembangan hulu-ke-hilir.
 
 ---
 
