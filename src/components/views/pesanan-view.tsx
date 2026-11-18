@@ -24,6 +24,7 @@ import { BRAND } from "@/lib/constants";
 import { NpsWidget } from "@/components/site/nps-widget";
 import { PushEnableCard } from "@/components/site/push-enable-card"; // R-011 — Web Push
 import { DetailHero } from "@/components/views/detail-shell";
+import { REFUND_TIERS, REFUND_SLA_DAYS } from "@/lib/refund"; // R-044 — kebijakan berjenjang
 import { cn } from "@/lib/utils";
 
 interface TrackResult {
@@ -156,6 +157,36 @@ export function PesananView() {
   const status = result?.order.status ?? "";
   const isPaid = status === "PAID";
 
+  // R-044 — Ajukan pembatalan & refund berjenjang (hanya order LUNAS).
+  const [refundOpen, setRefundOpen] = useState(false);
+  const [refundReason, setRefundReason] = useState("");
+  const [refundBusy, setRefundBusy] = useState(false);
+  const [refundResult, setRefundResult] = useState<{ ok: boolean; message: string; tier?: string; percent?: number; approvedAmount?: number } | null>(null);
+
+  const submitRefund = async () => {
+    if (!result) return;
+    setRefundBusy(true);
+    setRefundResult(null);
+    try {
+      const res = await fetch("/api/refund-requests", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orderNumber: result.order.number, phone, reason: refundReason }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok) {
+        setRefundResult({ ok: true, message: data.message, tier: data.request?.tier, percent: data.request?.percentApproved, approvedAmount: data.request?.approvedAmount });
+        setRefundReason("");
+      } else {
+        setRefundResult({ ok: false, message: data.error ?? "Gagal mengajukan refund." });
+      }
+    } catch {
+      setRefundResult({ ok: false, message: "Gagal mengajukan refund." });
+    } finally {
+      setRefundBusy(false);
+    }
+  };
+
   return (
     <div className="flex flex-col">
       <DetailHero
@@ -280,6 +311,69 @@ export function PesananView() {
                     <Icon name="download" className="mr-2 h-4 w-4" aria-hidden />
                     {t("pesanan.invoiceDownload")}
                   </a>
+                )}
+
+                {/* R-044 — Refund & Pembatalan Berjenjang */}
+                {isPaid && (
+                  <div className="rounded-xl border border-violet-500/30 bg-violet-500/5 p-4" data-testid="refund-panel">
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="flex items-center gap-1.5 text-sm font-extrabold">
+                        <Icon name="rotate" className="h-4 w-4 text-violet-600" aria-hidden />
+                        {t("pesanan.refundTitle")}
+                      </p>
+                      <button type="button" onClick={() => setRefundOpen((v) => !v)} className="text-xs font-bold text-primary hover:underline" data-testid="refund-toggle">
+                        {refundOpen ? t("pesanan.refundClose") : t("pesanan.refundOpen")}
+                      </button>
+                    </div>
+                    <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{t("pesanan.refundDesc")}</p>
+                    {refundOpen && (
+                      <div className="mt-3 space-y-3">
+                        <div className="rounded-lg border bg-background/60 p-3">
+                          <p className="text-[11px] font-extrabold uppercase tracking-wide text-muted-foreground">{t("pesanan.refundPolicyTitle")}</p>
+                          <ul className="mt-1.5 space-y-1 text-xs" data-testid="refund-policy">
+                            {REFUND_TIERS.map((tier) => (
+                              <li key={tier.code} className="flex justify-between gap-2">
+                                <span className="text-muted-foreground">{tier.labelId}</span>
+                                <span className="font-bold">{tier.percent}%</span>
+                              </li>
+                            ))}
+                          </ul>
+                          <p className="mt-1.5 text-[11px] text-muted-foreground">{t("pesanan.refundSla", { days: String(REFUND_SLA_DAYS) })}</p>
+                        </div>
+                        {refundResult ? (
+                          <div className={cn("rounded-lg border p-3 text-sm", refundResult.ok ? "border-emerald-500/40 bg-emerald-500/10" : "border-destructive/40 bg-destructive/10")} data-testid="refund-result">
+                            <p className="font-extrabold">{refundResult.ok ? t("pesanan.refundSent") : t("pesanan.refundFailed")}</p>
+                            {refundResult.ok && refundResult.tier && (
+                              <p className="mt-1">
+                                {t("pesanan.refundTier")}: <b>{refundResult.tier}</b> ({refundResult.percent}%) → {rupiah(refundResult.approvedAmount ?? 0)}
+                              </p>
+                            )}
+                            <p className="mt-1 text-xs text-muted-foreground">{refundResult.message}</p>
+                          </div>
+                        ) : (
+                          <>
+                            <textarea
+                              value={refundReason}
+                              onChange={(e) => setRefundReason(e.target.value)}
+                              rows={3}
+                              placeholder={t("pesanan.refundReasonPh")}
+                              className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm"
+                              data-testid="refund-reason"
+                            />
+                            <Button
+                              type="button"
+                              onClick={() => void submitRefund()}
+                              disabled={refundBusy || refundReason.trim().length < 5}
+                              className="h-10 w-full justify-center bg-violet-600 text-white hover:bg-violet-700"
+                              data-testid="refund-submit"
+                            >
+                              {refundBusy ? t("pesanan.refundSending") : t("pesanan.refundSubmit")}
+                            </Button>
+                          </>
+                        )}
+                      </div>
+                    )}
+                  </div>
                 )}
 
                 {status === "PENDING" && result.sandbox && (

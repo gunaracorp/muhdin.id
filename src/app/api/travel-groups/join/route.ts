@@ -2,6 +2,7 @@ import { NextRequest } from "next/server";
 import { db } from "@/lib/db";
 import { ok, fail } from "@/lib/api-helpers";
 import { rateLimit } from "@/lib/ratelimit";
+import { safeBody, GroupJoinSchema } from "@/lib/validation";
 
 /**
  * R-012 (v13.3) — Bergabung ke grup perjalanan dengan KODE (publik).
@@ -16,13 +17,11 @@ export async function POST(req: NextRequest) {
   try {
     const body = (await req.json().catch(() => null)) as Record<string, unknown> | null;
     if (!body) return fail("Data tidak valid.");
-
-    const code = String(body.code || "").trim().toUpperCase();
-    if (!code) return fail("Kode grup wajib diisi.");
-    const fullName = String(body.fullName || "").trim();
-    if (fullName.length < 3) return fail("Nama lengkap minimal 3 karakter.");
-    const phone = String(body.phone || "").trim();
-    if (phone && !/^[+0-9 ()-]{6,20}$/.test(phone)) return fail("Nomor WhatsApp tidak valid.");
+    const parsed = safeBody(GroupJoinSchema, body); // R-081
+    if (!parsed.ok) return fail(parsed.error);
+    const code = parsed.data.code;
+    const fullName = parsed.data.fullName;
+    const phone = parsed.data.phone;
 
     const group = await db.travelGroup.findUnique({ where: { code } });
     if (!group) return fail("Kode grup tidak ditemukan. Periksa kode dari panitia Anda.", 404);

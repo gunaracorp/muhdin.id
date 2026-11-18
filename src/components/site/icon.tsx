@@ -37,6 +37,9 @@ import {
   Check,
   // Task 29 (v13.2) — ikon organisasi master & komunitas WA
   Medal, Microscope, BedDouble, Coins, ShieldPlus, HandHeart,
+  // v14.1 «AKADEMI & MITRA» — doa audio, kelas live, merchant, API mitra
+  Volume2, VolumeX, Mic, Square, Video, Store, Crown, KeySquare, CalendarClock,
+  FileSignature,
 } from "lucide-react";
 
 export const ICONS: Record<string, React.ComponentType<{ className?: string; strokeWidth?: number }>> = {
@@ -211,6 +214,17 @@ export const ICONS: Record<string, React.ComponentType<{ className?: string; str
   zap: Zap,
   "play-circle": PlayCircle,
   check: Check,
+  // v14.1 «AKADEMI & MITRA» — doa audio, kelas live, merchant, API mitra
+  "volume-2": Volume2,
+  "volume-x": VolumeX,
+  mic: Mic,
+  square: Square,
+  video: Video,
+  store: Store,
+  crown: Crown,
+  "key-square": KeySquare,
+  "calendar-clock": CalendarClock,
+  "file-signature": FileSignature,
 };
 
 export function Icon({

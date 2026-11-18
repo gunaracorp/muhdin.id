@@ -50,6 +50,15 @@ export const SECTION_ROLES: { id: string; roles: Role[] }[] = [
   { id: "kampanye", roles: ["SUPER_ADMIN", "ADMIN", "EDITOR"] },
   // v14.0 «KAMPANYE & KAWAL» — Voucher & Kupon Kampanye (R-042)
   { id: "coupons", roles: ["SUPER_ADMIN", "ADMIN", "EDITOR"] },
+  // v14.1 «AKADEMI & MITRA» — kelas live, harga, refund, B2B, merchant, API, masjid
+  { id: "liveclasses", roles: ["SUPER_ADMIN", "ADMIN", "EDITOR", "VERIFIKATOR"] }, // R-024/R-026 dashboard mentor
+  { id: "pricerules", roles: ["SUPER_ADMIN", "ADMIN"] }, // R-043 harga musiman & early bird
+  { id: "refunds", roles: ["SUPER_ADMIN", "ADMIN"] }, // R-044 keputusan refund
+  { id: "grouporders", roles: ["SUPER_ADMIN", "ADMIN", "VERIFIKATOR"] }, // R-045 rombongan B2B
+  { id: "merchants", roles: ["SUPER_ADMIN", "ADMIN", "EDITOR"] }, // R-029 merchant mitra
+  { id: "apipartners", roles: ["SUPER_ADMIN"] }, // R-065 kunci API mitra
+  { id: "mosquepartners", roles: ["SUPER_ADMIN", "ADMIN", "EDITOR", "VERIFIKATOR"] }, // R-090 kemitraan masjid
+  { id: "syllabus", roles: ["SUPER_ADMIN", "ADMIN", "EDITOR"] }, // R-027 kurikulum builder
   { id: "tutorials", roles: ["SUPER_ADMIN", "ADMIN", "EDITOR"] },
   { id: "messages", roles: ["SUPER_ADMIN", "ADMIN"] },
   { id: "complaints", roles: ["SUPER_ADMIN", "ADMIN", "VERIFIKATOR"] },

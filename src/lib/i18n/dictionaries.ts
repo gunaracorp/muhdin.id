@@ -82,6 +82,13 @@ import { searchDict } from "@/lib/i18n/locales/search";
 import { keanggotaanDict } from "@/lib/i18n/locales/keanggotaan";
 // Audit 2026 — Kemitraan FKK Banten, Pembayaran, Keamanan, Model Biaya, KPI, ARMINA
 import { audit13Dict } from "@/lib/i18n/locales/audit13";
+// v14.1 «AKADEMI & MITRA» — doa audio (R-016), kelas live (R-024),
+// rombongan B2B (R-045), kemitraan masjid (R-090) + kunci refund/merchant (R-044/R-029)
+import { doaDict } from "@/lib/i18n/locales/doa";
+import { kelasDict } from "@/lib/i18n/locales/kelas";
+import { rombonganDict } from "@/lib/i18n/locales/rombongan";
+import { masjidDict } from "@/lib/i18n/locales/masjid";
+import { v141Dict } from "@/lib/i18n/locales/v141";
 
 const dicts = [
   commonDict,
@@ -171,6 +178,13 @@ const dicts = [
   audit13Dict,
   // v14.0 «KAMPANYE & KAWAL» — R-017 Kalender Musim Umrah & Haji
   kalenderDict,
+  // v14.1 «AKADEMI & MITRA» — doa audio, kelas live, rombongan B2B, kemitraan masjid,
+  // refund berjenjang, merchant KTA, item layanan baru
+  doaDict,
+  kelasDict,
+  rombonganDict,
+  masjidDict,
+  v141Dict,
 ];
 
 export const dictionaries: Record<"id" | "en" | "ar", Record<string, unknown>> = {

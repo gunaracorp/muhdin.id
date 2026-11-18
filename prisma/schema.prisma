@@ -580,6 +580,7 @@ model TourPackage {
   itinerary     ItineraryDay[]
   waitlist      WaitlistEntry[]
   travelGroups  TravelGroup[]
+  priceRules    PriceRule[]
 }
 
 /// Booking/permintaan jadwal jamaah terhadap sebuah paket (pipeline panitia).
@@ -612,6 +613,10 @@ model ForumThread {
   // R-082 anti-spam — skor & alasan filter otomatis (konteks moderasi)
   spamScore     Int          @default(0)
   spamReasons   String?
+  // R-025 v14.1 — Forum Diskusi Per-Kelas: thread terikat kelas Akademi live,
+  // terpisah dari forum jamaah umum, dimoderasi mentor.
+  kelasId       String?
+  kelas         LiveClass?   @relation(fields: [kelasId], references: [id], onDelete: SetNull)
   pinned        Boolean      @default(false)
   views         Int          @default(0)
   reviewedBy    String?
@@ -906,6 +911,9 @@ model AcademyCourse {
   durationMin  Int      @default(60)
   modules      Int      @default(4)
   quiz         String   @default("[]") // JSON [{q,options[4],answer}]
+  // R-027 v14.1 — Kurikulum Builder Drag-and-Drop: silabus JSON
+  // [{title,type:MODUL|KUIS|SERTIFIKASI,desc}] tersusun lewat dnd-kit di CMS.
+  syllabus     String   @default("[]")
   passScore    Int      @default(70)
   rewardPoints Int      @default(30)
   icon         String   @default("book-open")
@@ -1472,4 +1480,209 @@ model CouponRedemption {
   createdAt   DateTime @default(now())
 
   @@index([couponId, createdAt])
+}
+
+// ==================== v14.1.0 «AKADEMI & MITRA» ====================
+
+/// R-024 v14.1 «AKADEMI & MITRA» — Kelas Live & Webinar Terjadwal:
+/// agenda kelas daring dengan pendaftaran publik, pengingat dua kanal
+/// (WA + push saat keberangkatan), dan rekaman tersimpan setelah kelas.
+model LiveClass {
+  id           String   @id @default(cuid())
+  title        String
+  description  String   @default("")
+  instructor   String
+  level        String   @default("UMUM") // UMUM | DASAR | LANJUTAN | MENTOR
+  startsAt     DateTime
+  durationMin  Int      @default(90)
+  platform     String   @default("ZOOM") // ZOOM | MEET | OTHER
+  joinUrl      String   @default("") // tampil hanya setelah registrasi
+  capacity     Int      @default(100)
+  status       String   @default("SCHEDULED") // SCHEDULED | LIVE | DONE | CANCELLED
+  recordingUrl String? // rekaman tersimpan setelah kelas selesai
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  registrations LiveClassRegistration[]
+  forumThreads  ForumThread[]
+
+  @@index([status, startsAt])
+}
+
+/// Pendaftaran kelas live — unik per kelas per nomor WhatsApp (anti ganda).
+model LiveClassRegistration {
+  id             String   @id @default(cuid())
+  classId        String
+  liveClass      LiveClass @relation(fields: [classId], references: [id], onDelete: Cascade)
+  name           String
+  phone          String
+  attended       Boolean  @default(false) // dicatat mentor/panitia
+  mentorFeedback String? // R-026 umpan balik mentor per murid
+  createdAt      DateTime @default(now())
+
+  @@unique([classId, phone])
+  @@index([phone])
+}
+
+/// R-043 v14.1 — Harga Musiman & Early Bird: aturan harga per paket yang
+/// DIHITUNG ULANG SERVER-SIDE di checkout (klien tidak pernah dipercaya).
+/// SEASONAL  → potongan bila bulan keberangkatan jatuh di jendela musim.
+/// EARLYBIRD → potongan bila checkout sebelum deadline pemesan awal.
+model PriceRule {
+  id         String     @id @default(cuid())
+  packageId  String
+  tourPackage TourPackage @relation(fields: [packageId], references: [id], onDelete: Cascade)
+  kind       String     @default("SEASONAL") // SEASONAL | EARLYBIRD
+  monthFrom  Int? // 1–12 (SEASONAL, rentang boleh memutar tahun)
+  monthTo    Int?
+  deadline   DateTime? // EARLYBIRD
+  adjustType String     @default("PERCENT") // PERCENT | FIXED (potongan)
+  value      Int // persen 1–100 atau rupiah tetap
+  label      String     @default("")
+  active     Boolean    @default(true)
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+
+  @@index([packageId, active])
+}
+
+/// R-044 v14.1 — Refund & Pembatalan Berjenjang: kebijakan bertahap berdasar
+/// sisa hari menuju keberangkatan, SLA diproses ≤7 hari kerja, setiap keputusan
+/// panitia tercatat di jejak audit.
+model RefundRequest {
+  id             String    @id @default(cuid())
+  orderNumber    String    @unique
+  customerName   String
+  customerPhone  String
+  packageTitle   String    @default("")
+  departureDate  DateTime?
+  amountPaid     Int       @default(0)
+  tier           String    @default("T2") // kode tier kebijakan (lib/refund.ts)
+  percentApproved Int      @default(0)
+  approvedAmount Int       @default(0)
+  reason         String    @default("")
+  status         String    @default("PENDING") // PENDING | APPROVED | REJECTED | PAID | CANCELLED
+  adminNote      String    @default("")
+  decidedBy      String?
+  decidedAt      DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@index([status, createdAt])
+}
+
+/// R-045 v14.1 — Pendaftaran Rombongan B2B: koordinator mengunggah anggota
+/// massal (satu nama per baris) dan menerima SATU tagihan group order.
+model GroupOrder {
+  id               String    @id @default(cuid())
+  code             String    @unique // MHD-B2B-XXXX
+  groupName        String
+  coordinatorName  String
+  coordinatorPhone String
+  packageTitle     String
+  departureDate    DateTime?
+  memberNames      String    @default("[]") // JSON array nama anggota
+  memberCount      Int       @default(0)
+  unitPrice        Int       @default(0) // harga per jamaah saat order
+  totalAmount      Int       @default(0)
+  status           String    @default("PENDING") // PENDING | CONFIRMED | CANCELLED
+  notes            String    @default("")
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  @@index([status, createdAt])
+}
+
+/// R-029 v14.1 — Merchant Partner Benefit KTA: diskon & fasilitas merchant
+/// mitra yang dapat ditukar langsung dengan kartu KTA di lokasi mitra.
+model MerchantPartner {
+  id           String    @id @default(cuid())
+  name         String
+  category     String    @default("UMUM") // RITEL | HOTEL | TRANSPORTASI | PAKAIAN | ELEKTRONIK | KULINER | UMUM
+  discountText String
+  city         String    @default("")
+  address      String    @default("")
+  phone        String    @default("")
+  minTier      String    @default("KLASIK") // KLASIK | VERIFIED | PLATINUM
+  validUntil   DateTime?
+  active       Boolean   @default(true)
+  description  String    @default("")
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  redemptions MerchantRedemption[]
+
+  @@index([active, category])
+}
+
+/// Tebusan offer merchant dengan kartu KTA — dicatat panitia/mitra saat kasir.
+model MerchantRedemption {
+  id         String         @id @default(cuid())
+  merchantId String
+  merchant   MerchantPartner @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+  cardNo     String
+  holderName String         @default("")
+  note       String         @default("")
+  createdAt  DateTime       @default(now())
+
+  @@index([merchantId, createdAt])
+}
+
+/// R-065 v14.1 — API Publik v1 untuk Mitra: kunci API (disimpan hash),
+/// kuota harian, dan webhook tanda tangan HMAC agar mitra integrasi mandiri.
+model ApiPartner {
+  id                String    @id @default(cuid())
+  name              String
+  email             String    @default("")
+  keyHash           String    @unique // sha256 hex dari kunci penuh
+  keyPrefix         String // 8 karakter pertama (identifikasi di CMS)
+  quotaDaily        Int       @default(1000)
+  callsToday        Int       @default(0)
+  lastCallAt        DateTime?
+  webhookUrl        String    @default("")
+  webhookSecretHash String    @default("")
+  active            Boolean   @default(true)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@index([active])
+}
+
+/// R-090 v14.1 — Portal Kemitraan Masjid & Komunitas: masjid/komunitas daftar
+/// jadi mitra penjangkauan dengan kode relasi sendiri + dashboard aktivitas.
+model MosquePartner {
+  id        String   @id @default(cuid())
+  code      String   @unique // MHD-MP-XXXX
+  name      String
+  type      String   @default("MASJID") // MASJID | KOMUNITAS | SEKOLAH | YAYASAN
+  city      String   @default("")
+  province  String   @default("")
+  address   String   @default("")
+  picName   String
+  phone     String
+  reach     Int      @default(0) // estimasi jangkauan jamaah per bulan
+  status    String   @default("PENDING") // PENDING | ACTIVE | SUSPENDED
+  program   String   @default("KAJIAN") // KAJIAN | TABARRUJ | UMRAH
+  notes     String   @default("")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  activities PartnerActivity[]
+
+  @@index([status, createdAt])
+}
+
+/// Log aktivitas kemitraan (kajian, tabarru, pelatihan, umrah bersama).
+model PartnerActivity {
+  id         String        @id @default(cuid())
+  partnerId  String
+  partner    MosquePartner @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+  type       String        @default("KAJIAN") // KAJIAN | TABARRUJ | PELATIHAN | UMRAH_BERSAMA
+  title      String
+  date       DateTime
+  attendance Int           @default(0)
+  notes      String        @default("")
+  createdAt  DateTime      @default(now())
+
+  @@index([partnerId, date])
 }

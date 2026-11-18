@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { guardRole, ok, fail, parseIntOr } from "@/lib/api-helpers";
 import { rateLimit } from "@/lib/ratelimit";
 import { logAudit } from "@/lib/audit";
+import { safeBody, SoalSubmitSchema } from "@/lib/validation";
 
 /**
  * R-023 (v13.3) — Bank Soal Manasik Berjenjang.
@@ -84,10 +85,10 @@ export async function POST(req: NextRequest) {
     if (!rateLimit(req, "soal-submit", 12, 60_000)) {
       return fail("Terlalu banyak pengajuan latihan. Sebentar lagi, ya.", 429);
     }
-    const level = String(body.level || "").toUpperCase();
-    if (!LEVELS.includes(level as (typeof LEVELS)[number])) return fail("Level tidak valid.");
-    const answers = Array.isArray(body.answers) ? (body.answers as { id?: unknown; idx?: unknown }[]) : [];
-    if (answers.length === 0) return fail("Tidak ada jawaban untuk dinilai.");
+    const parsed = safeBody(SoalSubmitSchema, body); // R-081
+    if (!parsed.ok) return fail(parsed.error);
+    const level = parsed.data.level;
+    const answers = parsed.data.answers;
     if (answers.length > MAX_N) return fail("Jumlah jawaban melebihi batas sesi.");
 
     const ids = answers.map((a) => String(a.id || "")).filter(Boolean);

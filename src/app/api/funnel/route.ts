@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { guardRole, ok, fail } from "@/lib/api-helpers";
 import { rateLimit } from "@/lib/ratelimit";
 import { isFunnelStage, recordFunnel, FUNNEL_STAGES, FUNNEL_LABELS } from "@/lib/funnel";
+import { safeBody, FunnelTrackSchema } from "@/lib/validation";
 
 /**
  * R-093 — Analitik Funnel Pendaftaran.
@@ -26,12 +27,13 @@ export async function POST(req: NextRequest) {
   }
   try {
     const body = await req.json().catch(() => ({}));
-    const stage = String(body?.stage || "");
-    if (!isFunnelStage(stage) || !CLIENT_STAGES.has(stage)) {
+    const parsed = safeBody(FunnelTrackSchema, body); // R-081
+    if (!parsed.ok) return fail(parsed.error, 400);
+    if (!CLIENT_STAGES.has(parsed.data.stage)) {
       return fail("Stage tidak valid.", 400);
     }
-    const refId = body?.refId ? String(body.refId).slice(0, 120) : null;
-    recordFunnel(stage, refId, "WEB");
+    const refId = typeof body?.refId === "string" && body.refId ? body.refId.slice(0, 120) : null;
+    recordFunnel(parsed.data.stage, refId, "WEB");
     return ok({ tracked: true });
   } catch {
     return fail("Gagal mencatat event.", 500);

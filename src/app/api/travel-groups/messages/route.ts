@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { guardRole, ok, fail } from "@/lib/api-helpers";
 import { rateLimit } from "@/lib/ratelimit";
 import { logAudit } from "@/lib/audit";
+import { safeBody, GroupMessageSchema } from "@/lib/validation";
 
 /**
  * R-012 (v13.3) — Chat singkat grup perjalanan (portal, berbasis KODE).
@@ -13,7 +14,7 @@ import { logAudit } from "@/lib/audit";
  */
 
 const CHAT_TAKE = 60;
-const MAX_LEN = 500;
+// Batas panjang pesan (500) kini divalidasi Zod di GroupMessageSchema (R-081).
 
 export async function GET(req: NextRequest) {
   try {
@@ -45,14 +46,11 @@ export async function POST(req: NextRequest) {
   try {
     const body = (await req.json().catch(() => null)) as Record<string, unknown> | null;
     if (!body) return fail("Data tidak valid.");
-
-    const code = String(body.code || "").trim().toUpperCase();
-    if (!code) return fail("Kode grup wajib diisi.");
-    const authorName = String(body.authorName || "").trim();
-    if (authorName.length < 2 || authorName.length > 40) return fail("Nama pengirim 2–40 karakter.");
-    const text = String(body.body || "").trim();
-    if (!text) return fail("Pesan tidak boleh kosong.");
-    if (text.length > MAX_LEN) return fail(`Pesan maksimal ${MAX_LEN} karakter.`);
+    const parsed = safeBody(GroupMessageSchema, body); // R-081
+    if (!parsed.ok) return fail(parsed.error);
+    const code = parsed.data.code;
+    const authorName = parsed.data.authorName;
+    const text = parsed.data.body;
 
     const group = await db.travelGroup.findUnique({ where: { code }, select: { id: true, status: true } });
     if (!group) return fail("Kode grup tidak ditemukan.", 404);

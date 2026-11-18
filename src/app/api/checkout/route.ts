@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
 import { db } from "@/lib/db";
-import { ok, fail, parseIntOr } from "@/lib/api-helpers";
+import { ok, fail } from "@/lib/api-helpers";
 import { rateLimit } from "@/lib/ratelimit";
 import { logAudit } from "@/lib/audit";
 import {
@@ -8,6 +8,8 @@ import {
 } from "@/lib/payment";
 import { notifyOrderPaid } from "@/lib/whatsapp";
 import { validateCoupon, CouponReason } from "@/lib/coupon";
+import { computePackagePrice } from "@/lib/pricing-server"; // R-043
+import { safeBody, CheckoutSchema } from "@/lib/validation"; // R-081
 
 /**
  * v12.4 «LUNAS» — R-010 Checkout Lengkap.
@@ -20,6 +22,9 @@ import { validateCoupon, CouponReason } from "@/lib/coupon";
  * server-side (potongan klien tidak pernah dipercaya); amount tersimpan
  * sudah setelah diskon, discountAmount + couponCode dicatat pada Order,
  * tebusan baru dicatat saat LUNAS (applyPaid).
+ * v14.1 «AKADEMI & MITRA» — R-043: harga per jamaah dihitung ulang
+ * server-side dari aturan musiman & early bird (PriceRule); R-081: seluruh
+ * payload divalidasi Zod di gerbang (lib/validation.ts).
  */
 
 /** Pesan ramah per alasan kupon — konsisten dengan panel checkout. */
@@ -40,22 +45,14 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json().catch(() => null);
     if (!body) return fail("Data tidak valid.");
+    const parsed = safeBody(CheckoutSchema, body); // R-081 — gerbang Zod
+    if (!parsed.ok) return fail(parsed.error);
+    const { packageId, name, phone, email, quantity, notes, couponCode } = parsed.data;
 
-    const packageId = String(body.packageId || "");
-    const name = String(body.name || "").trim();
-    const phone = String(body.phone || "").trim();
-    const email = String(body.email || "").trim();
-    const quantity = Math.max(1, Math.min(50, parseIntOr(String(body.quantity ?? "") || null, 1) as number));
-    const notes = String(body.notes || "").trim();
-    const couponCode = String(body.couponCode || "").trim(); // R-042
-
-    if (!packageId) return fail("Paket tidak valid.");
-    if (name.length < 3) return fail("Nama lengkap minimal 3 karakter.");
-    if (!/^[+\-\s()0-9]{8,20}$/.test(phone)) return fail("Nomor WhatsApp/telepon tidak valid.");
-    // R-078 UU PDP — persetujuan pemrosesan data pribadi wajib saat checkout.
-    if (body.pdpConsent !== true) {
-      return fail("Persetujuan Pelindungan Data Pribadi (UU PDP) wajib dicentang.");
-    }
+    // R-043 — harga final per jamaah dihitung server-side dari aturan harga
+    // (musiman & early bird). Klien hanya mengirim packageId.
+    const quote = await computePackagePrice(packageId, null);
+    const unitPrice = quote.finalPrice;
 
     const pkg = await db.tourPackage.findUnique({
       where: { id: packageId },
@@ -67,7 +64,7 @@ export async function POST(req: NextRequest) {
       return fail(`Sisa slot hanya ${pkg.slots - pkg.slotsTaken}. Kurangi jumlah jamaah atau hubungi panitia.`);
     }
 
-    const subtotal = pkg.price * quantity;
+    const subtotal = unitPrice * quantity;
 
     // R-042 — validasi ulang kupon server-side; klien tidak pernah dipercaya.
     let discountAmount = 0;
@@ -98,7 +95,7 @@ export async function POST(req: NextRequest) {
           customerPhone: phone,
           customerEmail: email || null,
           quantity,
-          unitPrice: pkg.price,
+          unitPrice, // harga final setelah aturan musiman/early bird (R-043)
           amount,
           discountAmount,
           couponCode: appliedCode,
@@ -144,6 +141,9 @@ export async function POST(req: NextRequest) {
           subtotal,
           discountAmount,
           couponCode: appliedCode,
+          unitPrice,
+          unitBasePrice: quote.basePrice,
+          priceAdjustments: quote.adjustments, // R-043 rincian potongan musiman/early bird
           packageTitle: order.packageTitle,
         },
         payment: {

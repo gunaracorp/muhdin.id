@@ -2,6 +2,7 @@ import { NextRequest } from "next/server";
 import { db } from "@/lib/db";
 import { guardRole, ok, fail, parseIntOr, slugify } from "@/lib/api-helpers";
 import { logAudit } from "@/lib/audit";
+import { describeRule } from "@/lib/pricing"; // R-043 — label promo musiman/early bird
 
 /**
  * v5.0 — Marketplace Paket Ibadah.
@@ -44,11 +45,22 @@ export async function GET(req: NextRequest) {
         member: {
           select: { id: true, name: true, type: true, city: true, licenseNo: true, status: true, rating: true },
         },
+        // R-043 — aturan harga aktif ikut dikirim untuk badge promo katalog.
+        priceRules: {
+          where: { active: true },
+          select: { kind: true, adjustType: true, value: true, monthFrom: true, monthTo: true, deadline: true, label: true },
+        },
       },
       orderBy: [{ featured: "desc" }, { departureDate: "asc" }, { createdAt: "desc" }],
     });
 
-    return ok(rows);
+    // Label promo ringkas per paket (Early Bird s.d. <tanggal> / Musim Nov–Feb).
+    return ok(
+      rows.map((p) => ({
+        ...p,
+        promos: (p.priceRules ?? []).slice(0, 2).map((r) => describeRule(r)),
+      }))
+    );
   } catch {
     return fail("Gagal memuat paket.", 500);
   }

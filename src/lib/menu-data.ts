@@ -90,6 +90,12 @@ export const MENU_NODES: MenuNode[] = [
       { slug: "grup-perjalanan", icon: "users", route: "grup" },
       // v14.0 R-017 — Kalender Musim Umrah & Haji
       { slug: "kalender-musim", icon: "calendar-days", route: "kalender" },
+      // v14.1 R-016 — Panduan Doa & Dzikir Audio
+      { slug: "doa-dzikir", icon: "volume-2", route: "doa" },
+      // v14.1 R-024 — Kelas Live & Webinar Terjadwal
+      { slug: "kelas-live", icon: "video", route: "kelas" },
+      // v14.1 R-045 — Pendaftaran Rombongan B2B (satu tagihan)
+      { slug: "rombongan-b2b", icon: "users", route: "rombongan" },
       { slug: "booking-slot", icon: "calendar-check", route: "booking" },
       { slug: "benefit-kta", icon: "gift", route: "benefit" },
       { slug: "paspor-haji", icon: "wallet-cards", route: "paspor" },
@@ -151,6 +157,8 @@ export const MENU_NODES: MenuNode[] = [
       { slug: "darurat", icon: "siren", route: "darurat" },
       // Audit 2026 — kemitraan, pembayaran, keamanan, model biaya
       { slug: "kemitraan", icon: "handshake", route: "kemitraan" },
+      // v14.1 R-090 — Portal Kemitraan Masjid & Komunitas
+      { slug: "masjid-mitra", icon: "landmark", route: "masjid" },
       { slug: "pembayaran", icon: "wallet", route: "pembayaran" },
       { slug: "keamanan", icon: "shield-ellipsis", route: "keamanan" },
       { slug: "biaya", icon: "banknote", route: "biaya" },

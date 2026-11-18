@@ -77,6 +77,11 @@ import { LatihanView } from "@/components/views/latihan-view";
 import { GrupView } from "@/components/views/grup-view";
 // v14.0 «KAMPANYE & KAWAL» — R-017 Kalender Musim Umrah & Haji
 import { KalenderView } from "@/components/views/kalender-view";
+// v14.1 «AKADEMI & MITRA» — doa audio, kelas live, rombongan B2B, kemitraan masjid
+import { DoaView } from "@/components/views/doa-view";
+import { KelasLiveView } from "@/components/views/kelas-live-view";
+import { RombonganView } from "@/components/views/rombongan-view";
+import { MasjidView } from "@/components/views/masjid-view";
 // v5.0 — Marketplace paket, forum jamaah, kartu jamaah digital
 import { PaketView } from "@/components/views/paket-view";
 import { PaketDetail } from "@/components/views/paket-detail";
@@ -254,6 +259,22 @@ export function MuhdinApp({ initialLocale = "id" }: { initialLocale?: "id" | "en
     // v14.0 R-017 — Kalender Musim Umrah & Haji (peta 12 bulan)
     case "kalender":
       content = <KalenderView />;
+      break;
+    // v14.1 R-016 — Panduan Doa & Dzikir Audio (TTS perangkat)
+    case "doa":
+      content = <DoaView />;
+      break;
+    // v14.1 R-024 — Kelas Live & Webinar Terjadwal (+ forum per-kelas R-025)
+    case "kelas":
+      content = <KelasLiveView />;
+      break;
+    // v14.1 R-045 — Pendaftaran Rombongan B2B (satu tagihan)
+    case "rombongan":
+      content = <RombonganView />;
+      break;
+    // v14.1 R-090 — Portal Kemitraan Masjid & Komunitas
+    case "masjid":
+      content = <MasjidView />;
       break;
     // Task 50 — Pusat Layanan, Perizinan & Sertifikasi (menu baru)
     case "layanan":

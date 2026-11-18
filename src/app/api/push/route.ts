@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { ok, fail } from "@/lib/api-helpers";
 import { rateLimit } from "@/lib/ratelimit";
 import { pushConfig } from "@/lib/web-push";
+import { safeBody, PushSubscribeSchema } from "@/lib/validation";
 
 /**
  * R-011 Web Push — langganan notifikasi keberangkatan jamaah.
@@ -22,14 +23,16 @@ export async function POST(req: NextRequest) {
   }
   try {
     const body = await req.json().catch(() => ({}));
-    const sub = body?.subscription;
-    const endpoint = String(sub?.endpoint || "");
-    const p256dh = String(sub?.keys?.p256dh || "");
-    const auth = String(sub?.keys?.auth || "");
-    if (!endpoint.startsWith("https://") || !p256dh || !auth) {
+    // R-081 — langganan divalidasi Zod (endpoint URL + kunci p256dh/auth).
+    const parsed = safeBody(PushSubscribeSchema, body?.subscription ? { ...body.subscription, cardNo: body.cardNo ?? null } : null);
+    if (!parsed.ok) return fail(parsed.error, 400);
+    const endpoint = parsed.data.endpoint;
+    const p256dh = parsed.data.keys.p256dh;
+    const auth = parsed.data.keys.auth;
+    if (!endpoint.startsWith("https://")) {
       return fail("Langganan push tidak valid.", 400);
     }
-    const cardNo = body?.cardNo ? String(body.cardNo).trim().slice(0, 40) : null;
+    const cardNo = parsed.data.cardNo ? String(parsed.data.cardNo).trim().slice(0, 40) : null;
     await db.pushSubscription.upsert({
       where: { endpoint },
       update: { p256dh, auth, cardNo },

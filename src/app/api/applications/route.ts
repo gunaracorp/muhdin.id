@@ -6,6 +6,7 @@ import { notifyEmailApplication } from "@/lib/email"; // Task 60 — notifikasi 
 import { rateLimit } from "@/lib/ratelimit";
 import { broadcastRegistration } from "@/lib/live-gateway"; // Task 53 — push realtime
 import { recordFunnel } from "@/lib/funnel"; // R-093 — funnel pendaftaran
+import { safeBody, ApplicationSchema } from "@/lib/validation"; // R-081
 
 /**
  * Task 53 — Penugasan nomor urut ATOMIK.
@@ -81,29 +82,23 @@ export async function POST(req: NextRequest) {
     // Task 33 (ROLE 08) — No. izin hanya wajib untuk jenis berizin (PPIU/PIHK/KBIHU);
     // peran individu/penyedia/teknologi/partner boleh tanpa nomor izin.
     const LICENSED_TYPES = ["PPIU", "PIHK", "KBIHU"];
-    const required = ["orgName", "type", "contactName", "email", "phone", "city"];
-    for (const f of required) {
-      if (!String(body[f] || "").trim()) return fail(`Kolom ${f} wajib diisi.`);
-    }
-    if (LICENSED_TYPES.includes(String(body.type)) && !String(body.licenseNo || "").trim()) {
+    // R-081 — bentuk payload divalidasi Zod di gerbang.
+    const parsed = safeBody(ApplicationSchema, body);
+    if (!parsed.ok) return fail(parsed.error);
+    if (LICENSED_TYPES.includes(parsed.data.type) && !parsed.data.licenseNo) {
       return fail("Kolom licenseNo wajib diisi untuk jenis PPIU/PIHK/KBIHU.");
-    }
-    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(String(body.email))) return fail("Format email tidak valid.");
-    // R-078 UU PDP — persetujuan pemrosesan data pribadi wajib (UU 27/2022).
-    if (body.pdpConsent !== true) {
-      return fail("Persetujuan Pelindungan Data Pribadi (UU PDP) wajib dicentang.");
     }
     const ticketCode = await generateTicketCode();
     const app = await createWithQueueNumber({
-      orgName: String(body.orgName).trim(),
-      type: String(body.type),
-      contactName: String(body.contactName).trim(),
-      email: String(body.email).trim(),
-      phone: String(body.phone).trim(),
-      city: String(body.city).trim(),
-      province: String(body.province || "").trim(),
-      licenseNo: String(body.licenseNo).trim(),
-      message: body.message ? String(body.message) : null,
+      orgName: parsed.data.orgName,
+      type: parsed.data.type,
+      contactName: parsed.data.contactName,
+      email: parsed.data.email,
+      phone: parsed.data.phone,
+      city: parsed.data.city,
+      province: parsed.data.province,
+      licenseNo: parsed.data.licenseNo,
+      message: parsed.data.message || null,
       pdpConsent: true,
       pdpConsentAt: new Date(),
       ticketCode, // Task 18 — kode pelacakan publik

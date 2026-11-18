@@ -526,6 +526,8 @@ export interface TourPackageItem {
   metaDescription?: string | null;
   createdAt: string;
   updatedAt: string;
+  /** R-043 v14.1 — label promo harga musiman/early bird aktif (dari API). */
+  promos?: string[];
 }
 
 export interface PackageBookingItem {

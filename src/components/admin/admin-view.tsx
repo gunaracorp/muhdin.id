@@ -53,6 +53,15 @@ import { AdminPush } from "@/components/admin/admin-push";
 import { AdminCampaigns } from "@/components/admin/admin-campaigns";
 // v14.0 «KAMPANYE & KAWAL» — Voucher & Kupon Kampanye (R-042)
 import { AdminCoupons } from "@/components/admin/admin-coupons";
+// v14.1 «AKADEMI & MITRA» — kelas live & mentor, harga, refund, B2B, merchant, API, masjid, kurikulum
+import { AdminLiveClasses } from "@/components/admin/admin-live-classes";
+import { AdminPriceRules } from "@/components/admin/admin-price-rules";
+import { AdminRefunds } from "@/components/admin/admin-refunds";
+import { AdminGroupOrders } from "@/components/admin/admin-group-orders";
+import { AdminMerchants } from "@/components/admin/admin-merchants";
+import { AdminApiPartners } from "@/components/admin/admin-api-partners";
+import { AdminMosquePartners } from "@/components/admin/admin-mosque-partners";
+import { AdminSyllabus } from "@/components/admin/admin-syllabus";
 // v12.4 «LUNAS» — Pesanan & Invoice (checkout + payment gateway)
 import { AdminOrders } from "@/components/admin/admin-orders";
 import { AdminJamaahOps } from "@/components/admin/admin-jamaah-ops";
@@ -90,6 +99,15 @@ const MENU = [
   { id: "kampanye", label: "Kampanye Musiman", icon: "megaphone" },
   // v14.0 «KAMPANYE & KAWAL» — Voucher & Kupon Kampanye (R-042)
   { id: "coupons", label: "Voucher & Kupon", icon: "ticket-percent" },
+  // v14.1 «AKADEMI & MITRA» — panel baru
+  { id: "liveclasses", label: "Kelas Live & Mentor", icon: "video" },
+  { id: "pricerules", label: "Harga Musiman", icon: "ticket-percent" },
+  { id: "refunds", label: "Refund & Pembatalan", icon: "rotate" },
+  { id: "grouporders", label: "Rombongan B2B", icon: "users" },
+  { id: "merchants", label: "Merchant Mitra", icon: "store" },
+  { id: "apipartners", label: "API Mitra", icon: "key-square" },
+  { id: "mosquepartners", label: "Kemitraan Masjid", icon: "landmark" },
+  { id: "syllabus", label: "Kurikulum Builder", icon: "book-marked" },
   { id: "tutorials", label: "Tutorial", icon: "graduation-cap" },
   { id: "messages", label: "Pesan Masuk", icon: "inbox" },
   { id: "complaints", label: "Pengaduan", icon: "shield-alert" },
@@ -313,6 +331,15 @@ export function AdminView() {
           {section === "push" && <AdminPush />}
           {section === "kampanye" && <AdminCampaigns />}
           {section === "coupons" && <AdminCoupons />}
+          {/* v14.1 «AKADEMI & MITRA» */}
+          {section === "liveclasses" && <AdminLiveClasses />}
+          {section === "pricerules" && <AdminPriceRules />}
+          {section === "refunds" && <AdminRefunds />}
+          {section === "grouporders" && <AdminGroupOrders />}
+          {section === "merchants" && <AdminMerchants />}
+          {section === "apipartners" && <AdminApiPartners />}
+          {section === "mosquepartners" && <AdminMosquePartners />}
+          {section === "syllabus" && <AdminSyllabus />}
           {section === "audit" && <AdminAudit />}
           {section === "users" && <AdminUsers meId={user.id} />}
           {/* GABUNG v11 — Power Pack */}

@@ -255,6 +255,13 @@ export function PaketView() {
                             {rupiah(p.price)}
                             <span className="text-xs font-semibold text-muted-foreground"> {t("paket.perPax")}</span>
                           </p>
+                          {/* R-043 — badge promo harga musiman/early bird */}
+                          {(p.promos ?? []).map((promo: string) => (
+                            <p key={promo} className="mt-0.5 inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:text-emerald-400">
+                              <Icon name="ticket-percent" className="h-3 w-3" aria-hidden />
+                              {promo}
+                            </p>
+                          ))}
                         </div>
                         <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-3.5 py-2 text-xs font-bold text-primary transition group-hover:bg-primary group-hover:text-white">
                           {t("paket.viewDetail")}

@@ -4,6 +4,7 @@ import { guardRole, ok, fail, computeLifecycle } from "@/lib/api-helpers";
 import { rateLimit } from "@/lib/ratelimit";
 import { logAudit } from "@/lib/audit";
 import { decryptField, encryptField } from "@/lib/vault-crypto";
+import { safeBody, JamaahDocSchema } from "@/lib/validation";
 
 /**
  * v6.0 — Brankas Dokumen Jamaah (proses): paspor/visa/vaksin/tiket/asuransi
@@ -95,16 +96,17 @@ export async function POST(req: NextRequest) {
     }
     const body = await req.json().catch(() => null);
     if (!body) return fail("Data tidak valid.");
+    const parsed = safeBody(JamaahDocSchema, body); // R-081
+    if (!parsed.ok) return fail(parsed.error);
 
-    const cardNo = String(body.cardNo || "").trim().toUpperCase();
-    if (!cardNo) return fail("Nomor kartu jamaah wajib diisi.");
+    const cardNo = parsed.data.cardNo;
     const card = await db.pilgrimCard.findUnique({ where: { cardNo } });
     if (!card) return fail("Kartu jamaah tidak ditemukan. Periksa nomor kartu Anda.", 404);
     if (card.status !== "ACTIVE") return fail("Kartu tidak aktif — hubungi panitia MUHDIN.", 403);
 
-    const kind = KINDS.includes(String(body.kind)) ? String(body.kind) : "PASPOR";
-    const issueDate = body.issueDate ? new Date(String(body.issueDate)) : null;
-    const expiryDate = body.expiryDate ? new Date(String(body.expiryDate)) : null;
+    const kind = parsed.data.kind;
+    const issueDate = parsed.data.issueDate ? new Date(parsed.data.issueDate) : null;
+    const expiryDate = parsed.data.expiryDate ? new Date(parsed.data.expiryDate) : null;
     if (issueDate && Number.isNaN(issueDate.getTime())) return fail("Tanggal terbit tidak valid.");
     if (expiryDate && Number.isNaN(expiryDate.getTime())) return fail("Tanggal kedaluwarsa tidak valid.");
 
@@ -112,11 +114,11 @@ export async function POST(req: NextRequest) {
       data: {
         pilgrimCardId: card.id,
         kind,
-        docNo: encryptField(String(body.docNo || "")) ?? "",
+        docNo: encryptField(parsed.data.docNo) ?? "",
         issueDate,
         expiryDate,
-        fileUrl: body.fileUrl ? encryptField(String(body.fileUrl)) : null,
-        note: body.note ? encryptField(String(body.note)) : null,
+        fileUrl: parsed.data.fileUrl ? encryptField(parsed.data.fileUrl) : null,
+        note: parsed.data.note ? encryptField(parsed.data.note) : null,
         verifyStatus: "PENDING",
       },
     });

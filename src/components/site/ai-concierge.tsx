@@ -14,6 +14,9 @@
  * - Indikator mengetik, tombol bersihkan riwayat, aksesibilitas penuh
  *   (aria, esc untuk menutup, fokus input otomatis).
  * - Hydration-aman: dirender dari MuhdinApp hanya setelah mount.
+ * v14.1 (R-015) — WA-AI Bot di Portal & Voice: input suara via Web Speech
+ *   Recognition (tombol mikrofon, 3 bahasa) + keluaran suara via
+ *   speechSynthesis (tombol speaker per jawaban, auto-baca opsional).
  */
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -48,6 +51,13 @@ const COPY = {
     inputAria: "Tulis pertanyaan untuk Sahabat MUHDIN",
     sendAria: "Kirim pertanyaan",
     thinking: "Sahabat MUHDIN sedang mengetik…",
+    micAria: "Tanya dengan suara",
+    micStopAria: "Hentikan rekaman",
+    micListening: "Mendengarkan…",
+    micUnsupported: "Perangkat tidak mendukung input suara — gunakan Chrome/Edge/Safari.",
+    speakAria: "Putar jawaban dengan suara",
+    stopSpeakAria: "Hentikan suara",
+    autoSpeak: "Baca otomatis jawaban",
   },
   en: {
     title: "Sahabat MUHDIN",
@@ -68,6 +78,13 @@ const COPY = {
     inputAria: "Write a question for Sahabat MUHDIN",
     sendAria: "Send question",
     thinking: "Sahabat MUHDIN is typing…",
+    micAria: "Ask by voice",
+    micStopAria: "Stop recording",
+    micListening: "Listening…",
+    micUnsupported: "This device does not support voice input — use Chrome/Edge/Safari.",
+    speakAria: "Read answer aloud",
+    stopSpeakAria: "Stop voice",
+    autoSpeak: "Auto-read answers",
   },
   ar: {
     title: "صاحب مُهدين",
@@ -88,6 +105,13 @@ const COPY = {
     inputAria: "اكتب سؤالاً لصاحب مُهدين",
     sendAria: "إرسال السؤال",
     thinking: "صاحب مُهدين يكتب الآن…",
+    micAria: "اسأل بالصوت",
+    micStopAria: "إيقاف التسجيل",
+    micListening: "أستمع الآن…",
+    micUnsupported: "الجهاز لا يدعم الإدخال الصوتي — استخدم كروم/إيدج/سفاري.",
+    speakAria: "اقرأ الجواب بصوت مسموع",
+    stopSpeakAria: "إيقاف الصوت",
+    autoSpeak: "قراءة الجواب تلقائياً",
   },
 } as const;
 
@@ -115,6 +139,126 @@ export function SahabatMuhdin() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const mountedRef = useRef(false);
+
+  // === R-015 (v14.1) — Voice: input mikrofon + keluaran suara ===
+  const [listening, setListening] = useState(false);
+  const [micSupported, setMicSupported] = useState<boolean | null>(null);
+  const [speakingId, setSpeakingId] = useState<string | null>(null);
+  const [autoSpeak, setAutoSpeak] = useState(false);
+  const recogRef = useRef<{ stop: () => void } | null>(null);
+  const autoSpeakRef = useRef(false);
+
+  useEffect(() => {
+    // SpeechRecognition: Chrome/Edge (SpeechRecognition) & Safari (webkit).
+    const w = window as unknown as Record<string, unknown>;
+    const SR = (w.SpeechRecognition ?? w.webkitSpeechRecognition) as
+      | (new () => {
+        lang: string;
+        interimResults: boolean;
+        maxAlternatives: number;
+        onresult: ((e: { results: ArrayLike<ArrayLike<{ transcript: string }>> }) => void) | null;
+        onend: (() => void) | null;
+        onerror: (() => void) | null;
+        start: () => void;
+        stop: () => void;
+      })
+      | undefined;
+    setMicSupported(!!SR);
+    try {
+      const stored = localStorage.getItem("muhdin-ai-autospeak");
+      if (stored === "1") {
+        setAutoSpeak(true);
+        autoSpeakRef.current = true;
+      }
+    } catch {
+      /* abaikan */
+    }
+  }, []);
+
+  // Bersihkan suara saat locale berubah / unmount.
+  useEffect(() => {
+    return () => {
+      if (typeof window !== "undefined" && "speechSynthesis" in window) window.speechSynthesis.cancel();
+      recogRef.current?.stop();
+    };
+  }, []);
+
+  const speak = useCallback(
+    (text: string, id: string) => {
+      if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
+      window.speechSynthesis.cancel();
+      // Buang sintaks markdown agar pembacaan natural.
+      const plain = text.replace(/[#*_`>\[\]]/g, "").replace(/\s+/g, " ").slice(0, 1200);
+      const utter = new SpeechSynthesisUtterance(plain);
+      utter.lang = locale === "ar" ? "ar-SA" : locale === "en" ? "en-US" : "id-ID";
+      utter.rate = 1;
+      const voices = window.speechSynthesis.getVoices();
+      const v = voices.find((vo) => vo.lang?.toLowerCase().startsWith(utter.lang.slice(0, 2)));
+      if (v) utter.voice = v;
+      utter.onend = () => setSpeakingId(null);
+      utter.onerror = () => setSpeakingId(null);
+      setSpeakingId(id);
+      window.speechSynthesis.speak(utter);
+    },
+    [locale]
+  );
+
+  const toggleMic = useCallback(() => {
+    if (listening) {
+      recogRef.current?.stop();
+      setListening(false);
+      return;
+    }
+    const w = window as unknown as Record<string, unknown>;
+    const SR = (w.SpeechRecognition ?? w.webkitSpeechRecognition) as
+      | (new () => {
+        lang: string;
+        interimResults: boolean;
+        maxAlternatives: number;
+        onresult: ((e: { results: ArrayLike<ArrayLike<{ transcript: string }>> }) => void) | null;
+        onend: (() => void) | null;
+        onerror: (() => void) | null;
+        start: () => void;
+        stop: () => void;
+      })
+      | undefined;
+    if (!SR) {
+      setMicSupported(false);
+      return;
+    }
+    const recog = new SR();
+    recog.lang = locale === "ar" ? "ar-SA" : locale === "en" ? "en-US" : "id-ID";
+    recog.interimResults = false;
+    recog.maxAlternatives = 1;
+    recog.onresult = (e) => {
+      const said = e.results?.[0]?.[0]?.transcript ?? "";
+      if (said.trim()) setInput((prev) => (prev ? `${prev} ${said.trim()}` : said.trim()));
+    };
+    recog.onend = () => setListening(false);
+    recog.onerror = () => setListening(false);
+    recogRef.current = recog;
+    setListening(true);
+    try {
+      recog.start();
+    } catch {
+      setListening(false);
+    }
+  }, [listening, locale]);
+
+  function toggleAutoSpeak() {
+    const next = !autoSpeak;
+    setAutoSpeak(next);
+    autoSpeakRef.current = next;
+    try {
+      localStorage.setItem("muhdin-ai-autospeak", next ? "1" : "0");
+    } catch {
+      /* abaikan */
+    }
+    if (!next && typeof window !== "undefined" && "speechSynthesis" in window) {
+      window.speechSynthesis.cancel();
+      setSpeakingId(null);
+    }
+  }
 
   // Muat riwayat hanya setelah mount (bebas hydration mismatch).
   useEffect(() => {
@@ -171,16 +315,18 @@ export function SahabatMuhdin() {
         });
         const data = await res.json().catch(() => ({}));
         const reply: string = res.ok && data?.reply ? String(data.reply) : "";
-        setMessages((prev) =>
-          [...prev, { role: "assistant" as const, content: reply || c.error }].slice(-MAX_STORED)
-        );
+        const finalReply = reply || c.error;
+        const assistantMsg: Msg = { role: "assistant", content: finalReply };
+        setMessages((prev) => [...prev, assistantMsg].slice(-MAX_STORED));
+        // R-015 — auto-baca jawaban bila mode aktif (suhara per toggle).
+        if (autoSpeakRef.current) speak(finalReply, `auto-${next.length}`);
       } catch {
         setMessages((prev) => [...prev, { role: "assistant" as const, content: c.error }].slice(-MAX_STORED));
       } finally {
         setBusy(false);
       }
     },
-    [busy, messages, locale, c.error]
+    [busy, messages, locale, c.error, speak]
   );
 
   const isEmpty = messages.length === 0;
@@ -231,6 +377,20 @@ export function SahabatMuhdin() {
             </div>
             <button
               type="button"
+              onClick={toggleAutoSpeak}
+              title={c.autoSpeak}
+              aria-label={c.autoSpeak}
+              aria-pressed={autoSpeak}
+              className={cn(
+                "grid h-8 w-8 shrink-0 place-items-center rounded-full text-white/80 transition hover:bg-white/15 hover:text-white",
+                autoSpeak && "bg-white/20 text-white"
+              )}
+              data-testid="ai-autospeak"
+            >
+              <Icon name={autoSpeak ? "volume-2" : "volume-x"} className="h-4 w-4" aria-hidden />
+            </button>
+            <button
+              type="button"
               onClick={() => setMessages([])}
               title={c.clear}
               aria-label={c.clear}
@@ -257,14 +417,28 @@ export function SahabatMuhdin() {
                   className={cn("flex", m.role === "user" ? "justify-end" : "justify-start")}
                 >
                   {m.role === "assistant" ? (
-                    <div className="prose-sm prose-invert max-w-[92%] rounded-2xl rounded-ss-md bg-muted/70 px-3.5 py-2.5 text-sm leading-relaxed text-foreground [&_ol]:ms-4 [&_ol]:list-decimal [&_p]:my-1 [&_strong]:text-primary [&_ul]:ms-4 [&_ul]:list-disc">
-                      <ReactMarkdown
-                        components={{
-                          p: ({ children }) => <p>{children}</p>,
-                        }}
-                      >
-                        {m.content}
-                      </ReactMarkdown>
+                    <div className="max-w-[92%] rounded-2xl rounded-ss-md bg-muted/70 px-3.5 py-2.5 text-sm leading-relaxed text-foreground">
+                      <div className="prose-sm prose-invert [&_ol]:ms-4 [&_ol]:list-decimal [&_p]:my-1 [&_strong]:text-primary [&_ul]:ms-4 [&_ul]:list-disc">
+                        <ReactMarkdown
+                          components={{
+                            p: ({ children }) => <p>{children}</p>,
+                          }}
+                        >
+                          {m.content}
+                        </ReactMarkdown>
+                      </div>
+                      {/* R-015 — tombol putar jawaban per pesan */}
+                      <div className="mt-1.5 flex items-center justify-end">
+                        <button
+                          type="button"
+                          onClick={() => speakingId === `m-${i}` ? (window.speechSynthesis?.cancel(), setSpeakingId(null)) : speak(m.content, `m-${i}`)}
+                          aria-label={speakingId === `m-${i}` ? c.stopSpeakAria : c.speakAria}
+                          className="grid h-7 w-7 place-items-center rounded-full text-primary/70 transition hover:bg-primary/10 hover:text-primary"
+                          data-testid={`ai-speak-${i}`}
+                        >
+                          <Icon name={speakingId === `m-${i}` ? "square" : "volume-2"} className="h-3.5 w-3.5" aria-hidden />
+                        </button>
+                      </div>
                     </div>
                   ) : (
                     <div className="max-w-[88%] whitespace-pre-wrap rounded-2xl rounded-se-md bg-gradient-to-br from-primary to-forest px-3.5 py-2.5 text-sm leading-relaxed text-white shadow-sm">
@@ -306,7 +480,7 @@ export function SahabatMuhdin() {
             </div>
           )}
 
-          {/* Input */}
+          {/* Input + mikrofon (R-015) */}
           <form
             className="flex items-center gap-2 border-t border-border bg-background/95 px-3 py-2.5 pb-[max(0.625rem,env(safe-area-inset-bottom))]"
             onSubmit={(e) => {
@@ -314,11 +488,25 @@ export function SahabatMuhdin() {
               void send(input);
             }}
           >
+            {micSupported && (
+              <button
+                type="button"
+                onClick={toggleMic}
+                aria-label={listening ? c.micStopAria : c.micAria}
+                className={cn(
+                  "grid h-10 w-10 shrink-0 place-items-center rounded-full border border-input text-primary transition hover:bg-primary/10",
+                  listening && "animate-pulse border-destructive/50 bg-destructive/10 text-destructive"
+                )}
+                data-testid="ai-mic"
+              >
+                <Icon name={listening ? "square" : "mic"} className="h-4 w-4" aria-hidden />
+              </button>
+            )}
             <input
               ref={inputRef}
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder={c.placeholder}
+              placeholder={listening ? c.micListening : c.placeholder}
               aria-label={c.inputAria}
               maxLength={2000}
               disabled={busy}

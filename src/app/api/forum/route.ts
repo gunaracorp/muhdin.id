@@ -3,22 +3,27 @@ import { db } from "@/lib/db";
 import { ok, fail } from "@/lib/api-helpers";
 import { rateLimit } from "@/lib/ratelimit";
 import { spamScore } from "@/lib/anti-spam";
+import { safeBody, ForumThreadSchema } from "@/lib/validation";
 
 /**
  * v5.0 — Forum Jamaah.
  * GET  publik: daftar thread APPROVED (+ jumlah balasan disetujui),
- *              urut pinned → terbaru. Filter ?category= &q=.
+ *              urut pinned → terbaru. Filter ?category= &q= &kelasId=
+ *              (R-025 forum per-kelas; thread terikat kelas Akademi live).
  * POST publik (rate limit 3/menit/IP): ajukan thread baru → status PENDING
- *              (moderasi CMS sebelum tampil publik).
+ *              (moderasi CMS sebelum tampil publik). R-081: bentuk payload
+ *              divalidasi Zod di gerbang; R-025: kelasId opsional divalidasi.
  */
 export async function GET(req: NextRequest) {
   try {
     const sp = req.nextUrl.searchParams;
     const category = sp.get("category");
     const q = sp.get("q")?.trim();
+    const kelasId = sp.get("kelasId")?.trim();
 
     const where: Record<string, unknown> = { status: "APPROVED" };
     if (category) where.category = category;
+    if (kelasId) where.kelasId = kelasId;
     if (q) {
       where.OR = [{ title: { contains: q } }, { body: { contains: q } }, { authorName: { contains: q } }];
     }
@@ -26,7 +31,10 @@ export async function GET(req: NextRequest) {
     const threads = await db.forumThread.findMany({
       where,
       orderBy: [{ pinned: "desc" }, { createdAt: "desc" }],
-      include: { _count: { select: { replies: { where: { status: "APPROVED" } } } } },
+      include: {
+        _count: { select: { replies: { where: { status: "APPROVED" } } } },
+        kelas: { select: { title: true, level: true } },
+      },
     });
 
     return ok(
@@ -36,6 +44,8 @@ export async function GET(req: NextRequest) {
         body: t.body,
         authorName: t.authorName,
         category: t.category,
+        kelasId: t.kelasId,
+        kelasTitle: t.kelas?.title ?? null,
         status: t.status,
         pinned: t.pinned,
         views: t.views,
@@ -56,16 +66,15 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json().catch(() => null);
     if (!body) return fail("Data tidak valid.");
+    const parsed = safeBody(ForumThreadSchema, body);
+    if (!parsed.ok) return fail(parsed.error);
+    const { title, body: threadBody, authorName, authorContact, category, kelasId } = parsed.data;
 
-    const title = String(body.title || "").trim();
-    const threadBody = String(body.body || "").trim();
-    const authorName = String(body.authorName || "").trim();
-    const authorContact = String(body.authorContact || "").trim();
-    const category = String(body.category || "Umum");
-
-    if (title.length < 8) return fail("Judul pertanyaan minimal 8 karakter.");
-    if (threadBody.length < 20) return fail("Isi diskusi minimal 20 karakter agar mudah dijawab.");
-    if (authorName.length < 3) return fail("Nama Anda minimal 3 karakter.");
+    // R-025 — kelasId opsional harus merujuk kelas yang benar-benar ada.
+    if (kelasId) {
+      const kelas = await db.liveClass.findUnique({ where: { id: kelasId } });
+      if (!kelas) return fail("Kelas diskusi tidak ditemukan.");
+    }
 
     // R-082 — filter anti-spam otomatis sebelum masuk antrean moderasi.
     const verdict = await spamScore({ title, text: threadBody, authorContact, entity: "thread" });
@@ -82,6 +91,7 @@ export async function POST(req: NextRequest) {
         category: ["Manasik", "Dokumen", "Perjalanan", "Akomodasi", "Biaya", "Lainnya"].includes(category)
           ? category
           : "Lainnya",
+        kelasId: kelasId || null,
         status: "PENDING",
         spamScore: verdict.score,
         spamReasons: verdict.reasons.length ? verdict.reasons.join("; ") : null,
