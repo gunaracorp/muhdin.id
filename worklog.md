@@ -2518,3 +2518,17 @@ Work Log:
 
 QA Gates: tsc 0 · eslint 0 · build produksi OK · test-i18n-merge hijau · crawl 61 route bersih · 122/122 endpoint terlayani · /api/status v15.1.0 ✓ · endpoint uji 401-guard ✓.
 Stage Summary: situs lulus audit tanpa satu pun bug (3 temuan ditutup permanen), pengetahuan pengembangan kini terdokumentasi end-to-end di TUTORIAL.md, README sinkron dengan realitas kode (v15.1.1 «RAMBU» — papan penunjuk arah).
+
+## Task ID 39 — v15.1.2 «JATIM»: Struktur Resmi Bakorwil Jawa Timur — PT Ashanty Perdana Pratiwi
+Tanggal: 2026-11-18
+
+Task: owner menetapkan struktur organisasi — Ketua Bakorwil Jawa Timur dipegang oleh PT ASHANTY PERDANA PRATIWI, di bawah pimpinan Bapak Asmandanu (Komisaris Utama) dan Bapak Handita Aria Perdana (Direktur Utama) PT Ashanty Perdana Pratiwi.
+
+Work Log:
+- Pemetaan sumber data: jaringan daerah hidup di model **RegionalBranch** (prisma/schema.prisma:305) via `/api/branches`; pola seed resmi mengikuti `scripts/update-management.mjs` (Task 28). Label tampilan PIC = `detail.branch.pic` («Penanggung Jawab») di `#/dpd/<code>`.
+- **scripts/update-bakorwil-jatim.mjs** (baru, idempoten): upsert RegionalBranch — code `BAKORWIL-JATIM`, name «Badan Koordinator Wilayah Provinsi Jawa Timur», province Jawa Timur, city Surabaya, **picName = PT Ashanty Perdana Pratiwi**, description lengkap memuat kedua nama pimpinan (Komisaris Utama: Bapak Asmandanu; Direktur Utama: Bapak Handita Aria Perdana) + asal pembentukan (penunjukan Pengurus Pusat). Aman dijalankan berulang; tidak menyentuh cabang lain.
+- Eksekusi terverifikasi dua jalur: run-1 create ✓, run-2 update (idempoten) ✓. Total cabang terdaftar: 1 (Jawa Timur — wilayah lain tetap target desain per org-master, Register 38 Bakorwil).
+- Tidak ada nomor telepon/email baru dari owner → kolom kontak dibiarkan kosong (tidak mengarang data); bisa diisi kapan saja via CMS `#/admin` atau skrip.
+
+QA Gates: tsc 0 · eslint 0 · build produksi OK · `/api/branches` mengembalikan BAKORWIL-JATIM (published) · browser: `#/dpd` terdaftar ✓, `#/dpd/BAKORWIL-JATIM` menampilkan title + Penanggung Jawab PT Ashanty Perdana Pratiwi + Komisaris Utama Asmandanu + Direktur Utama Handita Aria Perdana (6/6 asersi, 0 raw key) · screenshot bukti tersimpan.
+Stage Summary: struktur resmi Bakorwil Jawa Timur kini live di jaringan daerah MUHDIN dengan entitas pengelola korporasi dan kedua pimpinan PT — data tercatat di skrip idempoten sehingga bootstrap DB baru mana pun menghasilkan struktur yang sama.
