@@ -2565,3 +2565,18 @@ Work Log:
 
 QA Gates: tsc 0 · eslint 0 · test-i18n-merge (kunci bertitik 0) · build produksi OK · browser `#/ekosistem-global` **14/14 asersi** (judul, orchestrator, MHUTU, 6 engines, AROFAHAJJ+PT AGS+MVA, batas kewenangan, entitas, alur, tier, scorecard, hub, tata kelola; raw key 0) · EN/AR paritas (judul+engine ar) ✓ · navbar "EKOSISTEM GLOBAL" aktif ✓ · footer link ✓ · CTA Beranda ✓ · crawl 61 route bersih (raw = domain sah saja) · screenshot bukti tersimpan.
 Stage Summary: arsitektur ekosistem final kini hidup di portal — MUHDIN sebagai orkestrator, MHUTU sebagai OS, dan AROFAHAJJ naik kelas sebagai Master Vendor & Supply Chain Aggregator dengan batas kewenangan yang jujur; enam temuan audit publik seluruhnya tertutup di sisi codebase.
+
+## Task ID 42 — v15.2.1 «IDENTITAS»: Audit Total «MUHDIN Nusantara» — Dipastikan NOL
+Tanggal: 2026-11-19
+
+Task: instruksi owner — «jangan sampai ada MUHDIN Nusantara, kan MUHDIN Indonesia». Verifikasi menyeluruh pasca-recycle sandbox (repo di-clone ulang dari origin pada 21b70e3, deps + DB di-bootstrap ulang: bun run setup + seed-nusuk/fitur-v5/v6/v7/membership/compliance/roadmap99/kontak-resmi).
+
+Work Log:
+- **Audit repositori penuh** (case-insensitive, tanpa node_modules/.next/.git): 82 kemunculan kata "nusantara" → **src/ 0 · public/ 0 · prisma/ 2 (nama contoh: "Rombl. Ziarah Nusantara", "PT Barokah Wisata Nusantara" — entitas pihak ketiga, bukan merek) · scripts/ 19 (nama PT resmi Kemenag & toko contoh: PT Al-Andalus Nusantara, PT Jasa Wisata Nusantara, Kurma Nusantara, dst.) · download/ 56 (template impor internal)**.
+- **Kombinasi merek "MUHDIN Nusantara"**: tepat **1** — di worklog.md (kutipan temuan audit Task 41, dokumen dev internal, bukan konten situs). Kombinasi di kode/publik/DB/SEO/manifest: **NOL**.
+- **Sumber identitas bersih**: `BRAND.name = "MUHDIN"` di constants.ts; seed SiteSetting & RegionalBranch 0 "nusantara"; query DB langsung (SiteSetting + RegionalBranch): 0.
+- **Verifikasi runtime**: build produksi OK → server → browser: beranda `nusantaraAny=false`; 7 halaman kunci (beranda, ekosistem, ekosistem-global, pengurus, anggota, nusuk, tentang, kontak) semuanya **0 "nusantara"** dalam teks yang dirender; crawl 61 route bersih (raw = domain sah).
+- Kesimpulan: identitas situs 100% **MUHDIN** (MUHDIN Indonesia) — tidak ada — dan tidak akan ada — branding "MUHDIN Nusantara" di konten publik. Snapshot "MUHDIN Nusantara" pada hasil indeks mesin pencari berasal dari versi lama di luar repo ini dan akan tergantikan seiring re-crawl.
+
+QA Gates: build ✓ · 7 halaman kunci regex `/muhdin\s*nusantara/i` = false semuanya · crawl-audit bersih · DB inti 0 kemunculan.
+Stage Summary: audit identitas ditutup — nama tunggal MUHDIN terjaga konsisten di seluruh codebase, database, dan situs yang dirender.
