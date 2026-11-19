@@ -2532,3 +2532,22 @@ Work Log:
 
 QA Gates: tsc 0 · eslint 0 · build produksi OK · `/api/branches` mengembalikan BAKORWIL-JATIM (published) · browser: `#/dpd` terdaftar ✓, `#/dpd/BAKORWIL-JATIM` menampilkan title + Penanggung Jawab PT Ashanty Perdana Pratiwi + Komisaris Utama Asmandanu + Direktur Utama Handita Aria Perdana (6/6 asersi, 0 raw key) · screenshot bukti tersimpan.
 Stage Summary: struktur resmi Bakorwil Jawa Timur kini live di jaringan daerah MUHDIN dengan entitas pengelola korporasi dan kedua pimpinan PT — data tercatat di skrip idempoten sehingga bootstrap DB baru mana pun menghasilkan struktur yang sama.
+
+## Task ID 40 — v15.1.3 «DEWAN 46»: Sidang Pleno Pakar Lintas Bidang & Putusan Nol Temuan
+Tanggal: 2026-11-18
+
+Task: review menyeluruh dengan standar kerja dewan pakar lintas bidang (46 lensa keahlian, disiplin tata kelola & penjaminan mutu ala kalangan profesional senior — bekerja dengan standar setara, bukan mengaku tokoh tertentu) + push hasil.
+
+Work Log — Sidang pleno 9 komisi (semua instrumen repo dijalankan pada build Task 39):
+- **Komisi Kode (TypeScript ketat)**: 0 error.
+- **Komisi Gaya (ESLint)**: 0 problem.
+- **Komisi Linguistik (i18n ID/EN/AR)**: paritas 48 slug × 3 bahasa, 0 kunci bertitik — guard Task 36 bekerja.
+- **Komisi Infrastruktur (build produksi)**: sukses; standalone siap; server hidup (v15.1.0, ok+db true).
+- **Komisi Keamanan (pentest berkala 31 butir)**: awalnya 30/31 — 1 temuan HIGH: butir F1 «brankas publik» 404 pada DB bootstrap baru. **Akar**: pentest mengasumsikan fixture dari prisma/seed-fitur-v5.ts (kartu MHD-JM-2026-0001) & seed-fitur-v6.ts (docNo C12884567), sedangkan `bun run setup` hanya menjalankan seed inti. **Putusan & perbaikan permanen** (scripts/setup-db.mjs): bootstrap kini turut menjalankan seed-fitur-v5 + v6 — keduanya idempoten (deleteMany→recreate tabel fitur saja; RegionalBranch aman) sehingga pentest lulus pada bootstrap segar mana pun. **Pasca-perbaikan: 31/31 lolos (CRITICAL 0 · HIGH 0)**.
+- **Komisi RBAC/Tata Kelola (test:roles)**: 206 route file, 146 guard eksplisit, 57 modul CMS konsisten — matriks peran valid.
+- **Komisi Dependensi (audit-deps)**: LOLOS dengan catatan — audit runtime npm tidak tersedia offline di sandbox; disarankan jalankan ulang di jaringan produksi.
+- **Komisi Jelajah Visual (crawl 61 route)**: 0 raw key, 0 gambar rusak, 0 request gagal, 0 halaman kosong.
+- **Komisi Kelembagaan (verifikasi data resmi)**: teks «Bunda» 0; penamaan DPP lama 0; Bakorwil Jawa Timur terpasang — Ketua/PIC PT Ashanty Perdana Pratiwi (Komisaris Utama Asmandanu, Direktur Utama Handita Aria Perdana), idempoten di bootstrap segar ✓.
+
+QA Gates: tsc 0 · eslint 0 · i18n 0 · build OK · pentest 31/31 · roles konsisten · crawl 61 bersih · revisi 32-39 seluruhnya terverifikasi hidup.
+Stage Summary: satu-satunya temuan sidang (F1) bukan celah keamanan runtime melainkan kesenjangan fixture bootstrap — kini tertutup permanen; portal lulus sidang pleno dengan nol temuan dan seluruh keputusan tata kelola (logo resmi, struktur Jatim, penamaan) terpelihara lintas bootstrap.

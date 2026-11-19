@@ -31,6 +31,12 @@ console.log("[setup-db] db/custom.db belum ada — bootstrap: prisma db push + s
 try {
   execSync("npx prisma db push", { stdio: "inherit" });
   execSync("bun prisma/seed.ts", { stdio: "inherit" });
+  // Task 40 — seed fitur v5 (kartu jamaah MHD-JM-2026-*) & v6 (brankas dokumen)
+  // ikut di-bootstrap: keduanya idempoten (deleteMany→recreate tabel fitur saja)
+  // dan menjadi fixture butir pentest F1 (brankas publik). Tanpa ini, pentest
+  // berkala gagal 404 pada DB bootstrap baru.
+  execSync("bun prisma/seed-fitur-v5.ts", { stdio: "inherit" });
+  execSync("bun prisma/seed-fitur-v6.ts", { stdio: "inherit" });
 } catch (err) {
   console.error("[setup-db] Bootstrap gagal. Pastikan `bun` ter-install (https://bun.sh).");
   console.error(err?.message ?? err);
