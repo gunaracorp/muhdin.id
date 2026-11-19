@@ -24,6 +24,8 @@ import { downloadsDict } from "@/lib/i18n/locales/downloads";
 import { reportDict } from "@/lib/i18n/locales/report";
 import { branchesDict } from "@/lib/i18n/locales/branches";
 import { nusHomeDict } from "@/lib/i18n/locales/indonesia-home";
+// Task 41 — MUHDIN GLOBAL ECOSYSTEM (6 Business Engines + AROFAHAJJ Master Vendor)
+import { ecoGlobalDict } from "@/lib/i18n/locales/eco-global";
 import { nusTrustDict } from "@/lib/i18n/locales/indonesia-trust";
 import { nusJoinDict } from "@/lib/i18n/locales/indonesia-join";
 import { pengurusDict } from "@/lib/i18n/locales/pengurus";
@@ -115,6 +117,7 @@ const dicts = [
   branchesDict,
   // Task 33 — MUHDIN INDONESIA (Trusted Pilgrim Ecosystem)
   nusHomeDict,
+  ecoGlobalDict,
   nusTrustDict,
   nusJoinDict,
   // Task 37 — Susunan Pengurus MUHDIN (#/pengurus)

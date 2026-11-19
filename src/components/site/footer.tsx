@@ -643,6 +643,9 @@ export function Footer() {
             <nav aria-label={t("footer.colEcosystem")}>
               <ColHead>{t("footer.colEcosystem")}</ColHead>
               <ul className="space-y-2.5 text-sm">
+                <li>
+                  <FootLink onClick={() => go("ekosistem-global")}>{t("footer.ecoGlobalLink")}</FootLink>
+                </li>
                 {EKOSISTEM_LINKS.map(([k, num]) => (
                   <li key={k}>
                     <FootLink onClick={() => go(`ekosistem/${num}`)}>{t(`footer.eco.${k}`)}</FootLink>
@@ -679,11 +682,11 @@ export function Footer() {
                 <li className="flex items-start gap-2.5">
                   <Icon name="phone" className="h-4 w-4 mt-0.5 text-gold shrink-0" />
                   <a
-                    href={`tel:${(settings?.phone?.trim() || "+62 21 1234 5678").replace(/[^+\d]/g, "")}`}
+                    href={`tel:${(settings?.phone?.trim() || "+62 812-2234-5856").replace(/[^+\d]/g, "")}`}
                     className="text-emerald-100/70 transition-colors hover:text-gold"
                     dir="ltr"
                   >
-                    {settings?.phone?.trim() || "+62 21 1234 5678"}
+                    {settings?.phone?.trim() || "+62 812-2234-5856"}
                   </a>
                 </li>
                 <li className="flex items-start gap-2.5">

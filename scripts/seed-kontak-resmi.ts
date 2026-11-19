@@ -13,7 +13,7 @@ const SETTINGS: Record<string, string> = {
   whatsapp: "0812 2234 5856",
   phone: "+62 812-2234-5856",
   address:
-    "Kantor Jakarta — Jl. Cempaka Putih Tengah XXX No.30 7 9, RT.9/RW.7, Cemp. Putih Tim., Kec. Cemp. Putih, Kota Jakarta Pusat, DKI Jakarta 10510",
+    "Kantor Jakarta — Jl. Cempaka Putih Tengah, RT.9/RW.7, Cempaka Putih Timur, Kec. Cempaka Putih, Kota Jakarta Pusat, DKI Jakarta 10510",
 };
 
 const JABAR_ADDRESS =
@@ -25,7 +25,7 @@ const JAKARTA_OFFICES = [
     name: "Kantor Jakarta — Cempaka Putih",
     officeName: "Kantor Perwakilan MUHDIN Jakarta",
     address:
-      "Jl. Cempaka Putih Tengah XXX No.30 7 9, RT.9/RW.7, Cemp. Putih Tim., Kec. Cemp. Putih, Kota Jakarta Pusat, Daerah Khusus Ibukota Jakarta 10510",
+      "Jl. Cempaka Putih Tengah, RT.9/RW.7, Cempaka Putih Timur, Kec. Cempaka Putih, Kota Jakarta Pusat, Daerah Khusus Ibukota Jakarta 10510",
     city: "Jakarta Pusat",
     province: "DKI Jakarta",
     order: 1,

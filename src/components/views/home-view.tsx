@@ -911,6 +911,18 @@ function MhutuSection() {
           })}
         </Stagger>
 
+        {/* Task 41 — CTA arsitektur ekosistem lengkap */}
+        <Reveal className="mt-8 text-center">
+          <button
+            type="button"
+            onClick={() => navigate("ekosistem-global")}
+            className="inline-flex items-center gap-2 rounded-full border border-gold/50 bg-gold/10 px-6 py-3 text-xs font-bold tracking-wide text-gold shadow transition hover:bg-gold/20"
+          >
+            <Icon name="network" className="h-4 w-4" strokeWidth={1.8} />
+            {t("ecoGlobal.ctaEcoPage")}
+          </button>
+        </Reveal>
+
         {/* 15 domain yang dikelola MHUTU */}
         <Reveal className="mt-12 text-center">
           <p className="text-xs font-bold uppercase tracking-[0.25em] text-gold-soft/80">

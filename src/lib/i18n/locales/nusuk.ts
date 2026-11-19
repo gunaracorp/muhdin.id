@@ -83,6 +83,8 @@ export const nusukDict = {
       matrixSubtitle:
         "Peta cakupan layanan MUHDIN terhadap platform Nusuk — dari visa hingga pengawasan mutu, beserta tahapan ketersediaannya.",
       matrixPending: "Menyusun integrasi teknis",
+      statusLegend:
+        "Legenda status: LIVE = kanal integrasi aktif pada platform · PILOT = uji coba terbatas · bertanggal = direncanakan. Integrasi Nusuk berjalan bertahap di bawah otoritas yang berwenang.",
       syncedLive: "Izin tersinkron live",
       svc1: "Nusuk Visa Platform",
       svc2: "Nusuk Ports & Handling",
@@ -364,6 +366,8 @@ curl -s "https://muhdin.web.id/api/nusuk/verify?no=NSK-HDL-2026-152220" \\
       matrixSubtitle:
         "A map of MUHDIN service coverage against the Nusuk platform — from visas to quality oversight, along with each availability stage.",
       matrixPending: "Technical integration in preparation",
+      statusLegend:
+        "Status legend: LIVE = active integration channel on the platform · PILOT = limited trial · dated = planned. Nusuk integration proceeds in stages under the competent authority.",
       syncedLive: "Permits synced live",
       svc1: "Nusuk Visa Platform",
       svc2: "Nusuk Ports & Handling",
@@ -645,6 +649,8 @@ curl -s "https://muhdin.web.id/api/nusuk/verify?no=NSK-HDL-2026-152220" \\
       matrixSubtitle:
         "خريطة تغطية خدمات موهدين لمنصة نوسك — من التأشيرات إلى الإشراف على الجودة، مع مراحل التوافر.",
       matrixPending: "جارٍ إعداد التكامل التقني",
+      statusLegend:
+        "مفتاح الحالة: LIVE = قناة تكامل نشطة على المنصة · PILOT = تجربة محدودة · مؤرَّخ = مُخطَّط. تكامل نوسك يسير على مراحل تحت سلطة مختصة.",
       syncedLive: "تراخيص متزامنة مباشرة",
       svc1: "منصة نوسك للتأشيرات",
       svc2: "نوسك للموانئ والمناولة",

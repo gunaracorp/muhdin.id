@@ -7,6 +7,7 @@ import { Navbar } from "@/components/site/navbar";
 import { Footer } from "@/components/site/footer";
 import { HomeView } from "@/components/views/home-view";
 import { EcosystemView } from "@/components/views/ecosystem-view";
+import { EcoGlobalView } from "@/components/views/eco-global-view";
 import { JourneyView } from "@/components/views/journey-view";
 import { MembersView } from "@/components/views/members-view";
 import { TutorialView } from "@/components/views/tutorial-view";
@@ -216,6 +217,10 @@ export function MuhdinApp({ initialLocale = "id" }: { initialLocale?: "id" | "en
     case "ekosistem":
       // Task 30 — deep-link #/ekosistem/<nomor> membuka dialog detail langsung.
       content = <EcosystemView focusNumber={route[1]} />;
+      break;
+    // Task 41 — arsitektur ekosistem bisnis: #/ekosistem-global
+    case "ekosistem-global":
+      content = <EcoGlobalView />;
       break;
     case "alur":
       content = <JourneyView />;

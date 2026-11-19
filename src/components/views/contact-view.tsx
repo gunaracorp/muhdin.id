@@ -49,7 +49,7 @@ const CONTACT_CARDS: {
     titleKey: "contact.cardAddressTitle",
     descKey: "contact.cardAddressDesc",
     href: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-      "Jl. Cempaka Putih Tengah XXX No.30, Cempaka Putih Timur, Jakarta Pusat 10510"
+      "Jl. Cempaka Putih Tengah RT.9/RW.7, Cempaka Putih Timur, Jakarta Pusat 10510"
     )}`,
     external: true,
   },

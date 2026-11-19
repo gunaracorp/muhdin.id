@@ -33,7 +33,7 @@ const NUSUK_SERVICES: Record<number, { key: string; level: "LIVE" | "PILOT" | st
   13: { key: "nusuk.svc13", level: "Q2 2027" },
 };
 
-/** Ekosistem dengan izin tersinkron live (VISA, HANDLING, MUTAWIF, HOTEL, TRANSPORT, RAUDAH) */
+/** Ekosistem dengan izin tersinkron live (VISA, HANDLING, MUTAWIF, HOTEL, TRANSPORT, RAUDAH, dst. — 7 kanal) */
 const SYNCED_ECOSYSTEMS = new Set([1, 2, 3, 5, 6, 7, 9]);
 
 /** Kode → key kamus (kode tetap dipakai untuk logika, label via kamus). */
@@ -1194,6 +1194,10 @@ function MatrixSection({ ecosystems }: { ecosystems: NusukPublicData["ecosystems
             );
           })}
         </div>
+        {/* Task 41 — legenda status: selaraskan LIVE/PILOT/terjadwal dengan pernyataan integrasi bertahap di footer */}
+        <p className="mt-4 rounded-xl border border-border/60 bg-muted/40 px-4 py-3 text-xs leading-relaxed text-muted-foreground">
+          {t("nusuk.statusLegend")}
+        </p>
       </div>
     </section>
   );

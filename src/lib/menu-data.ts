@@ -105,6 +105,8 @@ export const MENU_NODES: MenuNode[] = [
   },
   // v5.0 — Marketplace paket ibadah (feature baru)
   { key: "paket", route: "paket" },
+  // Task 41 — arsitektur ekosistem bisnis (MUHDIN GLOBAL ECOSYSTEM)
+  { key: "ekosistemGlobal", route: "ekosistem-global" },
   { key: "berita", route: "berita" },
   // v5.0 — Forum diskusi jamaah (feature baru)
   { key: "forum", route: "forum" },
