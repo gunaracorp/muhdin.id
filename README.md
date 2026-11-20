@@ -3,7 +3,7 @@
 
 ![MUHDIN.ID — Portal Digital Ekosistem Umrah dan Haji Indonesia](docs/assets/banner.svg)
 
-# 🕋 MUHDIN.ID — v15.1.0 «LOGO RESMI»
+# 🕋 MUHDIN.ID — v15.2.2 «GOVERNANCE & QUALITY»
 
 ### **MU**asyarakat **U**mroh **H**aji **D**igital **I**ndonesia
 
@@ -11,10 +11,12 @@
 *The Digital Home for Indonesia's Umrah & Hajj Ecosystem — From Indonesia to the Holy Land*
 *المنصة الرقمية لمنظومة العمرة والحج الإندونيسية — من إندونيسيا إلى الأرض المقدسة*
 
-*Terakhir diperbarui: 18 November 2026*
+*Terakhir diperbarui: 20 November 2026*
 
 > 📖 **Baru di sini? Baca [TUTORIAL.md](TUTORIAL.md) — panduan lengkap pengembangan
 > dari hulu (setup & arsitektur) ke hilir (QA gates, build, deploy, pemeliharaan).**
+
+> **v15.2.2 «GOVERNANCE & QUALITY»** — slot personalia Ketua Bidang dan koordinator subbidang kini tampil eksplisit sebagai **Belum Ditetapkan** pada 15 bidang strategis agar mudah dilengkapi tanpa mengubah nama pengurus yang sudah tercatat; label tersedia dalam ID/EN/AR. Ditambahkan [Kerangka QMS MUHDIN berbasis ISO 9001:2026](docs/muhdin-qms-iso9001-2026.md), termasuk peta proses, risiko, register dokumen, kompetensi, audit internal, KPI, tinjauan manajemen, dan rencana implementasi 90 hari. Ini adalah kerangka kesiapan internal, **bukan klaim sertifikasi**.
 
 [![Next.js 16](https://img.shields.io/badge/Next.js-16-black?logo=nextdotjs)](https://nextjs.org)
 [![React 19](https://img.shields.io/badge/React-19-61DAFB?logo=react)](https://react.dev)
