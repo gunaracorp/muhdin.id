@@ -85,6 +85,8 @@ export const orgMasterDict = {
         desc: "Setiap bidang memiliki ketua, wakil ketua, sekretaris, anggota, program kerja, indikator kinerja, dan laporan berkala.",
         subLabel: "Subbidang",
         expand: "Buka detail",
+        headLabel: "Ketua bidang",
+        coordinatorLabel: "Koordinator subbidang",
       },
       khusus: {
         eyebrow: "Fungsi Profesional Spesifik",
@@ -243,6 +245,8 @@ export const orgMasterDict = {
         desc: "Every division has a head, deputy head, secretary, members, work programmes, performance indicators and periodic reports.",
         subLabel: "Sub-divisions",
         expand: "Open details",
+        headLabel: "Division head",
+        coordinatorLabel: "Sub-division coordinator",
       },
       khusus: {
         eyebrow: "Specific Professional Functions",
@@ -401,6 +405,8 @@ export const orgMasterDict = {
         desc: "كل قسم له رئيس ونائب رئيس وسكرتير وأعضاء وبرامج عمل ومؤشرات أداء وتقارير دورية.",
         subLabel: "الأقسام الفرعية",
         expand: "فتح التفاصيل",
+        headLabel: "رئيس القسم",
+        coordinatorLabel: "منسق القسم الفرعي",
       },
       khusus: {
         eyebrow: "وظائف مهنية متخصصة",
