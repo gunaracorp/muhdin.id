@@ -259,12 +259,21 @@ function BidangCard({ b, delay }: { b: (typeof BIDANG_STRATEGIS)[number]; delay:
           </div>
         </div>
         <p className="mt-2.5 flex-1 text-xs leading-relaxed text-muted-foreground">{b.tujuan}</p>
+        <div className="mt-3 rounded-xl border border-dashed border-gold/40 bg-gold/[0.05] px-3 py-2">
+          <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">{t("orgMaster.bidang.headLabel")}</p>
+          <p className="mt-1 text-xs font-semibold">{b.ketua || t("orgMaster.status.belumDitetapkan")}</p>
+        </div>
         {open && (
-          <ul className="mt-3 space-y-1.5 border-t pt-3" data-testid={`bidang-${b.no}-sub`}>
-            {b.sub.map((s) => (
-              <li key={s} className="flex items-start gap-1.5 text-xs text-foreground/75">
-                <Icon name="check" className="mt-0.5 h-3 w-3 shrink-0 text-gold-deep" />
-                {s}
+          <ul className="mt-3 space-y-2 border-t pt-3" data-testid={`bidang-${b.no}-sub`}>
+            {b.sub.map((s, i) => (
+              <li key={s} className="rounded-lg bg-muted/30 px-3 py-2 text-xs text-foreground/75">
+                <div className="flex items-start gap-1.5">
+                  <Icon name="check" className="mt-0.5 h-3 w-3 shrink-0 text-gold-deep" />
+                  <span className="font-medium">{s}</span>
+                </div>
+                <p className="ms-4 mt-1 text-[10px] text-muted-foreground">
+                  {t("orgMaster.bidang.coordinatorLabel")}: {b.subKetua[i] || t("orgMaster.status.belumDitetapkan")}
+                </p>
               </li>
             ))}
           </ul>
