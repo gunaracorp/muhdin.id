@@ -2580,3 +2580,29 @@ Work Log:
 
 QA Gates: build ✓ · 7 halaman kunci regex `/muhdin\s*nusantara/i` = false semuanya · crawl-audit bersih · DB inti 0 kemunculan.
 Stage Summary: audit identitas ditutup — nama tunggal MUHDIN terjaga konsisten di seluruh codebase, database, dan situs yang dirender.
+
+
+## Task ID 43 — v15.2.2 «GOVERNANCE & QUALITY»: Slot Personalia Bidang + QMS ISO 9001:2026
+Tanggal: 2026-11-20
+
+Instruksi owner: perbarui portal dan repository; pertahankan semua nama pengurus yang sudah terisi; tampilkan posisi yang belum terisi agar dapat dilengkapi; siapkan tata kelola bermutu.
+
+Perubahan:
+- `src/lib/org-master.ts`: menambahkan properti `ketua` dan `subKetua` pada seluruh 15 bidang strategis. Nilai awal kosong secara sengaja; tidak mengganti nama personel yang telah tercatat. Menambahkan entri kandidat Ahmad dengan keterangan identitas lengkap belum tersedia.
+- `src/components/views/pengurus-view.tsx`: setiap kartu bidang menampilkan status Ketua Bidang; detail subbidang menampilkan slot Koordinator Subbidang. Kekosongan ditampilkan sebagai “Belum Ditetapkan” dan tidak diisi dengan nama rekaan.
+- `src/lib/i18n/locales/org-master.ts`: label personalia tersedia dalam Bahasa Indonesia, Inggris dan Arab.
+- `docs/muhdin-qms-iso9001-2026.md`: kerangka QMS internal meliputi ruang lingkup, konteks, pihak berkepentingan, kepemimpinan, peta proses, risiko/peluang, kompetensi, pengendalian dokumen, KPI, audit, tinjauan manajemen, tindakan korektif dan rencana implementasi 90 hari.
+- `package.json`: versi portal menjadi 15.2.2.
+- `README.md`: ringkasan rilis dan batas klaim sertifikasi diperbarui.
+
+Pengamanan integritas:
+- Nama yang sudah tercantum dipertahankan; tidak ada penetapan jabatan baru atas nama seseorang tanpa konfirmasi, persetujuan dan SK.
+- Slot jabatan kosong bukan bukti bahwa orang tertentu telah menerima jabatan.
+- ISO 9001:2026 digunakan sebagai acuan QMS; MUHDIN tidak menyatakan telah tersertifikasi.
+- Logo resmi dan aset branding yang telah disahkan tidak diubah dalam Task 43.
+
+Acuan publik standar: ISO 9001:2026 diterbitkan 16 September 2026. Organisasi wajib menelaah teks resmi standar sebelum menyatakan kesesuaian.
+
+QA yang masih harus dijalankan di workspace build: `bun run typecheck`, `bun run lint`, `bun run build`, `bunx tsx scripts/test-i18n-merge.ts`, `bun run test:roles`, serta audit browser halaman `#/pengurus` pada ID/EN/AR. GitHub connector commit berhasil, tetapi keberhasilan build/deploy produksi belum diverifikasi pada sesi ini.
+
+Stage Summary: struktur personalia lebih mudah dilengkapi tanpa mengubah nama yang sudah ada; fondasi dokumentasi mutu tersedia untuk ditinjau dan disahkan organisasi.
